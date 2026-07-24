@@ -10,6 +10,13 @@
         "nativeNarrative": "净收入同比增长 12.8%，高于订单数增速 3.2 个百分点。客单价温和增长说明本期并非单纯依赖提价，但订单扩张仍是主要贡献。",
         "findingIds": ["finding_revenue_growth", "finding_volume_driver"],
         "components": ["01-kpi-overview.html", "02-weekly-trend.html"]
+      },
+      {
+        "id": "hourly-pattern",
+        "heading": "2. 分时访问模式",
+        "nativeNarrative": "访问量在晚间明显抬升，工作日与周末均在 18–21 时形成高峰。24 小时数据在同一个证据组件中上下分组，便于在飞书文档宽度内比较。",
+        "findingIds": ["finding_evening_peak"],
+        "components": ["03-hourly-heatmap.html"]
       }
     ]
   }

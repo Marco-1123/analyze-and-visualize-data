@@ -479,6 +479,131 @@
     }).join("");
   }
 
+  function parseHourLabel(label) {
+    var normalized = String(label == null ? "" : label)
+      .trim()
+      .replace(/\s+/g, "")
+      .replace(/时$/, "")
+      .replace(/:00$/, "");
+    if (!/^\d{1,2}$/.test(normalized)) return null;
+    var hour = Number(normalized);
+    return hour >= 0 && hour <= 23 ? hour : null;
+  }
+
+  function isCanonicalHourlyColumns(columns) {
+    if (columns.length !== 24) return false;
+    return columns.every(function (label, index) {
+      return parseHourLabel(label) === index;
+    });
+  }
+
+  function resolveHeatmapGroups(component, columns) {
+    if (component.layout === "single") return [];
+    var supplied = Array.isArray(component.columnGroups)
+      ? component.columnGroups
+      : [];
+    if (supplied.length) {
+      return supplied.map(function (group, index) {
+        return {
+          label: group.label || "分组 " + (index + 1),
+          start: clamp(finite(group.start, 0), 0, Math.max(0, columns.length - 1)),
+          end: clamp(finite(group.end, columns.length - 1), 0, Math.max(0, columns.length - 1))
+        };
+      });
+    }
+    if (isCanonicalHourlyColumns(columns)) {
+      return [
+        { label: "0–11 时", start: 0, end: 11 },
+        { label: "12–23 时", start: 12, end: 23 }
+      ];
+    }
+    return [];
+  }
+
+  function buildHeatmapChart(component, rows, columns, matrix, group, min, max, compact) {
+    var start = group ? group.start : 0;
+    var end = group ? group.end : columns.length - 1;
+    var indices = [];
+    for (var index = start; index <= end; index += 1) indices.push(index);
+    var grouped = Boolean(group);
+    var range = max - min || 1;
+    var cellW = grouped ? (compact ? 48 : 54) : (compact ? 60 : 86);
+    var cellH = grouped ? 36 : 40;
+    var left = grouped ? (compact ? 72 : 94) : (compact ? 76 : 112);
+    var top = 42;
+    var width = left + indices.length * cellW + 18;
+    var height = top + rows.length * cellH + 20;
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": (component.ariaLabel || component.title || "热力图") +
+        (group ? "，" + group.label : ""),
+      "data-heatmap-svg": "true",
+      "data-domain-min": min,
+      "data-domain-max": max
+    });
+    svg.style.minWidth = width + "px";
+
+    indices.forEach(function (columnIndex, localIndex) {
+      svg.appendChild(svgEl("text", {
+        x: left + localIndex * cellW + cellW / 2,
+        y: 25,
+        "text-anchor": "middle",
+        class: "vda-axis-label"
+      }, columns[columnIndex]));
+    });
+
+    rows.forEach(function (row, rowIndex) {
+      svg.appendChild(svgEl("text", {
+        x: left - 10,
+        y: top + rowIndex * cellH + cellH / 2 + 4,
+        "text-anchor": "end",
+        class: "vda-axis-label"
+      }, row));
+      indices.forEach(function (columnIndex, localIndex) {
+        var value = matrix[rowIndex] ? Number(matrix[rowIndex][columnIndex]) : NaN;
+        var ratio = Number.isFinite(value) ? clamp((value - min) / range, 0, 1) : 0;
+        var fill = Number.isFinite(value) ? mixColor("#EEF2FF", "#315CF5", ratio) : "#F1F3F6";
+        var textColor = ratio > 0.58 ? "#FFFFFF" : "#263044";
+        var rawValue = Number.isFinite(value) ? String(matrix[rowIndex][columnIndex]) : "";
+        var rect = svgEl("rect", {
+          x: left + localIndex * cellW + 2,
+          y: top + rowIndex * cellH + 2,
+          width: cellW - 4,
+          height: cellH - 4,
+          rx: 5,
+          fill: fill,
+          tabindex: "0",
+          "data-heatmap-cell": "true",
+          "data-row-index": rowIndex,
+          "data-column-index": columnIndex,
+          "data-raw-value": rawValue,
+          "data-tip": esc(row) + " · " + esc(columns[columnIndex]) + ": " +
+            esc(Number.isFinite(value) ? formatValue(value, component.format) : "无数据")
+        });
+        rect.setAttribute("aria-label", rect.getAttribute("data-tip"));
+        svg.appendChild(rect);
+        if (component.showValues !== false && Number.isFinite(value)) {
+          svg.appendChild(svgEl("text", {
+            x: left + localIndex * cellW + cellW / 2,
+            y: top + rowIndex * cellH + cellH / 2 + 4,
+            "text-anchor": "middle",
+            fill: textColor,
+            "font-size": grouped ? "10.5" : "11",
+            "font-weight": "650",
+            "pointer-events": "none"
+          }, formatValue(value, component.format)));
+        }
+      });
+    });
+
+    var chart = document.createElement("div");
+    chart.className = "vda-chart vda-heatmap-chart";
+    chart.style.setProperty("--chart-height", height + "px");
+    chart.appendChild(svg);
+    return chart;
+  }
+
   function renderHeatmap(component) {
     var rows = Array.isArray(component.rows) ? component.rows : [];
     var columns = Array.isArray(component.columns) ? component.columns : [];
@@ -491,71 +616,54 @@
     });
     var min = component.domain ? finite(component.domain[0], 0) : Math.min.apply(null, flat.concat([0]));
     var max = component.domain ? finite(component.domain[1], 1) : Math.max.apply(null, flat.concat([1]));
-    var range = max - min || 1;
     var compact = compactChartLayout();
-    var cellW = compact ? 68 : 86;
-    var cellH = 40;
-    var left = compact ? 76 : 112;
-    var top = 42;
-    var width = left + columns.length * cellW + 18;
-    var height = top + rows.length * cellH + 20;
-    var svg = svgEl("svg", {
-      viewBox: "0 0 " + width + " " + height,
-      role: "img",
-      "aria-label": component.ariaLabel || component.title || "热力图"
-    });
-
-    columns.forEach(function (column, index) {
-      svg.appendChild(svgEl("text", {
-        x: left + index * cellW + cellW / 2,
-        y: 25,
-        "text-anchor": "middle",
-        class: "vda-axis-label"
-      }, column));
-    });
-
-    rows.forEach(function (row, rowIndex) {
-      svg.appendChild(svgEl("text", {
-        x: left - 10,
-        y: top + rowIndex * cellH + cellH / 2 + 4,
-        "text-anchor": "end",
-        class: "vda-axis-label"
-      }, row));
-      columns.forEach(function (column, columnIndex) {
-        var value = matrix[rowIndex] ? Number(matrix[rowIndex][columnIndex]) : NaN;
-        var ratio = Number.isFinite(value) ? clamp((value - min) / range, 0, 1) : 0;
-        var fill = Number.isFinite(value) ? mixColor("#EEF2FF", "#315CF5", ratio) : "#F1F3F6";
-        var textColor = ratio > 0.58 ? "#FFFFFF" : "#263044";
-        var rect = svgEl("rect", {
-          x: left + columnIndex * cellW + 2,
-          y: top + rowIndex * cellH + 2,
-          width: cellW - 4,
-          height: cellH - 4,
-          rx: 5,
-          fill: fill,
-          tabindex: "0",
-          "data-tip": esc(row) + " · " + esc(column) + ": " +
-            esc(Number.isFinite(value) ? formatValue(value, component.format) : "无数据")
-        });
-        rect.setAttribute("aria-label", rect.getAttribute("data-tip"));
-        svg.appendChild(rect);
-        if (component.showValues !== false && Number.isFinite(value)) {
-          svg.appendChild(svgEl("text", {
-            x: left + columnIndex * cellW + cellW / 2,
-            y: top + rowIndex * cellH + cellH / 2 + 4,
-            "text-anchor": "middle",
-            fill: textColor,
-            "font-size": "11",
-            "font-weight": "650"
-          }, formatValue(value, component.format)));
-        }
-      });
-    });
-
+    var groups = resolveHeatmapGroups(component, columns);
     var container = document.createElement("div");
-    container.className = "vda-chart";
-    container.style.overflowX = "auto";
-    container.appendChild(svg);
+    container.className = groups.length ? "vda-heatmap-stack" : "vda-heatmap-single";
+    container.setAttribute("data-heatmap-layout", groups.length ? "stacked-groups" : "single");
+    container.setAttribute("data-domain-min", min);
+    container.setAttribute("data-domain-max", max);
+
+    if (groups.length) {
+      groups.forEach(function (group, groupIndex) {
+        var module = document.createElement("section");
+        module.className = "vda-heatmap-group";
+        module.setAttribute("data-heatmap-group", "true");
+        module.setAttribute("data-group-index", groupIndex);
+        module.setAttribute("data-start-index", group.start);
+        module.setAttribute("data-end-index", group.end);
+        module.setAttribute("data-column-count", group.end - group.start + 1);
+        module.setAttribute("data-domain-min", min);
+        module.setAttribute("data-domain-max", max);
+        var heading = document.createElement("h3");
+        heading.className = "vda-heatmap-group-title";
+        heading.textContent = group.label;
+        module.appendChild(heading);
+        module.appendChild(buildHeatmapChart(
+          component, rows, columns, matrix, group, min, max, compact
+        ));
+        container.appendChild(module);
+      });
+    } else {
+      container.appendChild(buildHeatmapChart(
+        component, rows, columns, matrix, null, min, max, compact
+      ));
+    }
+
+    var legend = document.createElement("div");
+    legend.className = "vda-heatmap-legend";
+    legend.setAttribute("data-heatmap-shared-legend", "true");
+    legend.innerHTML =
+      '<span class="vda-heatmap-legend-value">' + esc(formatValue(min, component.format)) + '</span>' +
+      '<span class="vda-heatmap-legend-ramp" aria-hidden="true"></span>' +
+      '<span class="vda-heatmap-legend-value">' + esc(formatValue(max, component.format)) + '</span>';
+    container.appendChild(legend);
+    if (groups.length) {
+      var cue = document.createElement("p");
+      cue.className = "vda-scroll-cue";
+      cue.textContent = "每个时段组可左右滑动查看完整 12 小时 →";
+      container.appendChild(cue);
+    }
     return componentFrame(component, container.outerHTML);
   }
 

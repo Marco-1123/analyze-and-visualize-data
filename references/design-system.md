@@ -177,6 +177,15 @@ At narrow widths:
 - preserve the headline finding;
 - never shrink text below the defined minimum.
 
+For high-cardinality heatmaps:
+
+- split a canonical 24-hour axis into 0–11 and 12–23 stacked modules inside one
+  component;
+- use a subtle shared container hierarchy rather than two unrelated cards;
+- repeat row labels for scanability;
+- retain one shared color scale and legend;
+- prefer readable cells plus inner horizontal scrolling over compressed labels.
+
 ## 8. Content design
 
 - Lead with the most important information.

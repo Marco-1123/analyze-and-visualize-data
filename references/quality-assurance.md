@@ -52,6 +52,12 @@ Check:
 - Left/Right/Home/End keyboard navigation and accessible selected-value text;
 - persistent touch selection without blocking vertical page scrolling;
 - table scrolling;
+- canonical 24-hour heatmaps render exactly two groups with 12 columns each;
+- all 24 heatmap columns appear exactly once and preserve their original order;
+- stacked heatmap groups expose identical color-domain bounds and one shared
+  legend;
+- narrow heatmaps scroll within each module without causing page-level overflow;
+- heatmap cell tooltips preserve the exact source value and row/column labels;
 - reduced-motion behavior;
 - consistency across report components.
 

@@ -215,6 +215,122 @@ async function main() {
           screenshot: crosshairFilename,
         };
       }
+      const groupedHeatmaps = await page.locator(
+        '[data-heatmap-layout="stacked-groups"]'
+      ).count();
+      let heatmapInteraction = null;
+      if (groupedHeatmaps > 0) {
+        const heatmapState = await page.evaluate(() => {
+          const stack = document.querySelector(
+            '[data-heatmap-layout="stacked-groups"]'
+          );
+          const section = stack.closest("[data-component-id]");
+          const component = window.__VDA_SPEC__.components.find(
+            (item) => item.id === section.dataset.componentId
+          );
+          const groups = Array.from(
+            stack.querySelectorAll("[data-heatmap-group]")
+          );
+          const firstRowIndices = Array.from(
+            stack.querySelectorAll('[data-heatmap-cell][data-row-index="0"]')
+          ).map((cell) => Number(cell.dataset.columnIndex));
+          const domains = groups.map((group) => [
+            group.dataset.domainMin,
+            group.dataset.domainMax,
+          ]);
+          const expectedDomain = [
+            stack.dataset.domainMin,
+            stack.dataset.domainMax,
+          ];
+          const charts = Array.from(
+            stack.querySelectorAll(".vda-heatmap-chart")
+          );
+          return {
+            groupCount: groups.length,
+            groupCountMatches:
+              groups.length ===
+              (Array.isArray(component.columnGroups)
+                ? component.columnGroups.length
+                : 2),
+            columnCounts: groups.map((group) =>
+              Number(group.dataset.columnCount)
+            ),
+            twelveByTwelve:
+              groups.length === 2 &&
+              groups.every(
+                (group) => Number(group.dataset.columnCount) === 12
+              ),
+            coverage:
+              JSON.stringify(firstRowIndices) ===
+              JSON.stringify(Array.from({ length: 24 }, (_, index) => index)),
+            cellCount:
+              stack.querySelectorAll("[data-heatmap-cell]").length ===
+              component.rows.length * component.columns.length,
+            sharedLegend:
+              stack.querySelectorAll("[data-heatmap-shared-legend]").length ===
+              1,
+            sharedDomain: domains.every(
+              (domain) =>
+                domain[0] === expectedDomain[0] &&
+                domain[1] === expectedDomain[1]
+            ),
+            compactInnerScroll:
+              window.innerWidth > 520 ||
+              charts.every(
+                (chart) => chart.scrollWidth > chart.clientWidth + 1
+              ),
+          };
+        });
+
+        const secondGroupCell = page
+          .locator(
+            '[data-heatmap-group][data-group-index="1"] [data-heatmap-cell]'
+          )
+          .first();
+        await secondGroupCell.focus();
+        await page.waitForFunction(
+          () =>
+            window.getComputedStyle(
+              document.querySelector(".vda-tooltip")
+            ).opacity === "1"
+        );
+        const cellState = await secondGroupCell.evaluate((cell) => {
+          const section = cell.closest("[data-component-id]");
+          const component = window.__VDA_SPEC__.components.find(
+            (item) => item.id === section.dataset.componentId
+          );
+          const rowIndex = Number(cell.dataset.rowIndex);
+          const columnIndex = Number(cell.dataset.columnIndex);
+          return {
+            rawValueMatches:
+              cell.dataset.rawValue ===
+              String(component.values[rowIndex][columnIndex]),
+            tooltipHasCoordinates:
+              cell.dataset.tip.includes(String(component.rows[rowIndex])) &&
+              cell.dataset.tip.includes(String(component.columns[columnIndex])),
+          };
+        });
+        const heatmapFilename = `${path.basename(
+          input,
+          path.extname(input)
+        )}-${viewport.width}x${viewport.height}-heatmap-tooltip.png`;
+        await page.locator(".skip-link").evaluate((element) => {
+          element.style.visibility = "hidden";
+        });
+        await page.screenshot({
+          path: path.join(outputDir, heatmapFilename),
+          fullPage: true,
+        });
+        await page.locator(".skip-link").evaluate((element) => {
+          element.style.visibility = "";
+        });
+        await secondGroupCell.evaluate((cell) => cell.blur());
+        heatmapInteraction = {
+          ...heatmapState,
+          ...cellState,
+          screenshot: heatmapFilename,
+        };
+      }
       results.push({
         viewport,
         output: filename,
@@ -223,6 +339,7 @@ async function main() {
         dimensions,
         interaction: { tooltipTargets, keyboardTooltipOpen },
         lineInteraction,
+        heatmapInteraction,
       });
       await page.close();
     }
@@ -242,6 +359,12 @@ async function main() {
       Object.entries(result.lineInteraction).some(
         ([key, value]) =>
           !["hitboxes", "screenshot"].includes(key) && value !== true
+      )) ||
+    (result.heatmapInteraction &&
+      Object.entries(result.heatmapInteraction).some(
+        ([key, value]) =>
+          !["groupCount", "columnCounts", "screenshot"].includes(key) &&
+          value !== true
       ))
   );
   process.stdout.write(`${JSON.stringify(results, null, 2)}\n`);

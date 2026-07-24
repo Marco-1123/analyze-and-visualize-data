@@ -87,6 +87,31 @@ Supported baseline component types:
 - `table`
 - `divider`
 
+For a heatmap with many ordered columns, use a layout contract instead of
+pre-splitting or duplicating the data:
+
+```json
+{
+  "type": "heatmap",
+  "layout": "stacked-groups",
+  "columns": ["0时", "1时", "…", "23时"],
+  "columnGroups": [
+    {"label": "0–11 时", "start": 0, "end": 11},
+    {"label": "12–23 时", "start": 12, "end": 23}
+  ],
+  "values": []
+}
+```
+
+- `layout` accepts `auto` (default), `single`, or `stacked-groups`.
+- `columnGroups` use inclusive zero-based indices, must be ordered and
+  non-overlapping, and must cover every column exactly once.
+- Canonical 0–23 hour labels are auto-grouped into 0–11 and 12–23 unless
+  `layout` is explicitly `single`.
+- Keep the 24-column matrix once. Grouping is a presentation instruction, not a
+  data transformation.
+- Every group uses the component's one shared `domain` and legend.
+
 Give every component:
 
 - a stable `id`;

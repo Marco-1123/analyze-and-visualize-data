@@ -56,6 +56,11 @@ Confirmed:
 - the blocks were replaced again after adding the shared multi-series line-chart
   crosshair runtime; revision 9 returned three HTML blocks and three reference
   files, all containing the updated interaction code.
+- a fourth HTML block was appended to verify the canonical 24-hour heatmap
+  contract; revision 10 returned four HTML blocks and four reference files.
+  The new file was byte-identical to the local artifact and contained automatic
+  0–23 hour detection, vertically stacked 0–11 / 12–23 groups, exact cell
+  tooltips, and one shared color legend.
 
 Not yet confirmed:
 

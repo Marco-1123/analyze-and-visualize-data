@@ -10,7 +10,7 @@
     "dimensions": {
       "scrollWidth": 390,
       "clientWidth": 390,
-      "scrollHeight": 3300
+      "scrollHeight": 3341
     },
     "interaction": {
       "tooltipTargets": 29,
@@ -29,7 +29,8 @@
       "rawValuesMatch": true,
       "ariaValueTextPresent": true,
       "screenshot": "dashboard-390x844-crosshair.png"
-    }
+    },
+    "heatmapInteraction": null
   },
   {
     "viewport": {
@@ -42,7 +43,7 @@
     "dimensions": {
       "scrollWidth": 880,
       "clientWidth": 880,
-      "scrollHeight": 3223
+      "scrollHeight": 3241
     },
     "interaction": {
       "tooltipTargets": 29,
@@ -61,7 +62,8 @@
       "rawValuesMatch": true,
       "ariaValueTextPresent": true,
       "screenshot": "dashboard-880x1000-crosshair.png"
-    }
+    },
+    "heatmapInteraction": null
   },
   {
     "viewport": {
@@ -74,7 +76,7 @@
     "dimensions": {
       "scrollWidth": 1440,
       "clientWidth": 1440,
-      "scrollHeight": 2057
+      "scrollHeight": 2075
     },
     "interaction": {
       "tooltipTargets": 29,
@@ -93,6 +95,7 @@
       "rawValuesMatch": true,
       "ariaValueTextPresent": true,
       "screenshot": "dashboard-1440x1000-crosshair.png"
-    }
+    },
+    "heatmapInteraction": null
   }
 ]

@@ -70,7 +70,10 @@ Both modes use fixed embedded data. Filters, tabs, sorting, tooltips, and local 
 
 ### 5. Generate the artifact
 
-- Start from `assets/examples/report-kpi-spec.json`, `assets/examples/report-trend-spec.json`, or `assets/examples/dashboard-spec.json`.
+- Start from `assets/examples/report-kpi-spec.json`,
+  `assets/examples/report-trend-spec.json`,
+  `assets/examples/report-hourly-heatmap-spec.json`, or
+  `assets/examples/dashboard-spec.json`.
 - Run:
 
 ```bash
@@ -90,6 +93,9 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
 - For every multi-series line chart, verify nearest-x pointer snapping, a shared
   crosshair tooltip containing all series values, touch selection, and keyboard
   navigation. Per-point hover targets alone are not acceptable.
+- For a canonical 24-hour heatmap, default to one HTML component with 0–11 and
+  12–23 rendered as vertically stacked groups. Both groups must share one color
+  domain and one legend; never squeeze all 24 hours into one horizontal row.
 - Iterate after visual inspection. One-pass HTML generation is not complete.
 
 ### 7. Assemble the delivery

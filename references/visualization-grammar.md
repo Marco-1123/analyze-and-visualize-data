@@ -69,6 +69,14 @@
 - Provide a legend with units.
 - Use sequential color for magnitude and diverging color only around a meaningful midpoint.
 - Display values when the grid is small enough.
+- For canonical 24-hour columns, use one component with two vertical modules:
+  0–11 above 12–23. Repeat row labels, but do not duplicate the source matrix.
+- Use one shared domain and one shared legend across heatmap modules so equal
+  colors always mean equal values.
+- Preserve exact cell values in keyboard-accessible and pointer-accessible
+  tooltips even when visible labels are reduced.
+- On narrow screens, keep each 12-hour module legible and allow module-level
+  horizontal scrolling; do not make the page itself overflow.
 
 ### Table
 

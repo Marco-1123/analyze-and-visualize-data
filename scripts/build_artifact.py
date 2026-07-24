@@ -84,6 +84,57 @@ def validate_spec(spec: dict[str, Any]) -> None:
                 fail(f"{path}.values row count must match rows")
             if any(len(row) != len(columns) for row in values):
                 fail(f"{path}.values column count must match columns")
+            layout = component.get("layout", "auto")
+            if layout not in {"auto", "single", "stacked-groups"}:
+                fail(
+                    f"{path}.layout must be 'auto', 'single', or "
+                    "'stacked-groups'"
+                )
+            groups = component.get("columnGroups")
+            if groups is not None:
+                if not isinstance(groups, list) or not groups:
+                    fail(f"{path}.columnGroups must be a non-empty array")
+                covered: list[int] = []
+                previous_end = -1
+                for group_index, group in enumerate(groups):
+                    group_path = f"{path}.columnGroups[{group_index}]"
+                    if not isinstance(group, dict):
+                        fail(f"{group_path} must be an object")
+                    start = group.get("start")
+                    end = group.get("end")
+                    if (
+                        not isinstance(start, int)
+                        or isinstance(start, bool)
+                        or not isinstance(end, int)
+                        or isinstance(end, bool)
+                    ):
+                        fail(f"{group_path}.start and end must be integers")
+                    if start < 0 or end >= len(columns) or start > end:
+                        fail(f"{group_path} has an invalid inclusive range")
+                    if start <= previous_end:
+                        fail(f"{path}.columnGroups must be ordered and non-overlapping")
+                    previous_end = end
+                    covered.extend(range(start, end + 1))
+                if covered != list(range(len(columns))):
+                    fail(
+                        f"{path}.columnGroups must cover every column "
+                        "exactly once"
+                    )
+            if layout == "stacked-groups" and groups is None:
+                normalized_hours = []
+                for label in columns:
+                    normalized = (
+                        str(label).strip().replace(" ", "")
+                        .removesuffix("时").removesuffix(":00")
+                    )
+                    normalized_hours.append(
+                        int(normalized) if normalized.isdigit() else -1
+                    )
+                if normalized_hours != list(range(24)):
+                    fail(
+                        f"{path}.layout 'stacked-groups' requires "
+                        "columnGroups unless columns are canonical 0–23 hours"
+                    )
         elif component_type == "table":
             if not isinstance(component.get("columns"), list):
                 fail(f"{path}.columns must be an array")

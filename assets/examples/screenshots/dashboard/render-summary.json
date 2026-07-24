@@ -1,0 +1,56 @@
+[
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "output": "dashboard-390x844.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 3300
+    },
+    "interaction": {
+      "tooltipTargets": 35,
+      "keyboardTooltipOpen": true
+    }
+  },
+  {
+    "viewport": {
+      "width": 880,
+      "height": 1000
+    },
+    "output": "dashboard-880x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 880,
+      "clientWidth": 880,
+      "scrollHeight": 3223
+    },
+    "interaction": {
+      "tooltipTargets": 35,
+      "keyboardTooltipOpen": true
+    }
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "output": "dashboard-1440x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 2057
+    },
+    "interaction": {
+      "tooltipTargets": 35,
+      "keyboardTooltipOpen": true
+    }
+  }
+]

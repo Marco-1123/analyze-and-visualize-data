@@ -1,0 +1,16 @@
+{
+  "title": "2026 Q2 全渠道经营分析",
+  "mode": "report",
+  "nativeDocument": {
+    "summary": "第二季度收入保持双位数增长，订单量是主要驱动；5 月下旬后动能增强，但其与直营活动的因果关系仍需进一步验证。",
+    "sections": [
+      {
+        "id": "overall",
+        "heading": "1. 整体表现",
+        "nativeNarrative": "净收入同比增长 12.8%，高于订单数增速 3.2 个百分点。客单价温和增长说明本期并非单纯依赖提价，但订单扩张仍是主要贡献。",
+        "findingIds": ["finding_revenue_growth", "finding_volume_driver"],
+        "components": ["01-kpi-overview.html", "02-weekly-trend.html"]
+      }
+    ]
+  }
+}

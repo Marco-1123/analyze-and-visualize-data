@@ -1,0 +1,132 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "meta": {
+    "name": "Editorial Analytics",
+    "version": "0.1.0",
+    "intent": "A restrained, premium, Feishu-ready analytics system inspired by Semi Design and content-first editorial interfaces."
+  },
+  "color": {
+    "canvas": {"value": "#F4F6F8"},
+    "surface": {"value": "#FFFFFF"},
+    "surfaceSubtle": {"value": "#F8F9FB"},
+    "surfaceRaised": {"value": "#FFFFFF"},
+    "textPrimary": {"value": "#181C23"},
+    "textSecondary": {"value": "#545B68"},
+    "textTertiary": {"value": "#7D8593"},
+    "textDisabled": {"value": "#A8AEB8"},
+    "border": {"value": "#E6E9EE"},
+    "borderStrong": {"value": "#D8DCE3"},
+    "accent": {"value": "#315CF5"},
+    "accentHover": {"value": "#244BDC"},
+    "accentSoft": {"value": "#EEF2FF"},
+    "positive": {"value": "#14804A"},
+    "positiveSoft": {"value": "#EAF8F0"},
+    "negative": {"value": "#C33D45"},
+    "negativeSoft": {"value": "#FDEEEF"},
+    "warning": {"value": "#A55F00"},
+    "warningSoft": {"value": "#FFF4DC"},
+    "info": {"value": "#246BCE"},
+    "infoSoft": {"value": "#EAF3FF"},
+    "target": {"value": "#7357D6"},
+    "forecast": {"value": "#8A94A6"},
+    "focusRing": {"value": "#7C9BFF"},
+    "chart": {
+      "primary": {"value": "#315CF5"},
+      "secondary": {"value": "#17A6A1"},
+      "tertiary": {"value": "#7357D6"},
+      "quaternary": {"value": "#C98924"},
+      "neutral": {"value": "#A8B0BF"},
+      "categorical": {
+        "1": {"value": "#315CF5"},
+        "2": {"value": "#17A6A1"},
+        "3": {"value": "#7357D6"},
+        "4": {"value": "#C98924"},
+        "5": {"value": "#D45B86"},
+        "6": {"value": "#5D7B8A"},
+        "7": {"value": "#7D8D31"},
+        "8": {"value": "#AD6A3F"}
+      },
+      "sequential": {
+        "1": {"value": "#EEF2FF"},
+        "2": {"value": "#CFDAFF"},
+        "3": {"value": "#9CB2FF"},
+        "4": {"value": "#6689FA"},
+        "5": {"value": "#315CF5"},
+        "6": {"value": "#213CAD"}
+      }
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "sans": {"value": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", sans-serif"},
+      "mono": {"value": "\"SFMono-Regular\", Consolas, \"Liberation Mono\", monospace"}
+    },
+    "fontSize": {
+      "caption": {"value": "11px"},
+      "small": {"value": "12px"},
+      "body": {"value": "14px"},
+      "bodyLarge": {"value": "16px"},
+      "titleSmall": {"value": "18px"},
+      "title": {"value": "24px"},
+      "display": {"value": "32px"},
+      "metric": {"value": "36px"}
+    },
+    "lineHeight": {
+      "tight": {"value": 1.2},
+      "compact": {"value": 1.4},
+      "body": {"value": 1.65}
+    },
+    "weight": {
+      "regular": {"value": 400},
+      "medium": {"value": 500},
+      "semibold": {"value": 600},
+      "bold": {"value": 700}
+    },
+    "letterSpacing": {
+      "tight": {"value": "-0.02em"},
+      "normal": {"value": "0"},
+      "eyebrow": {"value": "0.12em"}
+    }
+  },
+  "space": {
+    "0": {"value": "0"},
+    "1": {"value": "4px"},
+    "2": {"value": "8px"},
+    "3": {"value": "12px"},
+    "4": {"value": "16px"},
+    "5": {"value": "20px"},
+    "6": {"value": "24px"},
+    "8": {"value": "32px"},
+    "10": {"value": "40px"},
+    "12": {"value": "48px"},
+    "16": {"value": "64px"}
+  },
+  "radius": {
+    "small": {"value": "6px"},
+    "medium": {"value": "10px"},
+    "large": {"value": "14px"},
+    "pill": {"value": "999px"}
+  },
+  "border": {
+    "hairline": {"value": "1px"},
+    "emphasis": {"value": "2px"}
+  },
+  "shadow": {
+    "raised": {"value": "0 8px 24px rgba(25, 32, 45, 0.06)"},
+    "overlay": {"value": "0 16px 40px rgba(25, 32, 45, 0.14)"}
+  },
+  "motion": {
+    "fast": {"value": "120ms"},
+    "normal": {"value": "180ms"},
+    "slow": {"value": "240ms"},
+    "ease": {"value": "cubic-bezier(0.2, 0, 0, 1)"}
+  },
+  "layout": {
+    "embedMin": {"value": "390px"},
+    "embedIdeal": {"value": "880px"},
+    "dashboardMax": {"value": "1440px"},
+    "contentMax": {"value": "1180px"},
+    "gridColumns": {"value": 12},
+    "touchTarget": {"value": "40px"}
+  }
+}

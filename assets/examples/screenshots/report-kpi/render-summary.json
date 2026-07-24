@@ -1,0 +1,56 @@
+[
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "output": "01-kpi-overview-390x844.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 844
+    },
+    "interaction": {
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    }
+  },
+  {
+    "viewport": {
+      "width": 880,
+      "height": 1000
+    },
+    "output": "01-kpi-overview-880x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 880,
+      "clientWidth": 880,
+      "scrollHeight": 1000
+    },
+    "interaction": {
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    }
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "output": "01-kpi-overview-1440x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1000
+    },
+    "interaction": {
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    }
+  }
+]

@@ -1,0 +1,50 @@
+{
+  "mode": "report-component",
+  "title": "收入增长由订单量与客单价共同驱动",
+  "eyebrow": "EVIDENCE 01 · KPI OVERVIEW",
+  "subtitle": "第二季度净收入同比增长 12.8%，量价两端均为正贡献。",
+  "description": "第二季度净收入、订单数与平均客单价三个核心指标及同比变化。",
+  "components": [
+    {
+      "id": "headline-metrics",
+      "type": "metrics",
+      "columns": 3,
+      "items": [
+        {
+          "label": "净收入",
+          "value": 12840000,
+          "display": "¥1,284万",
+          "change": {
+            "label": "同比 +12.8%",
+            "tone": "positive"
+          },
+          "context": "较目标高 3.4%"
+        },
+        {
+          "label": "订单数",
+          "value": 48260,
+          "display": "4.83万",
+          "change": {
+            "label": "同比 +9.6%",
+            "tone": "positive"
+          },
+          "context": "主要增长来源"
+        },
+        {
+          "label": "平均客单价",
+          "value": 266.1,
+          "display": "¥266.1",
+          "change": {
+            "label": "同比 +2.9%",
+            "tone": "positive"
+          },
+          "context": "价格贡献有限"
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "source": "数据来源：2026 Q2 订单明细",
+    "note": "口径：已完成订单净额"
+  }
+}

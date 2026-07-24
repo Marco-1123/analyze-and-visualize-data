@@ -1,0 +1,172 @@
+{
+  "source": {
+    "file": "sample-orders.csv",
+    "format": "csv"
+  },
+  "shape": {
+    "rows": 12,
+    "columns": 7
+  },
+  "duplicateRows": 0,
+  "columns": [
+    {
+      "name": "order_id",
+      "type": "text",
+      "nonNull": 12,
+      "missing": 0,
+      "missingRate": 0.0,
+      "unique": 12,
+      "topValues": [
+        {
+          "value": "O-001",
+          "count": 1
+        },
+        {
+          "value": "O-002",
+          "count": 1
+        },
+        {
+          "value": "O-003",
+          "count": 1
+        },
+        {
+          "value": "O-004",
+          "count": 1
+        },
+        {
+          "value": "O-005",
+          "count": 1
+        },
+        {
+          "value": "O-006",
+          "count": 1
+        },
+        {
+          "value": "O-007",
+          "count": 1
+        },
+        {
+          "value": "O-008",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "date",
+      "type": "date",
+      "nonNull": 12,
+      "missing": 0,
+      "missingRate": 0.0,
+      "unique": 12,
+      "range": {
+        "min": "2026-04-02T00:00:00",
+        "max": "2026-06-28T00:00:00"
+      }
+    },
+    {
+      "name": "region",
+      "type": "text",
+      "nonNull": 12,
+      "missing": 0,
+      "missingRate": 0.0,
+      "unique": 5,
+      "topValues": [
+        {
+          "value": "华东",
+          "count": 4
+        },
+        {
+          "value": "华北",
+          "count": 3
+        },
+        {
+          "value": "华南",
+          "count": 2
+        },
+        {
+          "value": "华中",
+          "count": 2
+        },
+        {
+          "value": "西南",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "channel",
+      "type": "text",
+      "nonNull": 12,
+      "missing": 0,
+      "missingRate": 0.0,
+      "unique": 3,
+      "topValues": [
+        {
+          "value": "直营",
+          "count": 6
+        },
+        {
+          "value": "电商平台",
+          "count": 3
+        },
+        {
+          "value": "代理",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "name": "revenue",
+      "type": "number",
+      "nonNull": 12,
+      "missing": 0,
+      "missingRate": 0.0,
+      "unique": 12,
+      "stats": {
+        "min": 1650.0,
+        "p25": 2100.0,
+        "median": 2990.0,
+        "mean": 3095.8333333333335,
+        "p75": 3557.5,
+        "max": 5260.0,
+        "sum": 37150.0
+      }
+    },
+    {
+      "name": "margin_rate",
+      "type": "number",
+      "nonNull": 12,
+      "missing": 0,
+      "missingRate": 0.0,
+      "unique": 11,
+      "stats": {
+        "min": 0.35,
+        "p25": 0.39999999999999997,
+        "median": 0.425,
+        "mean": 0.42166666666666663,
+        "p75": 0.4525,
+        "max": 0.48,
+        "sum": 5.06
+      }
+    },
+    {
+      "name": "status",
+      "type": "text",
+      "nonNull": 12,
+      "missing": 0,
+      "missingRate": 0.0,
+      "unique": 2,
+      "topValues": [
+        {
+          "value": "完成",
+          "count": 11
+        },
+        {
+          "value": "退款",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

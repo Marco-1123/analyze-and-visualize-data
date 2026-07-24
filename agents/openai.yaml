@@ -1,0 +1,4 @@
+interface:
+  display_name: "Visual Data Analysis"
+  short_description: "将固定数据生成精美分析报告与静态单页 Dashboard"
+  default_prompt: "Use $analyze-and-visualize-data to analyze my fixed dataset and create a polished Feishu-ready visual report."

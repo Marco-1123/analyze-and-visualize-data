@@ -60,6 +60,61 @@ async function main() {
         clientWidth: document.documentElement.clientWidth,
         scrollHeight: document.documentElement.scrollHeight,
       }));
+      const layoutIntegrity = await page.evaluate(() => {
+        const roundedPositions = (elements, axis) =>
+          Array.from(
+            new Set(
+              elements.map((element) =>
+                Math.round(element.getBoundingClientRect()[axis])
+              )
+            )
+          );
+        const metrics = Array.from(
+          document.querySelectorAll(".vda-metrics")
+        ).map((group) => {
+          const cards = Array.from(group.querySelectorAll(".vda-metric"));
+          const values = Array.from(
+            group.querySelectorAll(".vda-metric-value")
+          );
+          const fontSizes = values.map((value) =>
+            Number.parseFloat(window.getComputedStyle(value).fontSize)
+          );
+          return {
+            count: cards.length,
+            requestedColumns: Number(group.dataset.requestedColumns),
+            renderedColumns: roundedPositions(cards, "left").length,
+            renderedRows: roundedPositions(cards, "top").length,
+            fontSizes,
+            fontInRange: fontSizes.every(
+              (size) => size >= 24 && size <= 32
+            ),
+          };
+        });
+        const meta = document.querySelector(".vda-meta");
+        const metaItems = meta
+          ? Array.from(meta.querySelectorAll(".vda-meta-item"))
+          : [];
+        return {
+          metrics,
+          meta: meta
+            ? {
+                count: metaItems.length,
+                renderedRows: roundedPositions(metaItems, "top").length,
+                pairsStayInline: metaItems.every((item) => {
+                  const label = item.querySelector("strong");
+                  const value = item.querySelector("span");
+                  if (!label || !value) return false;
+                  return (
+                    Math.abs(
+                      label.getBoundingClientRect().top -
+                        value.getBoundingClientRect().top
+                    ) <= 2
+                  );
+                }),
+              }
+            : null,
+        };
+      });
       const tooltipTargets = await page.locator("[data-tip]").count();
       let keyboardTooltipOpen = null;
       if (tooltipTargets > 0) {
@@ -477,6 +532,7 @@ async function main() {
         ready,
         consoleErrors,
         dimensions,
+        layoutIntegrity,
         interaction: { tooltipTargets, keyboardTooltipOpen },
         lineInteraction,
         heatmapInteraction,
@@ -493,6 +549,23 @@ async function main() {
     result.ready !== "true" ||
     result.consoleErrors.length > 0 ||
     result.dimensions.scrollWidth > result.dimensions.clientWidth + 1 ||
+    result.layoutIntegrity.metrics.some(
+      (metrics) =>
+        !metrics.fontInRange ||
+        (result.viewport.width >= 760 &&
+          metrics.count === 4 &&
+          metrics.requestedColumns === 4 &&
+          (metrics.renderedColumns !== 4 || metrics.renderedRows !== 1)) ||
+        (result.viewport.width <= 520 &&
+          metrics.count === 4 &&
+          metrics.requestedColumns === 4 &&
+          (metrics.renderedColumns !== 2 || metrics.renderedRows !== 2))
+    ) ||
+    (result.layoutIntegrity.meta &&
+      (!result.layoutIntegrity.meta.pairsStayInline ||
+        (result.viewport.width >= 760 &&
+          result.layoutIntegrity.meta.count === 3 &&
+          result.layoutIntegrity.meta.renderedRows !== 1))) ||
     (result.interaction.tooltipTargets > 0 &&
       result.interaction.keyboardTooltipOpen !== true) ||
     (result.lineInteraction &&

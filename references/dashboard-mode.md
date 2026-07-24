@@ -47,6 +47,11 @@ Ensure a viewer can answer within a few seconds:
 ## Density
 
 - Use a 12-column grid on wide screens.
+- Keep a four-KPI executive strip on one row throughout the common 760–960 px
+  Feishu embed range. Reduce it to 2 × 2 only when the metric component is
+  narrower than 640 px.
+- Keep period, scope, and source as a single compact metadata row at Feishu
+  width; move that row below the title before wrapping individual pairs.
 - Keep related comparisons aligned.
 - Prefer large modules for primary evidence and compact modules for context.
 - Avoid equal-sized card grids when information importance is unequal.

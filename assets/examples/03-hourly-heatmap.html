@@ -6,7 +6,7 @@
   <meta name="use-iframe" content="true">
   <meta name="html-box-height-mode" content="auto">
   <meta name="description" content="周一至周日的逐小时访问量热力图，24 小时上下分组展示，共用统一色阶并支持逐格精确数值提示。">
-  <meta name="generator" content="analyze-and-visualize-data 0.5.0">
+  <meta name="generator" content="analyze-and-visualize-data 0.6.0">
   <meta name="color-scheme" content="light">
   <title>访问高峰集中在 18–21 时</title>
   <style>
@@ -120,7 +120,7 @@ a:focus-visible,
 
 .vda-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, auto);
   gap: 24px;
   align-items: end;
   padding: 28px 30px;
@@ -169,12 +169,24 @@ a:focus-visible,
 }
 
 .vda-meta {
-  display: grid;
-  gap: 6px;
-  min-width: 160px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  max-width: 540px;
   color: var(--vda-text-3);
   font-size: 12px;
+  line-height: 1.5;
   text-align: right;
+}
+
+.vda-meta-item {
+  display: inline-flex;
+  gap: 5px;
+  align-items: baseline;
+  white-space: nowrap;
 }
 
 .vda-meta strong {
@@ -191,6 +203,7 @@ a:focus-visible,
 .vda-component {
   grid-column: span var(--span, 12);
   min-width: 0;
+  container-type: inline-size;
 }
 
 .vda-panel {
@@ -284,11 +297,51 @@ a:focus-visible,
 .vda-metric-value {
   margin: 8px 0 0;
   color: var(--vda-text-1);
-  font-size: clamp(26px, 3.4vw, 38px);
+  font-size: clamp(24px, 3vw, 32px);
   font-variant-numeric: tabular-nums lining-nums;
   font-weight: 680;
   letter-spacing: -0.045em;
   line-height: 1.08;
+}
+
+@container (max-width: 640px) {
+  .vda-metrics[data-count="4"] {
+    --columns: 2 !important;
+  }
+
+  .vda-metrics[data-count="5"],
+  .vda-metrics[data-count="6"] {
+    --columns: 3 !important;
+  }
+}
+
+@container (min-width: 641px) and (max-width: 900px) {
+  .vda-metrics[data-count="4"] .vda-metric {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .vda-metrics[data-count="4"] .vda-metric-context {
+    gap: 4px;
+  }
+}
+
+@container (max-width: 500px) {
+  .vda-metrics[data-count="3"] {
+    --columns: 1 !important;
+  }
+
+  .vda-metrics[data-count="4"],
+  .vda-metrics[data-count="5"],
+  .vda-metrics[data-count="6"] {
+    --columns: 2 !important;
+  }
+}
+
+@container (max-width: 340px) {
+  .vda-metrics {
+    --columns: 1 !important;
+  }
 }
 
 .vda-metric-unit {
@@ -795,7 +848,8 @@ a:focus-visible,
   }
 
   .vda-meta {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: flex-start;
+    max-width: none;
     text-align: left;
   }
 
@@ -803,13 +857,6 @@ a:focus-visible,
     --span: 12 !important;
   }
 
-  .vda-metrics {
-    --columns: 2 !important;
-  }
-
-  .vda-app[data-mode="report-component"] .vda-metrics {
-    --columns: 3 !important;
-  }
 }
 
 @media (max-width: 520px) {
@@ -838,7 +885,9 @@ a:focus-visible,
   }
 
   .vda-meta {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
   }
 
   .vda-panel {
@@ -851,20 +900,12 @@ a:focus-visible,
     gap: 8px;
   }
 
-  .vda-metrics {
-    grid-template-columns: 1fr;
-  }
-
-  .vda-app[data-mode="report-component"] .vda-metrics {
-    --columns: 1 !important;
-  }
-
   .vda-metric {
     padding: 17px;
   }
 
   .vda-metric-value {
-    font-size: 30px;
+    font-size: 24px;
   }
 
   .vda-insight {
@@ -1065,7 +1106,10 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
   function renderMetrics(component) {
     var items = Array.isArray(component.items) ? component.items : [];
     var columns = clamp(finite(component.columns, Math.min(items.length || 1, 4)), 1, 6);
-    var html = '<div class="vda-metrics" style="--columns:' + columns + '">';
+    var html =
+      '<div class="vda-metrics" data-count="' + items.length +
+      '" data-requested-columns="' + columns +
+      '" style="--columns:' + columns + '">';
     items.forEach(function (item) {
       var change = item.change
         ? '<span class="vda-change" data-tone="' + esc(item.change.tone || "neutral") + '">' +
@@ -1709,9 +1753,24 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
   function renderHeader() {
     var meta = spec.meta || {};
     var metaItems = [];
-    if (meta.period) metaItems.push("<span><strong>周期</strong><br>" + esc(meta.period) + "</span>");
-    if (meta.scope) metaItems.push("<span><strong>范围</strong><br>" + esc(meta.scope) + "</span>");
-    if (meta.source) metaItems.push("<span><strong>来源</strong><br>" + esc(meta.source) + "</span>");
+    if (meta.period) {
+      metaItems.push(
+        '<span class="vda-meta-item"><strong>周期</strong><span>' +
+        esc(meta.period) + "</span></span>"
+      );
+    }
+    if (meta.scope) {
+      metaItems.push(
+        '<span class="vda-meta-item"><strong>范围</strong><span>' +
+        esc(meta.scope) + "</span></span>"
+      );
+    }
+    if (meta.source) {
+      metaItems.push(
+        '<span class="vda-meta-item"><strong>来源</strong><span>' +
+        esc(meta.source) + "</span></span>"
+      );
+    }
     return (
       '<header class="vda-header">' +
       "<div>" +
@@ -1719,7 +1778,10 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       '<h1 class="vda-title">' + esc(spec.title || "数据分析") + "</h1>" +
       (spec.subtitle ? '<p class="vda-subtitle">' + esc(spec.subtitle) + "</p>" : "") +
       "</div>" +
-      (metaItems.length ? '<div class="vda-meta">' + metaItems.join("") + "</div>" : "") +
+      (metaItems.length
+        ? '<div class="vda-meta" aria-label="数据范围">' +
+          metaItems.join("") + "</div>"
+        : "") +
       "</header>"
     );
   }

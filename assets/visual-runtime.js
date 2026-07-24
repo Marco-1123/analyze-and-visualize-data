@@ -110,7 +110,10 @@
   function renderMetrics(component) {
     var items = Array.isArray(component.items) ? component.items : [];
     var columns = clamp(finite(component.columns, Math.min(items.length || 1, 4)), 1, 6);
-    var html = '<div class="vda-metrics" style="--columns:' + columns + '">';
+    var html =
+      '<div class="vda-metrics" data-count="' + items.length +
+      '" data-requested-columns="' + columns +
+      '" style="--columns:' + columns + '">';
     items.forEach(function (item) {
       var change = item.change
         ? '<span class="vda-change" data-tone="' + esc(item.change.tone || "neutral") + '">' +
@@ -754,9 +757,24 @@
   function renderHeader() {
     var meta = spec.meta || {};
     var metaItems = [];
-    if (meta.period) metaItems.push("<span><strong>周期</strong><br>" + esc(meta.period) + "</span>");
-    if (meta.scope) metaItems.push("<span><strong>范围</strong><br>" + esc(meta.scope) + "</span>");
-    if (meta.source) metaItems.push("<span><strong>来源</strong><br>" + esc(meta.source) + "</span>");
+    if (meta.period) {
+      metaItems.push(
+        '<span class="vda-meta-item"><strong>周期</strong><span>' +
+        esc(meta.period) + "</span></span>"
+      );
+    }
+    if (meta.scope) {
+      metaItems.push(
+        '<span class="vda-meta-item"><strong>范围</strong><span>' +
+        esc(meta.scope) + "</span></span>"
+      );
+    }
+    if (meta.source) {
+      metaItems.push(
+        '<span class="vda-meta-item"><strong>来源</strong><span>' +
+        esc(meta.source) + "</span></span>"
+      );
+    }
     return (
       '<header class="vda-header">' +
       "<div>" +
@@ -764,7 +782,10 @@
       '<h1 class="vda-title">' + esc(spec.title || "数据分析") + "</h1>" +
       (spec.subtitle ? '<p class="vda-subtitle">' + esc(spec.subtitle) + "</p>" : "") +
       "</div>" +
-      (metaItems.length ? '<div class="vda-meta">' + metaItems.join("") + "</div>" : "") +
+      (metaItems.length
+        ? '<div class="vda-meta" aria-label="数据范围">' +
+          metaItems.join("") + "</div>"
+        : "") +
       "</header>"
     );
   }

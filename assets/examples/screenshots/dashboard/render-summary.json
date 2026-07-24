@@ -10,7 +10,29 @@
     "dimensions": {
       "scrollWidth": 390,
       "clientWidth": 390,
-      "scrollHeight": 3363
+      "scrollHeight": 3087
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 4,
+          "requestedColumns": 4,
+          "renderedColumns": 2,
+          "renderedRows": 2,
+          "fontSizes": [
+            24,
+            24,
+            24,
+            24
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": {
+        "count": 3,
+        "renderedRows": 3,
+        "pairsStayInline": true
+      }
     },
     "interaction": {
       "tooltipTargets": 29,
@@ -55,7 +77,29 @@
     "dimensions": {
       "scrollWidth": 880,
       "clientWidth": 880,
-      "scrollHeight": 3263
+      "scrollHeight": 3062
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 4,
+          "requestedColumns": 4,
+          "renderedColumns": 4,
+          "renderedRows": 1,
+          "fontSizes": [
+            26.4,
+            26.4,
+            26.4,
+            26.4
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": {
+        "count": 3,
+        "renderedRows": 1,
+        "pairsStayInline": true
+      }
     },
     "interaction": {
       "tooltipTargets": 29,
@@ -100,7 +144,29 @@
     "dimensions": {
       "scrollWidth": 1440,
       "clientWidth": 1440,
-      "scrollHeight": 2097
+      "scrollHeight": 2062
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 4,
+          "requestedColumns": 4,
+          "renderedColumns": 4,
+          "renderedRows": 1,
+          "fontSizes": [
+            32,
+            32,
+            32,
+            32
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": {
+        "count": 3,
+        "renderedRows": 1,
+        "pairsStayInline": true
+      }
     },
     "interaction": {
       "tooltipTargets": 29,

@@ -12,6 +12,23 @@
       "clientWidth": 390,
       "scrollHeight": 844
     },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 3,
+          "requestedColumns": 3,
+          "renderedColumns": 1,
+          "renderedRows": 3,
+          "fontSizes": [
+            24,
+            24,
+            24
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": null
+    },
     "interaction": {
       "tooltipTargets": 0,
       "keyboardTooltipOpen": null
@@ -32,6 +49,23 @@
       "clientWidth": 880,
       "scrollHeight": 1000
     },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 3,
+          "requestedColumns": 3,
+          "renderedColumns": 3,
+          "renderedRows": 1,
+          "fontSizes": [
+            26.4,
+            26.4,
+            26.4
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": null
+    },
     "interaction": {
       "tooltipTargets": 0,
       "keyboardTooltipOpen": null
@@ -51,6 +85,23 @@
       "scrollWidth": 1440,
       "clientWidth": 1440,
       "scrollHeight": 1000
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 3,
+          "requestedColumns": 3,
+          "renderedColumns": 3,
+          "renderedRows": 1,
+          "fontSizes": [
+            32,
+            32,
+            32
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": null
     },
     "interaction": {
       "tooltipTargets": 0,

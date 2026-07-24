@@ -42,6 +42,12 @@ Check:
 - label collisions;
 - inconsistent alignment;
 - empty or overly dense regions;
+- four-card metric groups remain one row at 880 px and use a balanced 2 × 2
+  layout at 390 px;
+- primary metric values remain within the 24–32 px type range and never become
+  larger at a narrower viewport;
+- period, scope, and source remain one horizontal metadata row at 880 px, with
+  each label and value kept on the same line;
 - chart-title truthfulness;
 - semantic color use;
 - contrast and focus state;

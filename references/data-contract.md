@@ -126,6 +126,12 @@ runtime maintain local visibility state. Hiding a series must not mutate,
 discard, or recalculate its source values, and must not change the shared
 y-domain.
 
+For metric components, `columns` is the preferred maximum column count, not a
+viewport breakpoint. The runtime preserves four columns when four cards have at
+least 160 px each, reduces four cards to a balanced 2 × 2 grid only below that
+capacity, and uses one column only when a two-column card would be unreadable.
+Agents must not add local media-query overrides for ordinary metric counts.
+
 ## 3. Numeric rules
 
 - Calculate with full available precision.

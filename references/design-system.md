@@ -106,7 +106,21 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
 - Show label, value, unit, comparison, and optional context.
 - Avoid decorative icons unless they improve identification.
 - Use no more than six top-level metrics in one row group.
+- Treat 160 px per card as the default minimum readable width. Keep four metrics
+  in one row across the 760–960 px Feishu embed range; use a balanced 2 × 2
+  layout only when the component itself is narrower than 640 px.
+- Keep primary metric values between 24 and 32 px in the default theme. Narrow
+  layouts must never increase the numeric type size.
 - Make the comparison basis explicit.
+
+### Header metadata
+
+- Keep period, scope, and source as compact inline label-value pairs.
+- At Feishu embed and full-page widths, render all available metadata pairs on
+  one horizontal row. Moving the row below the title is allowed; breaking each
+  label from its value or forcing a 2 + 1 metadata grid is not.
+- Allow metadata pairs to stack only below 520 px or when unusually long source
+  text genuinely exhausts the available row.
 
 ### Charts
 
@@ -178,7 +192,8 @@ Test at:
 
 At narrow widths:
 
-- stack metric cards;
+- reduce metric columns according to the component's actual width and card
+  count; prefer balanced grids and avoid orphaned final cards;
 - convert two-column modules to one column;
 - simplify axes and labels;
 - allow tables to scroll horizontally with a visible cue;

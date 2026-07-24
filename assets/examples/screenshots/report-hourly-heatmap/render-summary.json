@@ -12,6 +12,10 @@
       "clientWidth": 390,
       "scrollHeight": 1166
     },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
     "interaction": {
       "tooltipTargets": 168,
       "keyboardTooltipOpen": true
@@ -48,6 +52,10 @@
       "clientWidth": 880,
       "scrollHeight": 1183
     },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
     "interaction": {
       "tooltipTargets": 168,
       "keyboardTooltipOpen": true
@@ -83,6 +91,10 @@
       "scrollWidth": 1440,
       "clientWidth": 1440,
       "scrollHeight": 1256
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
     },
     "interaction": {
       "tooltipTargets": 168,

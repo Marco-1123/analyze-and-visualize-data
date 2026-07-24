@@ -68,6 +68,13 @@ Check:
   right and every negative mark to its left;
 - diverging-bar endpoint labels remain inside the SVG bounds, while every
   category label remains visible in the fixed label rail;
+- diverging-bar fixtures include 20+ character Chinese labels, 40+ character
+  Chinese labels, delimited machine identifiers, and unbroken 60-character
+  identifiers; visible label text never escapes its two-line row or overlaps
+  the adjacent row;
+- optional `displayCategories` stay aligned one-to-one with source
+  `categories`; the rail uses the display label while pointer, keyboard, touch,
+  accessible names, and bar-mark tooltips preserve the exact source category;
 - at 390 px and 520 px, an oversized diverging bar scrolls inside its own
   container via native horizontal wheel/trackpad and touch movement;
 - the diverging-bar initial narrow view exposes the zero axis, scrolling

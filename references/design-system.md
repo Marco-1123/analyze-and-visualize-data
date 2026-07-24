@@ -134,6 +134,10 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
   Compute a minimum readable width rather than shrinking these regions until
   they collide. Keep the category-label rail fixed while the signed plot
   scrolls, so row identity is never lost.
+- Keep category rows aligned to their bars. Show at most two visible label
+  lines, clamp longer labels without overflow, and expose the exact full label
+  on hover, keyboard focus, and touch. Prefer a concise display label backed by
+  an unchanged source identifier over an indefinitely wide label rail.
 
 ### Insight blocks
 

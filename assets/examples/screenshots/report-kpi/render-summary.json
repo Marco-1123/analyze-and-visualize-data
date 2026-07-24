@@ -29,6 +29,9 @@
       ],
       "meta": null
     },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
     "interaction": {
       "tooltipTargets": 0,
       "keyboardTooltipOpen": null
@@ -66,6 +69,50 @@
         }
       ],
       "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    },
+    "lineInteraction": null,
+    "barInteraction": null,
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 818,
+      "height": 1000
+    },
+    "output": "01-kpi-overview-818x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 818,
+      "clientWidth": 818,
+      "scrollHeight": 1000
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 3,
+          "requestedColumns": 3,
+          "renderedColumns": 3,
+          "renderedRows": 1,
+          "fontSizes": [
+            24.54,
+            24.54,
+            24.54
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
     },
     "interaction": {
       "tooltipTargets": 0,
@@ -105,6 +152,9 @@
       ],
       "meta": null
     },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
     "interaction": {
       "tooltipTargets": 0,
       "keyboardTooltipOpen": null
@@ -142,6 +192,9 @@
         }
       ],
       "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
     },
     "interaction": {
       "tooltipTargets": 0,

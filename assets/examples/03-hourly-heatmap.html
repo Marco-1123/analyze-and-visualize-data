@@ -6,7 +6,7 @@
   <meta name="use-iframe" content="true">
   <meta name="html-box-height-mode" content="auto">
   <meta name="description" content="周一至周日的逐小时访问量热力图，24 小时上下分组展示，共用统一色阶并支持逐格精确数值提示。">
-  <meta name="generator" content="analyze-and-visualize-data 0.8.0">
+  <meta name="generator" content="analyze-and-visualize-data 0.9.0">
   <meta name="color-scheme" content="light">
   <title>访问高峰集中在 18–21 时</title>
   <style>
@@ -412,7 +412,9 @@ a:focus-visible,
 
 .vda-diverging-bar-layout {
   display: grid;
-  grid-template-columns: minmax(84px, var(--bar-label-width, 132px)) minmax(0, 1fr);
+  grid-template-columns:
+    minmax(84px, min(var(--bar-label-width, 132px), 42%))
+    minmax(0, 1fr);
   gap: 12px;
   align-items: start;
   min-width: 0;
@@ -429,12 +431,34 @@ a:focus-visible,
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  width: 100%;
+  height: var(--bar-row-height, 44px);
   min-width: 0;
+  padding: 4px 0;
+  border: 0;
   color: var(--vda-text-2);
+  background: transparent;
+  font-family: inherit;
   font-size: 11px;
   line-height: 1.25;
   text-align: right;
+  cursor: help;
+}
+
+.vda-bar-category-label-text {
+  display: -webkit-box;
+  width: 100%;
+  max-height: 2.5em;
+  overflow: hidden;
   overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.vda-bar-category-label:focus-visible {
+  outline: 2px solid rgba(49, 92, 245, 0.58);
+  outline-offset: 2px;
+  border-radius: var(--vda-radius-sm);
 }
 
 .vda-bar-scroll-frame {
@@ -644,6 +668,11 @@ a:focus-visible,
 .vda-component[data-heatmap-scrollable="true"] .vda-heatmap-scroll-cue,
 .vda-component[data-bar-scrollable="true"] .vda-bar-scroll-cue {
   display: block;
+}
+
+.vda-component[data-bar-long-labels="true"] .vda-bar-label-cue {
+  display: block;
+  margin-top: 6px;
 }
 
 .vda-chart text {
@@ -1406,7 +1435,7 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
         estimateTextWidth(formatValue(value, component.format), 11)
       );
     }, 0);
-    var labelWidth = clamp(categoryWidth + 12, 84, 156);
+    var labelWidth = clamp(categoryWidth + 16, 104, 196);
     var valueGutter = clamp(valueWidth + 14, 36, 96);
     var negativeMagnitude = Math.abs(Math.min(0, min));
     var positiveMagnitude = Math.max(0, max);
@@ -1676,10 +1705,19 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
 
   function renderBarChart(component) {
     var categories = Array.isArray(component.categories) ? component.categories : [];
+    var displayCategories =
+      Array.isArray(component.displayCategories) &&
+      component.displayCategories.length === categories.length
+        ? component.displayCategories.map(String)
+        : categories.map(String);
     var values = Array.isArray(component.values) ? component.values.map(Number) : [];
-    var layout = resolveBarLayout(component, categories, values);
+    var layout = resolveBarLayout(component, displayCategories, values);
     var width = layout.width;
-    var rowHeight = clamp(finite(component.rowHeight, 38), 28, 54);
+    var rowHeight = clamp(
+      finite(component.rowHeight, layout.diverging ? 44 : 38),
+      layout.diverging ? 40 : 28,
+      60
+    );
     var height = Math.max(180, categories.length * rowHeight + 32);
     var margin = layout.margin;
     var innerW = width - margin.left - margin.right;
@@ -1705,6 +1743,7 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
     }));
 
     categories.forEach(function (category, index) {
+      var displayCategory = displayCategories[index];
       var value = Number.isFinite(values[index]) ? values[index] : 0;
       var y = margin.top + index * rowHeight + rowHeight * 0.18;
       var barH = rowHeight * 0.56;
@@ -1721,7 +1760,7 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
           "text-anchor": "end",
           class: "vda-axis-label",
           "data-bar-category-label": "true"
-        }, category));
+        }, displayCategory));
       }
 
       var bar = svgEl("rect", {
@@ -1772,11 +1811,21 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       frame.setAttribute("data-bar-scroll-frame", "true");
       frame.appendChild(container);
       var labelRail =
-        '<div class="vda-bar-label-rail" aria-hidden="true">' +
-        categories.map(function (category) {
+        '<div class="vda-bar-label-rail" aria-label="类别标签；可聚焦或点击查看完整名称">' +
+        categories.map(function (category, index) {
+          var displayCategory = displayCategories[index];
+          var accessibleLabel = displayCategory === category
+            ? category
+            : displayCategory + "；完整名称：" + category;
           return (
-            '<span class="vda-bar-category-label" title="' +
-            esc(category) + '">' + esc(category) + "</span>"
+            '<button type="button" class="vda-bar-category-label" ' +
+            'data-bar-category-index="' + index + '" ' +
+            'data-bar-category-full="' + esc(category) + '" ' +
+            'data-bar-category-display="' + esc(displayCategory) + '" ' +
+            'data-tip="' + esc(category) + '" ' +
+            'aria-label="' + esc(accessibleLabel) + '">' +
+            '<span class="vda-bar-category-label-text">' +
+            esc(displayCategory) + "</span></button>"
           );
         }).join("") +
         "</div>";
@@ -1788,6 +1837,8 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
           renderDivergingBarNavigation() +
           '<p class="vda-scroll-cue vda-bar-scroll-cue">' +
           "可左右滑动，或用上方按钮快速查看两端 →</p>" +
+          '<p class="vda-scroll-cue vda-bar-label-cue">' +
+          "长标签可悬停、聚焦或点击查看完整名称</p>" +
           renderDivergingBarDetail(component, categories, values, layout)
       );
     }
@@ -2283,6 +2334,8 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       tooltip.dataset.open = "false";
     }
 
+    var pinnedTarget = null;
+
     document.addEventListener("pointerover", function (event) {
       var target = event.target.closest("[data-tip]");
       if (target) showText(target, event);
@@ -2292,13 +2345,36 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       if (target && tooltip.dataset.open === "true") showText(target, event);
     });
     document.addEventListener("pointerout", function (event) {
-      if (event.target.closest("[data-tip]")) hide();
+      var target = event.target.closest("[data-tip]");
+      if (target && target !== pinnedTarget) hide();
+    });
+    document.addEventListener("pointerdown", function (event) {
+      var target = event.target.closest("[data-tip]");
+      if (
+        target &&
+        (event.pointerType === "touch" || event.pointerType === "pen")
+      ) {
+        pinnedTarget = target;
+        showText(target, event);
+        return;
+      }
+      if (pinnedTarget && (!target || target !== pinnedTarget)) {
+        pinnedTarget = null;
+        hide();
+      }
     });
     document.addEventListener("focusin", function (event) {
       var target = event.target.closest("[data-tip]");
       if (target) showText(target);
     });
-    document.addEventListener("focusout", hide);
+    document.addEventListener("focusout", function (event) {
+      if (event.target !== pinnedTarget) hide();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key !== "Escape") return;
+      pinnedTarget = null;
+      hide();
+    });
 
     return {
       element: tooltip,
@@ -2520,6 +2596,11 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       updateLegendState("");
       document.addEventListener("pointerdown", function (event) {
         if (event.target === hitbox || section.contains(event.target)) return;
+        if (event.target.closest("[data-tip]")) {
+          pinned = false;
+          focusLayer.dataset.open = "false";
+          return;
+        }
         pinned = false;
         hide();
       });
@@ -2624,6 +2705,33 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
     });
   }
 
+  function setupDivergingBarLabels() {
+    document.querySelectorAll(
+      '.vda-bar-chart[data-bar-layout="diverging"]'
+    ).forEach(function (chart) {
+      var component = chart.closest("[data-component-id]");
+      if (!component) return;
+      var labels = Array.from(
+        component.querySelectorAll(".vda-bar-category-label")
+      );
+      var hasCondensedLabel = false;
+      labels.forEach(function (label) {
+        var text = label.querySelector(".vda-bar-category-label-text");
+        var full = label.dataset.barCategoryFull || "";
+        var display = label.dataset.barCategoryDisplay || "";
+        var visuallyTruncated = Boolean(text) && (
+          text.scrollHeight > text.clientHeight + 1 ||
+          text.scrollWidth > text.clientWidth + 1
+        );
+        var condensed = visuallyTruncated || full !== display;
+        label.dataset.truncated = visuallyTruncated ? "true" : "false";
+        label.dataset.condensed = condensed ? "true" : "false";
+        hasCondensedLabel = hasCondensedLabel || condensed;
+      });
+      component.dataset.barLongLabels = hasCondensedLabel ? "true" : "false";
+    });
+  }
+
   function layoutHeatmapChart(chart) {
     var svg = chart.querySelector("[data-heatmap-svg]");
     if (!svg || chart.clientWidth <= 0) return;
@@ -2718,6 +2826,7 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       setupLineChartInteractions(tooltipApi);
       window.requestAnimationFrame(function () {
         setupHeatmapSizing();
+        setupDivergingBarLabels();
         setupDivergingBarScrolling();
         document.documentElement.dataset.vdaReady = "true";
         window.dispatchEvent(new CustomEvent("vda:ready"));

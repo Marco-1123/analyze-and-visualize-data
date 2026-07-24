@@ -70,5 +70,34 @@ class ComponentNoteContractTests(unittest.TestCase):
         validate_spec(self.spec_with_note("Method: values use a fixed cohort."))
 
 
+class BarDisplayCategoryContractTests(unittest.TestCase):
+    def test_display_categories_are_optional(self) -> None:
+        validate_spec(copy.deepcopy(BASE_SPEC))
+
+    def test_display_categories_preserve_raw_category_identity(self) -> None:
+        spec = copy.deepcopy(BASE_SPEC)
+        spec["components"][0]["categories"] = [
+            "queue_enterprise_recovery_priority_tier_01",
+            "queue_partner_risk_followup_tier_02",
+        ]
+        spec["components"][0]["displayCategories"] = [
+            "企业恢复优先队列",
+            "伙伴风险跟进队列",
+        ]
+        validate_spec(spec)
+
+    def test_display_categories_must_match_category_count(self) -> None:
+        spec = copy.deepcopy(BASE_SPEC)
+        spec["components"][0]["displayCategories"] = ["仅一个标签"]
+        with self.assertRaisesRegex(ValueError, "must have the same length"):
+            validate_spec(spec)
+
+    def test_display_categories_reject_blank_labels(self) -> None:
+        spec = copy.deepcopy(BASE_SPEC)
+        spec["components"][0]["displayCategories"] = ["A", "  "]
+        with self.assertRaisesRegex(ValueError, "non-empty strings"):
+            validate_spec(spec)
+
+
 if __name__ == "__main__":
     unittest.main()

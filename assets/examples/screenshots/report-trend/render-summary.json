@@ -16,6 +16,9 @@
       "metrics": [],
       "meta": null
     },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
     "interaction": {
       "tooltipTargets": 0,
       "keyboardTooltipOpen": null
@@ -66,6 +69,9 @@
       "metrics": [],
       "meta": null
     },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
     "interaction": {
       "tooltipTargets": 0,
       "keyboardTooltipOpen": null
@@ -101,6 +107,59 @@
   },
   {
     "viewport": {
+      "width": 818,
+      "height": 1000
+    },
+    "output": "02-weekly-trend-818x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 818,
+      "clientWidth": 818,
+      "scrollHeight": 1000
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    },
+    "lineInteraction": {
+      "hitboxes": 1,
+      "pointerSnap": true,
+      "pointerTooltip": true,
+      "touchPersistent": true,
+      "touchDismissesOutside": true,
+      "keyboardEnd": true,
+      "keyboardLeft": true,
+      "labelMatches": true,
+      "rowsMatch": true,
+      "rawValuesMatch": true,
+      "ariaValueTextPresent": true,
+      "legendButtons": 2,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "02-weekly-trend-818x1000-crosshair.png",
+      "legendScreenshot": "02-weekly-trend-818x1000-legend-hidden.png"
+    },
+    "barInteraction": null,
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
       "width": 880,
       "height": 1000
     },
@@ -115,6 +174,9 @@
     "layoutIntegrity": {
       "metrics": [],
       "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
     },
     "interaction": {
       "tooltipTargets": 0,
@@ -165,6 +227,9 @@
     "layoutIntegrity": {
       "metrics": [],
       "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
     },
     "interaction": {
       "tooltipTargets": 0,

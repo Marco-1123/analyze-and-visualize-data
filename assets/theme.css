@@ -400,7 +400,9 @@ a:focus-visible,
 
 .vda-diverging-bar-layout {
   display: grid;
-  grid-template-columns: minmax(84px, var(--bar-label-width, 132px)) minmax(0, 1fr);
+  grid-template-columns:
+    minmax(84px, min(var(--bar-label-width, 132px), 42%))
+    minmax(0, 1fr);
   gap: 12px;
   align-items: start;
   min-width: 0;
@@ -417,12 +419,34 @@ a:focus-visible,
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  width: 100%;
+  height: var(--bar-row-height, 44px);
   min-width: 0;
+  padding: 4px 0;
+  border: 0;
   color: var(--vda-text-2);
+  background: transparent;
+  font-family: inherit;
   font-size: 11px;
   line-height: 1.25;
   text-align: right;
+  cursor: help;
+}
+
+.vda-bar-category-label-text {
+  display: -webkit-box;
+  width: 100%;
+  max-height: 2.5em;
+  overflow: hidden;
   overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.vda-bar-category-label:focus-visible {
+  outline: 2px solid rgba(49, 92, 245, 0.58);
+  outline-offset: 2px;
+  border-radius: var(--vda-radius-sm);
 }
 
 .vda-bar-scroll-frame {
@@ -632,6 +656,11 @@ a:focus-visible,
 .vda-component[data-heatmap-scrollable="true"] .vda-heatmap-scroll-cue,
 .vda-component[data-bar-scrollable="true"] .vda-bar-scroll-cue {
   display: block;
+}
+
+.vda-component[data-bar-long-labels="true"] .vda-bar-label-cue {
+  display: block;
+  margin-top: 6px;
 }
 
 .vda-chart text {

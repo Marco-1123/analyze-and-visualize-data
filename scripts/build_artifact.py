@@ -143,6 +143,25 @@ def validate_spec(spec: dict[str, Any]) -> None:
                 fail(f"{path}.categories and {path}.values must be arrays")
             if len(categories) != len(values):
                 fail(f"{path}.categories and {path}.values must have the same length")
+            if not all(isinstance(item, str) and item.strip() for item in categories):
+                fail(f"{path}.categories must contain non-empty strings")
+            display_categories = component.get("displayCategories")
+            if display_categories is not None:
+                if not isinstance(display_categories, list):
+                    fail(f"{path}.displayCategories must be an array")
+                if len(display_categories) != len(categories):
+                    fail(
+                        f"{path}.displayCategories and {path}.categories "
+                        "must have the same length"
+                    )
+                if not all(
+                    isinstance(item, str) and item.strip()
+                    for item in display_categories
+                ):
+                    fail(
+                        f"{path}.displayCategories must contain "
+                        "non-empty strings"
+                    )
             layout = component.get("layout", "auto")
             if layout not in {"auto", "standard", "diverging"}:
                 fail(

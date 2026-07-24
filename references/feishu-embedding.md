@@ -94,6 +94,18 @@ Confirmed:
   reached the signed extreme and zero targets, including the case where two
   targets share the same physical scroll offset; the selected button state
   remained faithful to the user's last choice.
+- a seventh HTML block was appended for Skill v0.9.0 long-category regression.
+  Final revision 28 returned the block as an 88,856-byte reference file that
+  was SHA-256 byte-identical to the local artifact.
+- in the authenticated 818 px Feishu embed, the long-label fixture exposed a
+  532 px native `overflow-x: auto` viewport over a 632 px readable canvas.
+  A real horizontal wheel/trackpad event moved `scrollLeft` from 0 to the
+  100 px maximum while the iframe page remained contained and the zero axis
+  stayed visible. All five 44 px label rows remained aligned and
+  non-overlapping; the one visually clamped label stayed within its two-line
+  row. Selecting the concise `APAC North` display label opened a tooltip with
+  the exact source queue ID, and every label accessible name retained its
+  corresponding raw category.
 
 Not yet confirmed:
 

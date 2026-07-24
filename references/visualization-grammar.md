@@ -61,6 +61,10 @@
   width from the category text, signed domain, and formatted endpoint labels.
   If the plot exceeds the remaining component width, scroll it with native
   browser behavior instead of compressing or clipping it.
+- For long category names or queue identifiers, preserve the raw identifier,
+  optionally provide a concise display label, and limit the fixed rail to two
+  visible lines. Full text must remain available by pointer, keyboard, and
+  touch; labels must never overlap adjacent bar rows.
 - On narrow screens, begin with the zero axis visible when possible and show a
   concise horizontal-scroll cue. Do not implement mouse grab-to-drag.
 - Preserve one true linear scale even when positive and negative extremes differ

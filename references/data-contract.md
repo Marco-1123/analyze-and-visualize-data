@@ -171,7 +171,11 @@ For a signed bar comparison, use:
 {
   "type": "bar",
   "layout": "diverging",
-  "categories": ["华东 · 直营", "华南 · 代理"],
+  "categories": [
+    "queue_enterprise_recovery_priority_tier_01",
+    "queue_partner_risk_followup_tier_02"
+  ],
+  "displayCategories": ["企业恢复优先队列", "伙伴风险跟进队列"],
   "values": [82, -46],
   "format": {"decimals": 0}
 }
@@ -182,10 +186,19 @@ For a signed bar comparison, use:
   negative and one positive value. Use `standard` only to opt out explicitly.
 - `diverging` requires both signs and preserves one quantitative scale around a
   shared zero axis.
+- `categories` preserves the exact source category or queue identifier.
+  `displayCategories` is an optional same-length array of concise human-readable
+  labels. It changes only visible labels; tooltips, accessible names, and data
+  marks retain the exact `categories` value.
 - The runtime derives the full layout from the signed domain, longest category
-  label, and longest formatted endpoint value. Category labels remain in a
+  display label, and longest formatted endpoint value. Category labels remain in a
   fixed rail while the signed plot receives its own minimum readable width.
   Agents must not hard-code viewport widths or add custom drag handlers.
+- The fixed rail shows at most two lines per category. Longer text is visually
+  clamped without colliding with adjacent rows; hover, keyboard focus, and touch
+  expose the complete source category. Agents should use `displayCategories`
+  for long machine identifiers instead of replacing or shortening
+  `categories`.
 - When the derived width exceeds the component, the bar scrolls horizontally
   inside its own container. The initial view keeps the zero axis visible when
   possible; native trackpad/wheel, touch, scrollbar, and keyboard behavior are

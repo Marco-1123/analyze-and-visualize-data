@@ -16,6 +16,9 @@
       "metrics": [],
       "meta": null
     },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
     "interaction": {
       "tooltipTargets": 168,
       "keyboardTooltipOpen": true
@@ -34,7 +37,10 @@
       "cellCount": true,
       "sharedLegend": true,
       "sharedDomain": true,
-      "compactInnerScroll": true,
+      "fitWithoutUnnecessaryScroll": true,
+      "narrowScrollWhenRequired": true,
+      "cueMatchesOverflow": true,
+      "pageContained": true,
       "rawValueMatches": true,
       "tooltipHasCoordinates": true,
       "screenshot": "03-hourly-heatmap-390x844-heatmap-tooltip.png"
@@ -51,11 +57,14 @@
     "dimensions": {
       "scrollWidth": 520,
       "clientWidth": 520,
-      "scrollHeight": 1166
+      "scrollHeight": 1138
     },
     "layoutIntegrity": {
       "metrics": [],
       "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
     },
     "interaction": {
       "tooltipTargets": 168,
@@ -75,10 +84,60 @@
       "cellCount": true,
       "sharedLegend": true,
       "sharedDomain": true,
-      "compactInnerScroll": true,
+      "fitWithoutUnnecessaryScroll": true,
+      "narrowScrollWhenRequired": true,
+      "cueMatchesOverflow": true,
+      "pageContained": true,
       "rawValueMatches": true,
       "tooltipHasCoordinates": true,
       "screenshot": "03-hourly-heatmap-520x900-heatmap-tooltip.png"
+    }
+  },
+  {
+    "viewport": {
+      "width": 818,
+      "height": 1000
+    },
+    "output": "03-hourly-heatmap-818x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 818,
+      "clientWidth": 818,
+      "scrollHeight": 1171
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 168,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": null,
+    "barInteraction": null,
+    "heatmapInteraction": {
+      "groupCount": 2,
+      "groupCountMatches": true,
+      "columnCounts": [
+        12,
+        12
+      ],
+      "twelveByTwelve": true,
+      "coverage": true,
+      "cellCount": true,
+      "sharedLegend": true,
+      "sharedDomain": true,
+      "fitWithoutUnnecessaryScroll": true,
+      "narrowScrollWhenRequired": true,
+      "cueMatchesOverflow": true,
+      "pageContained": true,
+      "rawValueMatches": true,
+      "tooltipHasCoordinates": true,
+      "screenshot": "03-hourly-heatmap-818x1000-heatmap-tooltip.png"
     }
   },
   {
@@ -92,11 +151,14 @@
     "dimensions": {
       "scrollWidth": 880,
       "clientWidth": 880,
-      "scrollHeight": 1183
+      "scrollHeight": 1173
     },
     "layoutIntegrity": {
       "metrics": [],
       "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
     },
     "interaction": {
       "tooltipTargets": 168,
@@ -116,7 +178,10 @@
       "cellCount": true,
       "sharedLegend": true,
       "sharedDomain": true,
-      "compactInnerScroll": true,
+      "fitWithoutUnnecessaryScroll": true,
+      "narrowScrollWhenRequired": true,
+      "cueMatchesOverflow": true,
+      "pageContained": true,
       "rawValueMatches": true,
       "tooltipHasCoordinates": true,
       "screenshot": "03-hourly-heatmap-880x1000-heatmap-tooltip.png"
@@ -133,11 +198,14 @@
     "dimensions": {
       "scrollWidth": 1440,
       "clientWidth": 1440,
-      "scrollHeight": 1256
+      "scrollHeight": 1193
     },
     "layoutIntegrity": {
       "metrics": [],
       "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
     },
     "interaction": {
       "tooltipTargets": 168,
@@ -157,7 +225,10 @@
       "cellCount": true,
       "sharedLegend": true,
       "sharedDomain": true,
-      "compactInnerScroll": true,
+      "fitWithoutUnnecessaryScroll": true,
+      "narrowScrollWhenRequired": true,
+      "cueMatchesOverflow": true,
+      "pageContained": true,
       "rawValueMatches": true,
       "tooltipHasCoordinates": true,
       "screenshot": "03-hourly-heatmap-1440x1000-heatmap-tooltip.png"

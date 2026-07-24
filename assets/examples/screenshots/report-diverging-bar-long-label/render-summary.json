@@ -1,0 +1,312 @@
+[
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "output": "06-diverging-bar-long-label-390x844.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 844
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 10,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": null,
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 182,
+      "scrollWidth": 632,
+      "initialScrollLeft": 152,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "categoryLabelRowsSafe": true,
+      "categoryLabelsDoNotOverlap": true,
+      "categoryFullNamesPreserved": true,
+      "categoryDisplayLabelsPreserved": true,
+      "longLabelStateValid": true,
+      "labelCueMatchesCondensed": true,
+      "cueMatchesOverflow": true,
+      "mainScaleLinear": true,
+      "extremeDetailValid": true,
+      "extremeDetailAbsentWhenUnneeded": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "categoryKeyboardTooltip": true,
+      "categoryTouchTooltip": true,
+      "navigationWorks": true,
+      "screenshot": "06-diverging-bar-long-label-390x844-bar-scrolled.png"
+    },
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 520,
+      "height": 900
+    },
+    "output": "06-diverging-bar-long-label-520x900.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 520,
+      "clientWidth": 520,
+      "scrollHeight": 900
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 10,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": null,
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 257,
+      "scrollWidth": 632,
+      "initialScrollLeft": 114,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "categoryLabelRowsSafe": true,
+      "categoryLabelsDoNotOverlap": true,
+      "categoryFullNamesPreserved": true,
+      "categoryDisplayLabelsPreserved": true,
+      "longLabelStateValid": true,
+      "labelCueMatchesCondensed": true,
+      "cueMatchesOverflow": true,
+      "mainScaleLinear": true,
+      "extremeDetailValid": true,
+      "extremeDetailAbsentWhenUnneeded": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "categoryKeyboardTooltip": true,
+      "categoryTouchTooltip": true,
+      "navigationWorks": true,
+      "screenshot": "06-diverging-bar-long-label-520x900-bar-scrolled.png"
+    },
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 818,
+      "height": 1000
+    },
+    "output": "06-diverging-bar-long-label-818x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 818,
+      "clientWidth": 818,
+      "scrollHeight": 1000
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 10,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": null,
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 532,
+      "scrollWidth": 632,
+      "initialScrollLeft": 0,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "categoryLabelRowsSafe": true,
+      "categoryLabelsDoNotOverlap": true,
+      "categoryFullNamesPreserved": true,
+      "categoryDisplayLabelsPreserved": true,
+      "longLabelStateValid": true,
+      "labelCueMatchesCondensed": true,
+      "cueMatchesOverflow": true,
+      "mainScaleLinear": true,
+      "extremeDetailValid": true,
+      "extremeDetailAbsentWhenUnneeded": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "categoryKeyboardTooltip": true,
+      "categoryTouchTooltip": true,
+      "navigationWorks": true,
+      "screenshot": "06-diverging-bar-long-label-818x1000-bar-scrolled.png"
+    },
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 880,
+      "height": 1000
+    },
+    "output": "06-diverging-bar-long-label-880x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 880,
+      "clientWidth": 880,
+      "scrollHeight": 1000
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 10,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": null,
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 594,
+      "scrollWidth": 632,
+      "initialScrollLeft": 0,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "categoryLabelRowsSafe": true,
+      "categoryLabelsDoNotOverlap": true,
+      "categoryFullNamesPreserved": true,
+      "categoryDisplayLabelsPreserved": true,
+      "longLabelStateValid": true,
+      "labelCueMatchesCondensed": true,
+      "cueMatchesOverflow": true,
+      "mainScaleLinear": true,
+      "extremeDetailValid": true,
+      "extremeDetailAbsentWhenUnneeded": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "categoryKeyboardTooltip": true,
+      "categoryTouchTooltip": true,
+      "navigationWorks": true,
+      "screenshot": "06-diverging-bar-long-label-880x1000-bar-scrolled.png"
+    },
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "output": "06-diverging-bar-long-label-1440x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1000
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 10,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": null,
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 658,
+      "scrollWidth": 658,
+      "initialScrollLeft": 0,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "categoryLabelRowsSafe": true,
+      "categoryLabelsDoNotOverlap": true,
+      "categoryFullNamesPreserved": true,
+      "categoryDisplayLabelsPreserved": true,
+      "longLabelStateValid": true,
+      "labelCueMatchesCondensed": true,
+      "cueMatchesOverflow": true,
+      "mainScaleLinear": true,
+      "extremeDetailValid": true,
+      "extremeDetailAbsentWhenUnneeded": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "categoryKeyboardTooltip": true,
+      "categoryTouchTooltip": true,
+      "navigationWorks": true,
+      "screenshot": ""
+    },
+    "heatmapInteraction": null
+  }
+]

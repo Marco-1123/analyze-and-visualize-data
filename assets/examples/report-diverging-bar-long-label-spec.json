@@ -1,0 +1,44 @@
+{
+  "mode": "report-component",
+  "title": "长队列名称仍需与双向变化保持清晰对应",
+  "eyebrow": "QA · DIVERGING BAR · LONG LABELS",
+  "subtitle": "覆盖长中文名称、分隔式队列 ID 与连续英文 ID；主图保留原始标识，标签栏提供受控摘要。",
+  "description": "五个超长队列名称的正负变化压力测试，用于验证两行标签、完整名称访问、行对齐和窄容器滚动。",
+  "components": [
+    {
+      "id": "queue-change-long-labels",
+      "type": "bar",
+      "layout": "diverging",
+      "title": "超长队列名称不会挤压、重叠或丢失原始标识",
+      "subtitle": "队列指标变化，单位：点",
+      "ariaLabel": "五个超长队列名称对应的正负指标变化",
+      "categories": [
+        "华北区域战略合作伙伴高价值企业客户续约风险识别与恢复行动专项跟进队列",
+        "queue_enterprise_recovery_priority_tier_01_apac_north_2026Q2",
+        "QUEUEENTERPRISERECOVERYPRIORITYTIER01APACNORTH2026Q2LONGID",
+        "华东核心直营渠道高价值企业客户第一优先队列",
+        "华南-代理渠道-高端产品-核心客户-季度续约风险专项恢复队列"
+      ],
+      "displayCategories": [
+        "华北区域战略合作伙伴高价值企业客户续约风险识别与恢复行动专项跟进队列",
+        "企业恢复优先队列 · APAC North",
+        "QUEUEENTERPRISERECOVERYPRIORITYTIER01APACNORTH2026Q2LONGID",
+        "华东核心直营渠道高价值企业客户第一优先队列",
+        "华南代理渠道高端产品核心客户季度续约风险专项恢复队列"
+      ],
+      "values": [82, 54, 23, -18, -46],
+      "colors": ["#315CF5", "#7390F9", "#A8B0BF", "#D97B81", "#C33D45"],
+      "format": {
+        "decimals": 0
+      },
+      "note": {
+        "kind": "method",
+        "text": "展示名称仅用于标签栏排版；完整队列标识保留在交互提示与可访问名称中。"
+      }
+    }
+  ],
+  "footer": {
+    "source": "数据来源：长标签回归测试固定数据",
+    "note": "范围：中文名称与机器队列标识混合场景"
+  }
+}

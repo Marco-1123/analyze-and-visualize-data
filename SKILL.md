@@ -109,6 +109,11 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
   labels, and native component-level horizontal scrolling at 390 px and
   520 px. Trackpad/wheel and touch scrolling must work without causing
   page-level overflow; do not add grab-to-drag JavaScript.
+- For long diverging-bar categories or queue IDs, preserve exact source
+  identifiers, keep visible labels to at most two non-overlapping lines, and
+  expose full names by pointer, keyboard focus, and touch. Use optional
+  `displayCategories` for concise human-readable labels without replacing
+  `categories`.
 - For extreme positive/negative ratios, keep the main plot on one linear scale,
   require the labeled independent-scale small-side detail, and verify all three
   quick-position controls.

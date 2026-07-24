@@ -222,7 +222,7 @@
         estimateTextWidth(formatValue(value, component.format), 11)
       );
     }, 0);
-    var labelWidth = clamp(categoryWidth + 12, 84, 156);
+    var labelWidth = clamp(categoryWidth + 16, 104, 196);
     var valueGutter = clamp(valueWidth + 14, 36, 96);
     var negativeMagnitude = Math.abs(Math.min(0, min));
     var positiveMagnitude = Math.max(0, max);
@@ -492,10 +492,19 @@
 
   function renderBarChart(component) {
     var categories = Array.isArray(component.categories) ? component.categories : [];
+    var displayCategories =
+      Array.isArray(component.displayCategories) &&
+      component.displayCategories.length === categories.length
+        ? component.displayCategories.map(String)
+        : categories.map(String);
     var values = Array.isArray(component.values) ? component.values.map(Number) : [];
-    var layout = resolveBarLayout(component, categories, values);
+    var layout = resolveBarLayout(component, displayCategories, values);
     var width = layout.width;
-    var rowHeight = clamp(finite(component.rowHeight, 38), 28, 54);
+    var rowHeight = clamp(
+      finite(component.rowHeight, layout.diverging ? 44 : 38),
+      layout.diverging ? 40 : 28,
+      60
+    );
     var height = Math.max(180, categories.length * rowHeight + 32);
     var margin = layout.margin;
     var innerW = width - margin.left - margin.right;
@@ -521,6 +530,7 @@
     }));
 
     categories.forEach(function (category, index) {
+      var displayCategory = displayCategories[index];
       var value = Number.isFinite(values[index]) ? values[index] : 0;
       var y = margin.top + index * rowHeight + rowHeight * 0.18;
       var barH = rowHeight * 0.56;
@@ -537,7 +547,7 @@
           "text-anchor": "end",
           class: "vda-axis-label",
           "data-bar-category-label": "true"
-        }, category));
+        }, displayCategory));
       }
 
       var bar = svgEl("rect", {
@@ -588,11 +598,21 @@
       frame.setAttribute("data-bar-scroll-frame", "true");
       frame.appendChild(container);
       var labelRail =
-        '<div class="vda-bar-label-rail" aria-hidden="true">' +
-        categories.map(function (category) {
+        '<div class="vda-bar-label-rail" aria-label="类别标签；可聚焦或点击查看完整名称">' +
+        categories.map(function (category, index) {
+          var displayCategory = displayCategories[index];
+          var accessibleLabel = displayCategory === category
+            ? category
+            : displayCategory + "；完整名称：" + category;
           return (
-            '<span class="vda-bar-category-label" title="' +
-            esc(category) + '">' + esc(category) + "</span>"
+            '<button type="button" class="vda-bar-category-label" ' +
+            'data-bar-category-index="' + index + '" ' +
+            'data-bar-category-full="' + esc(category) + '" ' +
+            'data-bar-category-display="' + esc(displayCategory) + '" ' +
+            'data-tip="' + esc(category) + '" ' +
+            'aria-label="' + esc(accessibleLabel) + '">' +
+            '<span class="vda-bar-category-label-text">' +
+            esc(displayCategory) + "</span></button>"
           );
         }).join("") +
         "</div>";
@@ -604,6 +624,8 @@
           renderDivergingBarNavigation() +
           '<p class="vda-scroll-cue vda-bar-scroll-cue">' +
           "可左右滑动，或用上方按钮快速查看两端 →</p>" +
+          '<p class="vda-scroll-cue vda-bar-label-cue">' +
+          "长标签可悬停、聚焦或点击查看完整名称</p>" +
           renderDivergingBarDetail(component, categories, values, layout)
       );
     }
@@ -1099,6 +1121,8 @@
       tooltip.dataset.open = "false";
     }
 
+    var pinnedTarget = null;
+
     document.addEventListener("pointerover", function (event) {
       var target = event.target.closest("[data-tip]");
       if (target) showText(target, event);
@@ -1108,13 +1132,36 @@
       if (target && tooltip.dataset.open === "true") showText(target, event);
     });
     document.addEventListener("pointerout", function (event) {
-      if (event.target.closest("[data-tip]")) hide();
+      var target = event.target.closest("[data-tip]");
+      if (target && target !== pinnedTarget) hide();
+    });
+    document.addEventListener("pointerdown", function (event) {
+      var target = event.target.closest("[data-tip]");
+      if (
+        target &&
+        (event.pointerType === "touch" || event.pointerType === "pen")
+      ) {
+        pinnedTarget = target;
+        showText(target, event);
+        return;
+      }
+      if (pinnedTarget && (!target || target !== pinnedTarget)) {
+        pinnedTarget = null;
+        hide();
+      }
     });
     document.addEventListener("focusin", function (event) {
       var target = event.target.closest("[data-tip]");
       if (target) showText(target);
     });
-    document.addEventListener("focusout", hide);
+    document.addEventListener("focusout", function (event) {
+      if (event.target !== pinnedTarget) hide();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key !== "Escape") return;
+      pinnedTarget = null;
+      hide();
+    });
 
     return {
       element: tooltip,
@@ -1336,6 +1383,11 @@
       updateLegendState("");
       document.addEventListener("pointerdown", function (event) {
         if (event.target === hitbox || section.contains(event.target)) return;
+        if (event.target.closest("[data-tip]")) {
+          pinned = false;
+          focusLayer.dataset.open = "false";
+          return;
+        }
         pinned = false;
         hide();
       });
@@ -1440,6 +1492,33 @@
     });
   }
 
+  function setupDivergingBarLabels() {
+    document.querySelectorAll(
+      '.vda-bar-chart[data-bar-layout="diverging"]'
+    ).forEach(function (chart) {
+      var component = chart.closest("[data-component-id]");
+      if (!component) return;
+      var labels = Array.from(
+        component.querySelectorAll(".vda-bar-category-label")
+      );
+      var hasCondensedLabel = false;
+      labels.forEach(function (label) {
+        var text = label.querySelector(".vda-bar-category-label-text");
+        var full = label.dataset.barCategoryFull || "";
+        var display = label.dataset.barCategoryDisplay || "";
+        var visuallyTruncated = Boolean(text) && (
+          text.scrollHeight > text.clientHeight + 1 ||
+          text.scrollWidth > text.clientWidth + 1
+        );
+        var condensed = visuallyTruncated || full !== display;
+        label.dataset.truncated = visuallyTruncated ? "true" : "false";
+        label.dataset.condensed = condensed ? "true" : "false";
+        hasCondensedLabel = hasCondensedLabel || condensed;
+      });
+      component.dataset.barLongLabels = hasCondensedLabel ? "true" : "false";
+    });
+  }
+
   function layoutHeatmapChart(chart) {
     var svg = chart.querySelector("[data-heatmap-svg]");
     if (!svg || chart.clientWidth <= 0) return;
@@ -1534,6 +1613,7 @@
       setupLineChartInteractions(tooltipApi);
       window.requestAnimationFrame(function () {
         setupHeatmapSizing();
+        setupDivergingBarLabels();
         setupDivergingBarScrolling();
         document.documentElement.dataset.vdaReady = "true";
         window.dispatchEvent(new CustomEvent("vda:ready"));

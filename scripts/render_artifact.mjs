@@ -459,6 +459,20 @@ async function main() {
           const zeroRect = zero.getBoundingClientRect();
           const viewBoxWidth = svg.viewBox.baseVal.width;
           const section = chart.closest("[data-component-id]");
+          const component = window.__VDA_SPEC__.components.find(
+            (item) => item.id === section.dataset.componentId
+          );
+          const expectedDisplayCategories =
+            Array.isArray(component.displayCategories) &&
+            component.displayCategories.length === component.categories.length
+              ? component.displayCategories.map(String)
+              : component.categories.map(String);
+          const categoryLabelTexts = categoryLabels.map((label) =>
+            label.querySelector(".vda-bar-category-label-text")
+          );
+          const categoryLabelRects = categoryLabels.map((label) =>
+            label.getBoundingClientRect()
+          );
           const cue = section.querySelector(".vda-bar-scroll-cue");
           const detail = section.querySelector("[data-bar-detail]");
           const extreme = chart.dataset.barExtreme === "true";
@@ -539,6 +553,60 @@ async function main() {
                   bounds.height > 0
                 );
               }),
+            categoryLabelRowsSafe:
+              categoryLabelTexts.every((text, index) => {
+                if (!text) return false;
+                const textBounds = text.getBoundingClientRect();
+                const labelBounds = categoryLabelRects[index];
+                const style = window.getComputedStyle(text);
+                return (
+                  style.overflow === "hidden" &&
+                  textBounds.left >= labelBounds.left - 1 &&
+                  textBounds.right <= labelBounds.right + 1 &&
+                  textBounds.top >= labelBounds.top - 1 &&
+                  textBounds.bottom <= labelBounds.bottom + 1 &&
+                  labelBounds.height >= 40
+                );
+              }),
+            categoryLabelsDoNotOverlap:
+              categoryLabelRects.every(
+                (bounds, index) =>
+                  index === categoryLabelRects.length - 1 ||
+                  bounds.bottom <= categoryLabelRects[index + 1].top + 1
+              ),
+            categoryFullNamesPreserved:
+              categoryLabels.length === component.categories.length &&
+              categoryLabels.every((label, index) => {
+                const raw = String(component.categories[index]);
+                const mark = marks.find(
+                  (item) => Number(item.dataset.barIndex) === index
+                );
+                return (
+                  label.dataset.barCategoryFull === raw &&
+                  label.dataset.tip === raw &&
+                  (label.getAttribute("aria-label") || "").includes(raw) &&
+                  Boolean(mark) &&
+                  (mark.dataset.tip || "").includes(raw)
+                );
+              }),
+            categoryDisplayLabelsPreserved:
+              categoryLabelTexts.length === expectedDisplayCategories.length &&
+              categoryLabelTexts.every(
+                (text, index) =>
+                  text.textContent === expectedDisplayCategories[index]
+              ),
+            longLabelStateValid:
+              (!component.categories.some(
+                (category, index) =>
+                  String(category).length > 20 ||
+                  String(category) !== expectedDisplayCategories[index]
+              ) ||
+                section.dataset.barLongLabels === "true"),
+            labelCueMatchesCondensed:
+              (section.dataset.barLongLabels === "true") ===
+              (window.getComputedStyle(
+                section.querySelector(".vda-bar-label-cue")
+              ).display !== "none"),
             cueMatchesOverflow:
               (chart.scrollWidth > chart.clientWidth + 1) ===
               (window.getComputedStyle(cue).display !== "none"),
@@ -564,12 +632,28 @@ async function main() {
           };
         });
         const initialScrollLeft = initialState.initialScrollLeft;
+        const component = barChart.locator(
+          "xpath=ancestor::*[@data-component-id][1]"
+        );
+        const firstCategoryLabel = component
+          .locator(".vda-bar-category-label")
+          .first();
+        await firstCategoryLabel.focus();
+        const categoryKeyboardTooltip = await firstCategoryLabel.evaluate(
+          (label) => {
+            const tooltip = document.querySelector(".vda-tooltip");
+            return (
+              tooltip.dataset.open === "true" &&
+              tooltip.textContent === label.dataset.barCategoryFull
+            );
+          }
+        );
+        await firstCategoryLabel.evaluate((label) => label.blur());
         const maxScroll = Math.max(
           0,
           initialState.scrollWidth - initialState.clientWidth
         );
         let navigationWorks = true;
-        const component = barChart.locator("xpath=ancestor::*[@data-component-id][1]");
         const navigation = component.locator("[data-bar-navigation], .vda-bar-navigation");
         if (maxScroll > 1) {
           const negativeButton = component.locator('[data-bar-jump="negative"]');
@@ -700,6 +784,7 @@ async function main() {
 
         let touchNative = true;
         let touchPageContained = true;
+        let categoryTouchTooltip = true;
         if (viewport.width <= 520 && maxScroll > 1) {
           const touchContext = await browser.newContext({
             viewport,
@@ -752,6 +837,33 @@ async function main() {
           touchNative = touchState.scrollLeft > 0;
           touchPageContained =
             touchState.pageScrollWidth <= touchState.pageClientWidth + 1;
+          const touchLabel = touchPage
+            .locator(".vda-bar-category-label")
+            .first();
+          await touchLabel.dispatchEvent("pointerdown", {
+            pointerType: "touch",
+            clientX: 24,
+            clientY: 24,
+            bubbles: true,
+          });
+          const touchTooltipState = await touchLabel.evaluate((label) => {
+            const tooltip = document.querySelector(".vda-tooltip");
+            return (
+              tooltip.dataset.open === "true" &&
+              tooltip.textContent === label.dataset.barCategoryFull
+            );
+          });
+          await touchPage.locator("body").dispatchEvent("pointerdown", {
+            pointerType: "touch",
+            clientX: 2,
+            clientY: 2,
+            bubbles: true,
+          });
+          const touchTooltipDismissed = await touchPage.evaluate(
+            () => document.querySelector(".vda-tooltip").dataset.open !== "true"
+          );
+          categoryTouchTooltip =
+            touchTooltipState && touchTooltipDismissed;
           await touchContext.close();
         }
 
@@ -765,6 +877,8 @@ async function main() {
           wheelNative,
           touchNative,
           touchPageContained,
+          categoryKeyboardTooltip,
+          categoryTouchTooltip,
           navigationWorks,
           screenshot: barScreenshot,
         };

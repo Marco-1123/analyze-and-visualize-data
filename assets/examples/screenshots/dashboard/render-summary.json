@@ -10,7 +10,7 @@
     "dimensions": {
       "scrollWidth": 390,
       "clientWidth": 390,
-      "scrollHeight": 3087
+      "scrollHeight": 3104
     },
     "layoutIntegrity": {
       "metrics": [
@@ -64,6 +64,119 @@
       "screenshot": "dashboard-390x844-crosshair.png",
       "legendScreenshot": "dashboard-390x844-legend-hidden.png"
     },
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 238,
+      "scrollWidth": 752,
+      "initialScrollLeft": 0,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "cueVisible": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "screenshot": "dashboard-390x844-bar-scrolled.png"
+    },
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 520,
+      "height": 900
+    },
+    "output": "dashboard-520x900.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 520,
+      "clientWidth": 520,
+      "scrollHeight": 3108
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 4,
+          "requestedColumns": 4,
+          "renderedColumns": 2,
+          "renderedRows": 2,
+          "fontSizes": [
+            24,
+            24,
+            24,
+            24
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": {
+        "count": 3,
+        "renderedRows": 3,
+        "pairsStayInline": true
+      }
+    },
+    "interaction": {
+      "tooltipTargets": 29,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": {
+      "hitboxes": 1,
+      "pointerSnap": true,
+      "pointerTooltip": true,
+      "touchPersistent": true,
+      "touchDismissesOutside": true,
+      "keyboardEnd": true,
+      "keyboardLeft": true,
+      "labelMatches": true,
+      "rowsMatch": true,
+      "rawValuesMatch": true,
+      "ariaValueTextPresent": true,
+      "legendButtons": 2,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "dashboard-520x900-crosshair.png",
+      "legendScreenshot": "dashboard-520x900-legend-hidden.png"
+    },
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 368,
+      "scrollWidth": 752,
+      "initialScrollLeft": 0,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "cueVisible": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "screenshot": "dashboard-520x900-bar-scrolled.png"
+    },
     "heatmapInteraction": null
   },
   {
@@ -77,7 +190,7 @@
     "dimensions": {
       "scrollWidth": 880,
       "clientWidth": 880,
-      "scrollHeight": 3062
+      "scrollHeight": 3050
     },
     "layoutIntegrity": {
       "metrics": [
@@ -130,6 +243,29 @@
       "legendKeyboard": true,
       "screenshot": "dashboard-880x1000-crosshair.png",
       "legendScreenshot": "dashboard-880x1000-legend-hidden.png"
+    },
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 706,
+      "scrollWidth": 752,
+      "initialScrollLeft": 0,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "cueVisible": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "screenshot": "dashboard-880x1000-bar-scrolled.png"
     },
     "heatmapInteraction": null
   },
@@ -197,6 +333,29 @@
       "legendKeyboard": true,
       "screenshot": "dashboard-1440x1000-crosshair.png",
       "legendScreenshot": "dashboard-1440x1000-legend-hidden.png"
+    },
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 654,
+      "scrollWidth": 752,
+      "initialScrollLeft": 0,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "cueVisible": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "screenshot": "dashboard-1440x1000-bar-scrolled.png"
     },
     "heatmapInteraction": null
   }

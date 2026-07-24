@@ -132,6 +132,32 @@ least 160 px each, reduces four cards to a balanced 2 × 2 grid only below that
 capacity, and uses one column only when a two-column card would be unreadable.
 Agents must not add local media-query overrides for ordinary metric counts.
 
+For a signed bar comparison, use:
+
+```json
+{
+  "type": "bar",
+  "layout": "diverging",
+  "categories": ["华东 · 直营", "华南 · 代理"],
+  "values": [82, -46],
+  "format": {"decimals": 0}
+}
+```
+
+- `layout` accepts `auto` (default), `standard`, or `diverging`.
+- `auto` selects the diverging layout when `values` contain at least one
+  negative and one positive value. Use `standard` only to opt out explicitly.
+- `diverging` requires both signs and preserves one quantitative scale around a
+  shared zero axis.
+- The runtime derives the full layout from the signed domain, longest category
+  label, and longest formatted endpoint value. Category labels remain in a
+  fixed rail while the signed plot receives its own minimum readable width.
+  Agents must not hard-code viewport widths or add custom drag handlers.
+- When the derived width exceeds the component, the bar scrolls horizontally
+  inside its own container. The initial view keeps the zero axis visible when
+  possible; native trackpad/wheel, touch, scrollbar, and keyboard behavior are
+  retained. Mouse grab-to-drag is not part of the contract.
+
 ## 3. Numeric rules
 
 - Calculate with full available precision.

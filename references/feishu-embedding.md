@@ -66,17 +66,25 @@ Confirmed:
   four byte-identical reference files; the shared runtime contained legend
   toggle buttons, series-visibility state, filtered crosshair tooltips, and
   semantic generator-version metadata.
+- the dashboard block was replaced with the Skill v0.7.0 artifact after adding
+  the shared diverging-bar layout. Final revision 18 returned the new HTML
+  block and a byte-identical 74,811-byte reference file. An authenticated
+  Chrome session then
+  loaded the actual Feishu iframe: the signed plot reported native
+  `overflow-x: auto`, a 644 px viewport, a 752 px readable canvas, and 108 px
+  of component-level horizontal range. A real horizontal wheel/trackpad event
+  moved `scrollLeft` from 0 to 104 while the 818 px iframe document remained
+  page-contained. The fixed category rail stayed visible, the shared zero axis
+  remained valid, the positive endpoint became readable, and positive/negative
+  marks remained on the correct sides.
 
 Not yet confirmed:
 
 - copy/duplicate behavior across documents;
 - viewer permissions in accounts other than the creator;
-- visual behavior in every desktop and mobile Feishu client version.
-
-Automated browser-based visual inspection was blocked by the enterprise browser
-network policy during this test. This is a client-observation gap, not an API
-creation failure. Keep the created test document available for one manual visual
-check before treating client rendering as universally verified.
+- visual behavior in every desktop and mobile Feishu client version. Desktop
+  Chrome embedding is verified; mobile touch is covered by the artifact
+  regression harness but has not been exercised in every native Feishu client.
 
 Do not generalize this tenant result to every Feishu/Lark environment without a
 small compatibility test.

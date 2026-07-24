@@ -76,6 +76,7 @@ Both modes use fixed embedded data. Filters, tabs, sorting, tooltips, and local 
 - Start from `assets/examples/report-kpi-spec.json`,
   `assets/examples/report-trend-spec.json`,
   `assets/examples/report-hourly-heatmap-spec.json`, or
+  `assets/examples/report-diverging-bar-spec.json`, or
   `assets/examples/dashboard-spec.json`.
 - Run:
 
@@ -101,6 +102,11 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
 - For a canonical 24-hour heatmap, default to one HTML component with 0–11 and
   12–23 rendered as vertically stacked groups. Both groups must share one color
   domain and one legend; never squeeze all 24 hours into one horizontal row.
+- For a bar containing both negative and positive values, verify the common
+  zero axis, directionally correct marks, unclipped category and endpoint
+  labels, and native component-level horizontal scrolling at 390 px and
+  520 px. Trackpad/wheel and touch scrolling must work without causing
+  page-level overflow; do not add grab-to-drag JavaScript.
 - Iterate after visual inspection. One-pass HTML generation is not complete.
 
 ### 7. Assemble the delivery

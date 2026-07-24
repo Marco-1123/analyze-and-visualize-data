@@ -9,7 +9,7 @@ import { pathToFileURL } from "node:url";
 const require = createRequire(import.meta.url);
 
 function parseArgs(argv) {
-  const result = { viewports: "390x844,880x1000,1440x1000" };
+  const result = { viewports: "390x844,520x900,880x1000,1440x1000" };
   for (let index = 2; index < argv.length; index += 1) {
     const key = argv[index];
     const value = argv[index + 1];
@@ -410,6 +410,246 @@ async function main() {
           legendScreenshot: legendFilename,
         };
       }
+      const divergingBarCount = await page.locator(
+        '.vda-bar-chart[data-bar-layout="diverging"]'
+      ).count();
+      let barInteraction = null;
+      if (divergingBarCount > 0) {
+        const barChart = page.locator(
+          '.vda-bar-chart[data-bar-layout="diverging"]'
+        ).first();
+        await barChart.scrollIntoViewIfNeeded();
+        await barChart.evaluate((chart) => {
+          chart.scrollLeft = Number(chart.dataset.initialScrollLeft || 0);
+        });
+        const initialState = await barChart.evaluate((chart) => {
+          const svg = chart.querySelector("[data-bar-svg]");
+          const zero = svg.querySelector("[data-bar-zero]");
+          const marks = Array.from(svg.querySelectorAll("[data-bar-mark]"));
+          const labels = Array.from(
+            svg.querySelectorAll(
+              "[data-bar-category-label], [data-bar-value-label]"
+            )
+          );
+          const categoryLabels = Array.from(
+            chart
+              .closest("[data-component-id]")
+              .querySelectorAll(".vda-bar-category-label")
+          );
+          const zeroX = Number(zero.getAttribute("x1"));
+          const chartRect = chart.getBoundingClientRect();
+          const zeroRect = zero.getBoundingClientRect();
+          const viewBoxWidth = svg.viewBox.baseVal.width;
+          return {
+            count: marks.length,
+            clientWidth: chart.clientWidth,
+            scrollWidth: chart.scrollWidth,
+            initialScrollLeft: chart.scrollLeft,
+            nativeOverflow:
+              window.getComputedStyle(chart).overflowX === "auto",
+            pageContained:
+              document.documentElement.scrollWidth <=
+              document.documentElement.clientWidth + 1,
+            zeroVisibleInitial:
+              zeroRect.left >= chartRect.left - 1 &&
+              zeroRect.left <= chartRect.right + 1,
+            bothSigns:
+              marks.some((mark) => mark.dataset.barDirection === "negative") &&
+              marks.some((mark) => mark.dataset.barDirection === "positive"),
+            positiveDirection: marks
+              .filter((mark) => mark.dataset.barDirection === "positive")
+              .every(
+                (mark) => Number(mark.getAttribute("x")) >= zeroX - 0.5
+              ),
+            negativeDirection: marks
+              .filter((mark) => mark.dataset.barDirection === "negative")
+              .every(
+                (mark) =>
+                  Number(mark.getAttribute("x")) +
+                    Number(mark.getAttribute("width")) <=
+                  zeroX + 0.5
+              ),
+            labelsWithinSvg: labels.every((label) => {
+              const bounds = label.getBBox();
+              return (
+                bounds.x >= -0.5 &&
+                bounds.x + bounds.width <= viewBoxWidth + 0.5
+              );
+            }),
+            categoryLabelsVisible:
+              categoryLabels.length === marks.length &&
+              categoryLabels.every((label) => {
+                const bounds = label.getBoundingClientRect();
+                const sectionBounds = chart
+                  .closest("[data-component-id]")
+                  .getBoundingClientRect();
+                return (
+                  bounds.left >= sectionBounds.left - 1 &&
+                  bounds.right <= sectionBounds.right + 1 &&
+                  bounds.width > 0 &&
+                  bounds.height > 0
+                );
+              }),
+            cueVisible:
+              window.innerWidth > 520 ||
+              window.getComputedStyle(
+                chart
+                  .closest("[data-component-id]")
+                  .querySelector(".vda-bar-scroll-cue")
+              ).display !== "none",
+            mouseGrabNotEnabled:
+              !["grab", "grabbing"].includes(
+                window.getComputedStyle(chart).cursor
+              ) &&
+              chart.onpointerdown == null &&
+              chart.onmousedown == null,
+          };
+        });
+        const initialScrollLeft = initialState.initialScrollLeft;
+        const maxScroll = Math.max(
+          0,
+          initialState.scrollWidth - initialState.clientWidth
+        );
+
+        await barChart.evaluate((chart) => {
+          chart.scrollLeft = 0;
+        });
+        const negativeExtremeReadable = await barChart.evaluate((chart) => {
+          const labels = Array.from(
+            chart.querySelectorAll(
+              '[data-bar-value-label][data-bar-direction="negative"]'
+            )
+          );
+          if (!labels.length) return false;
+          const target = labels.reduce((leftmost, label) =>
+            label.getBBox().x < leftmost.getBBox().x ? label : leftmost
+          );
+          const chartRect = chart.getBoundingClientRect();
+          const labelRect = target.getBoundingClientRect();
+          return (
+            labelRect.left >= chartRect.left - 1 &&
+            labelRect.right <= chartRect.right + 1
+          );
+        });
+
+        let wheelNative = true;
+        if (maxScroll > 1) {
+          const barBox = await barChart.boundingBox();
+          if (!barBox) throw new Error("diverging bar has no bounding box");
+          await page.mouse.move(
+            barBox.x + barBox.width / 2,
+            barBox.y + barBox.height / 2
+          );
+          await page.mouse.wheel(180, 0);
+          await page.waitForTimeout(120);
+          wheelNative = (await barChart.evaluate((chart) => chart.scrollLeft)) > 0;
+        }
+
+        await barChart.evaluate((chart) => {
+          chart.scrollLeft = chart.scrollWidth - chart.clientWidth;
+        });
+        const positiveExtremeReadable = await barChart.evaluate((chart) => {
+          const labels = Array.from(
+            chart.querySelectorAll(
+              '[data-bar-value-label][data-bar-direction="positive"]'
+            )
+          );
+          if (!labels.length) return false;
+          const target = labels.reduce((rightmost, label) =>
+            label.getBBox().x > rightmost.getBBox().x ? label : rightmost
+          );
+          const chartRect = chart.getBoundingClientRect();
+          const labelRect = target.getBoundingClientRect();
+          return (
+            labelRect.left >= chartRect.left - 1 &&
+            labelRect.right <= chartRect.right + 1
+          );
+        });
+        let barScreenshot = "";
+        if (maxScroll > 1) {
+          barScreenshot = `${path.basename(
+            input,
+            path.extname(input)
+          )}-${viewport.width}x${viewport.height}-bar-scrolled.png`;
+          await page.screenshot({
+            path: path.join(outputDir, barScreenshot),
+            fullPage: true,
+          });
+        }
+        await barChart.evaluate((chart, scrollLeft) => {
+          chart.scrollLeft = scrollLeft;
+        }, initialScrollLeft);
+
+        let touchNative = true;
+        let touchPageContained = true;
+        if (viewport.width <= 520 && maxScroll > 1) {
+          const touchContext = await browser.newContext({
+            viewport,
+            deviceScaleFactor: 1,
+            hasTouch: true,
+            isMobile: true,
+          });
+          const touchPage = await touchContext.newPage();
+          await touchPage.goto(pathToFileURL(input).href, {
+            waitUntil: "load",
+          });
+          await touchPage.waitForFunction(
+            () => document.documentElement.dataset.vdaReady
+          );
+          const touchChart = touchPage
+            .locator('.vda-bar-chart[data-bar-layout="diverging"]')
+            .first();
+          await touchChart.scrollIntoViewIfNeeded();
+          await touchChart.evaluate((chart) => {
+            chart.scrollLeft = 0;
+          });
+          const touchBox = await touchChart.boundingBox();
+          if (!touchBox) throw new Error("touch diverging bar has no bounding box");
+          const cdp = await touchContext.newCDPSession(touchPage);
+          const startX = touchBox.x + touchBox.width - 24;
+          const endX = touchBox.x + 42;
+          const y = touchBox.y + touchBox.height / 2;
+          await cdp.send("Input.dispatchTouchEvent", {
+            type: "touchStart",
+            touchPoints: [{ x: startX, y }],
+          });
+          for (let step = 1; step <= 8; step += 1) {
+            const x = startX + ((endX - startX) * step) / 8;
+            await cdp.send("Input.dispatchTouchEvent", {
+              type: "touchMove",
+              touchPoints: [{ x, y }],
+            });
+            await touchPage.waitForTimeout(18);
+          }
+          await cdp.send("Input.dispatchTouchEvent", {
+            type: "touchEnd",
+            touchPoints: [],
+          });
+          await touchPage.waitForTimeout(180);
+          const touchState = await touchChart.evaluate((chart) => ({
+            scrollLeft: chart.scrollLeft,
+            pageClientWidth: document.documentElement.clientWidth,
+            pageScrollWidth: document.documentElement.scrollWidth,
+          }));
+          touchNative = touchState.scrollLeft > 0;
+          touchPageContained =
+            touchState.pageScrollWidth <= touchState.pageClientWidth + 1;
+          await touchContext.close();
+        }
+
+        barInteraction = {
+          ...initialState,
+          compactInnerScroll:
+            viewport.width > 520 ||
+            initialState.scrollWidth > initialState.clientWidth + 1,
+          negativeExtremeReadable,
+          positiveExtremeReadable,
+          wheelNative,
+          touchNative,
+          touchPageContained,
+          screenshot: barScreenshot,
+        };
+      }
       const groupedHeatmaps = await page.locator(
         '[data-heatmap-layout="stacked-groups"]'
       ).count();
@@ -535,6 +775,7 @@ async function main() {
         layoutIntegrity,
         interaction: { tooltipTargets, keyboardTooltipOpen },
         lineInteraction,
+        barInteraction,
         heatmapInteraction,
       });
       await page.close();
@@ -576,6 +817,17 @@ async function main() {
             "legendButtons",
             "screenshot",
             "legendScreenshot",
+          ].includes(key) && value !== true
+      )) ||
+    (result.barInteraction &&
+      Object.entries(result.barInteraction).some(
+        ([key, value]) =>
+          ![
+            "count",
+            "clientWidth",
+            "scrollWidth",
+            "initialScrollLeft",
+            "screenshot",
           ].includes(key) && value !== true
       )) ||
     (result.heatmapInteraction &&

@@ -129,6 +129,11 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
 - Direct-label important values when space allows.
 - Use annotation to connect visual evidence to the claim.
 - Keep source and caveat near the chart.
+- For diverging bars, reserve separate horizontal regions for category labels,
+  negative endpoint labels, the signed plot, and positive endpoint labels.
+  Compute a minimum readable width rather than shrinking these regions until
+  they collide. Keep the category-label rail fixed while the signed plot
+  scrolls, so row identity is never lost.
 
 ### Insight blocks
 
@@ -177,6 +182,12 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
   the selected label and values as accessible text.
 - Keep touch selection persistent until the viewer chooses another point or
   taps outside the chart.
+- Use native component-level horizontal scrolling for a diverging bar whose
+  readable width exceeds its container. Support trackpad/wheel, touch,
+  scrollbar, and keyboard behavior without JavaScript grab-to-drag gestures.
+- Keep the zero axis visible in the initial narrow view when possible. Preserve
+  the common quantitative scale while scrolling; never rescale the two sides
+  independently.
 - Keep animation between 120 and 240 ms.
 - Animate state changes only when continuity aids understanding.
 - Respect reduced-motion preferences.
@@ -197,6 +208,8 @@ At narrow widths:
 - convert two-column modules to one column;
 - simplify axes and labels;
 - allow tables to scroll horizontally with a visible cue;
+- keep signed bars inside an independent horizontal scroll viewport, with a
+  visible mobile cue and no page-level horizontal overflow;
 - preserve the headline finding;
 - never shrink text below the defined minimum.
 

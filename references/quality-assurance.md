@@ -32,6 +32,7 @@
 Render and inspect at:
 
 - 390 × 844;
+- 520 × 900;
 - 880 × 1000 or the closest Feishu component width;
 - 1440 × 1000 for dashboard mode.
 
@@ -63,6 +64,15 @@ Check:
 - Left/Right/Home/End keyboard navigation and accessible selected-value text;
 - persistent touch selection without blocking vertical page scrolling;
 - table scrolling;
+- diverging bars preserve one zero axis and render every positive mark to its
+  right and every negative mark to its left;
+- diverging-bar endpoint labels remain inside the SVG bounds, while every
+  category label remains visible in the fixed label rail;
+- at 390 px and 520 px, an oversized diverging bar scrolls inside its own
+  container via native horizontal wheel/trackpad and touch movement;
+- the diverging-bar initial narrow view exposes the zero axis, scrolling
+  reaches both signed extremes, and the document itself never overflows;
+- diverging bars do not install mouse grab-to-drag or custom touch gestures;
 - canonical 24-hour heatmaps render exactly two groups with 12 columns each;
 - all 24 heatmap columns appear exactly once and preserve their original order;
 - stacked heatmap groups expose identical color-domain bounds and one shared

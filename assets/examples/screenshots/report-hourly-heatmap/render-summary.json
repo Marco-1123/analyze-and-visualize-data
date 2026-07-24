@@ -21,6 +21,7 @@
       "keyboardTooltipOpen": true
     },
     "lineInteraction": null,
+    "barInteraction": null,
     "heatmapInteraction": {
       "groupCount": 2,
       "groupCountMatches": true,
@@ -37,6 +38,47 @@
       "rawValueMatches": true,
       "tooltipHasCoordinates": true,
       "screenshot": "03-hourly-heatmap-390x844-heatmap-tooltip.png"
+    }
+  },
+  {
+    "viewport": {
+      "width": 520,
+      "height": 900
+    },
+    "output": "03-hourly-heatmap-520x900.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 520,
+      "clientWidth": 520,
+      "scrollHeight": 1166
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "interaction": {
+      "tooltipTargets": 168,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": null,
+    "barInteraction": null,
+    "heatmapInteraction": {
+      "groupCount": 2,
+      "groupCountMatches": true,
+      "columnCounts": [
+        12,
+        12
+      ],
+      "twelveByTwelve": true,
+      "coverage": true,
+      "cellCount": true,
+      "sharedLegend": true,
+      "sharedDomain": true,
+      "compactInnerScroll": true,
+      "rawValueMatches": true,
+      "tooltipHasCoordinates": true,
+      "screenshot": "03-hourly-heatmap-520x900-heatmap-tooltip.png"
     }
   },
   {
@@ -61,6 +103,7 @@
       "keyboardTooltipOpen": true
     },
     "lineInteraction": null,
+    "barInteraction": null,
     "heatmapInteraction": {
       "groupCount": 2,
       "groupCountMatches": true,
@@ -101,6 +144,7 @@
       "keyboardTooltipOpen": true
     },
     "lineInteraction": null,
+    "barInteraction": null,
     "heatmapInteraction": {
       "groupCount": 2,
       "groupCountMatches": true,

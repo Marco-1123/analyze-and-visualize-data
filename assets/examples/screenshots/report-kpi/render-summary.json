@@ -34,6 +34,45 @@
       "keyboardTooltipOpen": null
     },
     "lineInteraction": null,
+    "barInteraction": null,
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 520,
+      "height": 900
+    },
+    "output": "01-kpi-overview-520x900.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 520,
+      "clientWidth": 520,
+      "scrollHeight": 900
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 3,
+          "requestedColumns": 3,
+          "renderedColumns": 1,
+          "renderedRows": 3,
+          "fontSizes": [
+            24,
+            24,
+            24
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": null
+    },
+    "interaction": {
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    },
+    "lineInteraction": null,
+    "barInteraction": null,
     "heatmapInteraction": null
   },
   {
@@ -71,6 +110,7 @@
       "keyboardTooltipOpen": null
     },
     "lineInteraction": null,
+    "barInteraction": null,
     "heatmapInteraction": null
   },
   {
@@ -108,6 +148,7 @@
       "keyboardTooltipOpen": null
     },
     "lineInteraction": null,
+    "barInteraction": null,
     "heatmapInteraction": null
   }
 ]

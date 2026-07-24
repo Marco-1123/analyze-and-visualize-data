@@ -76,6 +76,25 @@ def validate_spec(spec: dict[str, Any]) -> None:
                 fail(f"{path}.categories and {path}.values must be arrays")
             if len(categories) != len(values):
                 fail(f"{path}.categories and {path}.values must have the same length")
+            layout = component.get("layout", "auto")
+            if layout not in {"auto", "standard", "diverging"}:
+                fail(
+                    f"{path}.layout must be 'auto', 'standard', or "
+                    "'diverging'"
+                )
+            numeric_values = [
+                float(value)
+                for value in values
+                if isinstance(value, (int, float)) and not isinstance(value, bool)
+            ]
+            if layout == "diverging" and not (
+                any(value < 0 for value in numeric_values)
+                and any(value > 0 for value in numeric_values)
+            ):
+                fail(
+                    f"{path}.layout 'diverging' requires at least one "
+                    "negative and one positive value"
+                )
         elif component_type == "donut":
             if not isinstance(component.get("segments"), list) or not component["segments"]:
                 fail(f"{path}.segments must be a non-empty array")

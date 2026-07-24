@@ -54,6 +54,15 @@
 - Sort by value unless time or a natural order applies.
 - Prefer horizontal orientation for long category labels.
 - Use one focus color and neutral comparisons.
+- When both signs are present, use one diverging bar with a shared zero axis and
+  one quantitative scale. Positive marks extend right and negative marks extend
+  left.
+- Derive the fixed category-label rail and the signed plot's minimum readable
+  width from the category text, signed domain, and formatted endpoint labels.
+  If the plot exceeds the remaining component width, scroll it with native
+  browser behavior instead of compressing or clipping it.
+- On narrow screens, begin with the zero axis visible when possible and show a
+  concise horizontal-scroll cue. Do not implement mouse grab-to-drag.
 
 ### Stacked bar
 

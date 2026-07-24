@@ -158,6 +158,74 @@
     return Math.max(300, window.innerWidth - 54);
   }
 
+  function estimateTextWidth(value, fontSize) {
+    var size = finite(fontSize, 11);
+    var units = Array.from(String(value == null ? "" : value)).reduce(function (sum, char) {
+      if (/[\u2E80-\u9FFF\uAC00-\uD7AF]/.test(char)) return sum + 1;
+      if (/[MW@%￥¥]/.test(char)) return sum + 0.82;
+      if (/\s/.test(char)) return sum + 0.36;
+      if (/[.,:;|!'"`()[\]{}+\-]/.test(char)) return sum + 0.44;
+      return sum + 0.62;
+    }, 0);
+    return Math.ceil(units * size);
+  }
+
+  function resolveBarLayout(component, categories, values) {
+    var max = Math.max.apply(null, values.concat([0]));
+    var min = Math.min.apply(null, values.concat([0]));
+    var hasPositive = max > 0;
+    var hasNegative = min < 0;
+    var requested = component.layout || "auto";
+    var diverging = requested === "diverging" ||
+      (requested !== "standard" && hasPositive && hasNegative);
+    if (!diverging) {
+      var compact = compactChartLayout();
+      return {
+        diverging: false,
+        width: compact ? compactChartWidth() : 760,
+        margin: compact
+          ? { top: 6, right: 46, bottom: 18, left: 92 }
+          : { top: 6, right: 86, bottom: 18, left: 138 },
+        categoryX: null
+      };
+    }
+
+    var categoryWidth = categories.reduce(function (largest, category) {
+      return Math.max(largest, estimateTextWidth(category, 11));
+    }, 0);
+    var valueWidth = values.reduce(function (largest, value) {
+      return Math.max(
+        largest,
+        estimateTextWidth(formatValue(value, component.format), 11)
+      );
+    }, 0);
+    var labelWidth = clamp(categoryWidth + 12, 84, 156);
+    var valueGutter = clamp(valueWidth + 14, 36, 96);
+    var negativeMagnitude = Math.abs(Math.min(0, min));
+    var positiveMagnitude = Math.max(0, max);
+    var totalMagnitude = negativeMagnitude + positiveMagnitude || 1;
+    var negativeShare = negativeMagnitude / totalMagnitude;
+    var positiveShare = positiveMagnitude / totalMagnitude;
+    var minimumSide = 72;
+    var plotWidth = Math.max(
+      520,
+      negativeShare > 0 ? minimumSide / negativeShare : 0,
+      positiveShare > 0 ? minimumSide / positiveShare : 0
+    );
+    plotWidth = clamp(Math.ceil(plotWidth), 520, 640);
+    var plotLeft = valueGutter + 20;
+    var right = valueGutter + 20;
+    return {
+      diverging: true,
+      width: Math.ceil(plotLeft + plotWidth + right),
+      margin: { top: 6, right: right, bottom: 18, left: plotLeft },
+      categoryX: null,
+      labelWidth: labelWidth,
+      valueGutter: valueGutter,
+      plotWidth: plotWidth
+    };
+  }
+
   function renderLineChart(component) {
     var labels = Array.isArray(component.labels) ? component.labels : [];
     var series = Array.isArray(component.series) ? component.series : [];
@@ -339,13 +407,11 @@
   function renderBarChart(component) {
     var categories = Array.isArray(component.categories) ? component.categories : [];
     var values = Array.isArray(component.values) ? component.values.map(Number) : [];
-    var compact = compactChartLayout();
-    var width = compact ? compactChartWidth() : 760;
+    var layout = resolveBarLayout(component, categories, values);
+    var width = layout.width;
     var rowHeight = clamp(finite(component.rowHeight, 38), 28, 54);
     var height = Math.max(180, categories.length * rowHeight + 32);
-    var margin = compact
-      ? { top: 6, right: 46, bottom: 18, left: 92 }
-      : { top: 6, right: 86, bottom: 18, left: 138 };
+    var margin = layout.margin;
     var innerW = width - margin.left - margin.right;
     var max = Math.max.apply(null, values.concat([0]));
     var min = Math.min.apply(null, values.concat([0]));
@@ -354,12 +420,18 @@
     var svg = svgEl("svg", {
       viewBox: "0 0 " + width + " " + height,
       role: "img",
-      "aria-label": component.ariaLabel || component.title || "条形图"
+      "aria-label": component.ariaLabel || component.title || "条形图",
+      "data-bar-svg": "true",
+      "data-bar-layout": layout.diverging ? "diverging" : "standard",
+      "data-domain-min": Math.min(0, min),
+      "data-domain-max": Math.max(0, max)
     });
+    if (layout.diverging) svg.style.minWidth = width + "px";
 
     svg.appendChild(svgEl("line", {
       x1: zeroX, x2: zeroX, y1: margin.top, y2: height - margin.bottom,
-      class: "vda-zero-line"
+      class: "vda-zero-line",
+      "data-bar-zero": "true"
     }));
 
     categories.forEach(function (category, index) {
@@ -372,18 +444,25 @@
       var color = (component.colors && component.colors[index]) ||
         (component.highlightIndex === index ? "#315CF5" : index === 0 ? "#315CF5" : "#A8B0BF");
 
-      svg.appendChild(svgEl("text", {
-        x: margin.left - 12,
-        y: y + barH / 2 + 4,
-        "text-anchor": "end",
-        class: "vda-axis-label"
-      }, category));
+      if (!layout.diverging) {
+        svg.appendChild(svgEl("text", {
+          x: margin.left - 12,
+          y: y + barH / 2 + 4,
+          "text-anchor": "end",
+          class: "vda-axis-label",
+          "data-bar-category-label": "true"
+        }, category));
+      }
 
       var bar = svgEl("rect", {
         x: x, y: y, width: barW, height: barH, rx: 3,
         fill: color,
         opacity: component.highlightIndex == null || component.highlightIndex === index ? 1 : 0.48,
         tabindex: "0",
+        "data-bar-mark": "true",
+        "data-bar-index": index,
+        "data-bar-value": value,
+        "data-bar-direction": value < 0 ? "negative" : value > 0 ? "positive" : "zero",
         "data-tip": esc(category) + ": " + esc(formatValue(value, component.format))
       });
       bar.setAttribute("aria-label", bar.getAttribute("data-tip"));
@@ -392,14 +471,51 @@
         x: value >= 0 ? valueX + 8 : valueX - 8,
         y: y + barH / 2 + 4,
         "text-anchor": value >= 0 ? "start" : "end",
-        class: "vda-value-label"
+        class: "vda-value-label",
+        "data-bar-value-label": "true",
+        "data-bar-index": index,
+        "data-bar-direction": value < 0 ? "negative" : value > 0 ? "positive" : "zero"
       }, formatValue(value, component.format)));
     });
 
     var container = document.createElement("div");
-    container.className = "vda-chart";
+    container.className = "vda-chart" +
+      (layout.diverging ? " vda-bar-chart" : "");
     container.style.setProperty("--chart-height", height + "px");
     container.appendChild(svg);
+    if (layout.diverging) {
+      container.setAttribute("data-bar-layout", "diverging");
+      container.setAttribute("data-bar-zero-ratio", zeroX / width);
+      container.setAttribute("data-bar-chart-width", width);
+      container.setAttribute("role", "group");
+      container.setAttribute("tabindex", "0");
+      container.setAttribute(
+        "aria-label",
+        (component.ariaLabel || component.title || "双向条形图") +
+          "，可左右滚动查看正负两侧"
+      );
+      var frame = document.createElement("div");
+      frame.className = "vda-bar-scroll-frame";
+      frame.setAttribute("data-bar-scroll-frame", "true");
+      frame.appendChild(container);
+      var labelRail =
+        '<div class="vda-bar-label-rail" aria-hidden="true">' +
+        categories.map(function (category) {
+          return (
+            '<span class="vda-bar-category-label" title="' +
+            esc(category) + '">' + esc(category) + "</span>"
+          );
+        }).join("") +
+        "</div>";
+      return componentFrame(
+        component,
+        '<div class="vda-diverging-bar-layout" style="--bar-label-width:' +
+          layout.labelWidth + "px;--bar-row-height:" + rowHeight + 'px">' +
+          labelRail + frame.outerHTML + "</div>" +
+          '<p class="vda-scroll-cue vda-bar-scroll-cue">' +
+          "可左右滑动查看正负两侧 →</p>"
+      );
+    }
     return componentFrame(component, container.outerHTML);
   }
 
@@ -1105,6 +1221,26 @@
     });
   }
 
+  function setupDivergingBarScrolling() {
+    document.querySelectorAll(
+      '.vda-bar-chart[data-bar-layout="diverging"]'
+    ).forEach(function (chart) {
+      var maxScroll = Math.max(0, chart.scrollWidth - chart.clientWidth);
+      var zeroRatio = clamp(finite(chart.dataset.barZeroRatio, 0.5), 0, 1);
+      var zeroPixel = zeroRatio * chart.scrollWidth;
+      var target = zeroPixel > chart.clientWidth * 0.99
+        ? zeroPixel - chart.clientWidth * 0.98
+        : 0;
+      chart.scrollLeft = clamp(target, 0, maxScroll);
+      chart.dataset.scrollable = maxScroll > 1 ? "true" : "false";
+      chart.dataset.initialScrollLeft = String(chart.scrollLeft);
+      var frame = chart.closest("[data-bar-scroll-frame]");
+      if (frame) frame.dataset.scrollable = chart.dataset.scrollable;
+      var component = chart.closest("[data-component-id]");
+      if (component) component.dataset.barScrollable = chart.dataset.scrollable;
+    });
+  }
+
   function init() {
     try {
       var mode = spec.mode === "dashboard" ? "dashboard" : "report-component";
@@ -1119,8 +1255,11 @@
         "</div>";
       var tooltipApi = setupTooltips();
       setupLineChartInteractions(tooltipApi);
-      document.documentElement.dataset.vdaReady = "true";
-      window.dispatchEvent(new CustomEvent("vda:ready"));
+      window.requestAnimationFrame(function () {
+        setupDivergingBarScrolling();
+        document.documentElement.dataset.vdaReady = "true";
+        window.dispatchEvent(new CustomEvent("vda:ready"));
+      });
     } catch (error) {
       root.innerHTML = '<div class="vda-error"><strong>组件渲染失败</strong><br>' + esc(error.message) + "</div>";
       document.documentElement.dataset.vdaReady = "error";

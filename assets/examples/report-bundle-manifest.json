@@ -17,6 +17,13 @@
         "nativeNarrative": "访问量在晚间明显抬升，工作日与周末均在 18–21 时形成高峰。24 小时数据在同一个证据组件中上下分组，便于在飞书文档宽度内比较。",
         "findingIds": ["finding_evening_peak"],
         "components": ["03-hourly-heatmap.html"]
+      },
+      {
+        "id": "signed-contribution",
+        "heading": "3. 正负增量分化",
+        "nativeNarrative": "不同区域与渠道组合同时存在扩张和收缩。双向条以零轴为共同基准，在窄容器中保留可读宽度并支持组件内部左右滑动。",
+        "findingIds": ["finding_signed_contribution"],
+        "components": ["04-diverging-bar.html"]
       }
     ]
   }

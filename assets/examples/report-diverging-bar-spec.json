@@ -1,0 +1,34 @@
+{
+  "mode": "report-component",
+  "title": "区域与渠道的收入增量出现明显分化",
+  "eyebrow": "EVIDENCE 04 · DIVERGING BAR",
+  "subtitle": "正值代表收入增加，负值代表收入减少；金额单位：万元。",
+  "description": "五个区域与渠道组合的收入增量双向条形图，支持在窄容器中左右滑动查看。",
+  "components": [
+    {
+      "id": "regional-channel-change",
+      "type": "bar",
+      "layout": "diverging",
+      "title": "直营增长未完全抵消代理渠道的收缩",
+      "subtitle": "收入增量，单位：万元",
+      "ariaLabel": "五个区域与渠道组合收入增量的正负双向比较",
+      "categories": [
+        "华东 · 直营渠道",
+        "华北 · 电商平台",
+        "华中 · 直营渠道",
+        "西南 · 代理渠道",
+        "华南 · 代理渠道"
+      ],
+      "values": [82, 54, 23, -18, -46],
+      "colors": ["#315CF5", "#7390F9", "#A8B0BF", "#D97B81", "#C33D45"],
+      "format": {
+        "decimals": 0
+      },
+      "note": "方向表示收入增量的正负，不自动等同于经营表现的最终好坏。"
+    }
+  ],
+  "footer": {
+    "source": "数据来源：2026 Q2 区域渠道汇总",
+    "note": "口径：本期收入减去可比基期收入"
+  }
+}

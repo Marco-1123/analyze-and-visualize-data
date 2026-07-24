@@ -1,0 +1,190 @@
+[
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "output": "04-diverging-bar-390x844.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 844
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "interaction": {
+      "tooltipTargets": 5,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": null,
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 229,
+      "scrollWidth": 632,
+      "initialScrollLeft": 18,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "cueVisible": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "screenshot": "04-diverging-bar-390x844-bar-scrolled.png"
+    },
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 520,
+      "height": 900
+    },
+    "output": "04-diverging-bar-520x900.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 520,
+      "clientWidth": 520,
+      "scrollHeight": 900
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "interaction": {
+      "tooltipTargets": 5,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": null,
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 359,
+      "scrollWidth": 632,
+      "initialScrollLeft": 0,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "cueVisible": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "screenshot": "04-diverging-bar-520x900-bar-scrolled.png"
+    },
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 880,
+      "height": 1000
+    },
+    "output": "04-diverging-bar-880x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 880,
+      "clientWidth": 880,
+      "scrollHeight": 1000
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "interaction": {
+      "tooltipTargets": 5,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": null,
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 697,
+      "scrollWidth": 697,
+      "initialScrollLeft": 0,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "cueVisible": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "screenshot": ""
+    },
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "output": "04-diverging-bar-1440x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1000
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": null
+    },
+    "interaction": {
+      "tooltipTargets": 5,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": null,
+    "barInteraction": {
+      "count": 5,
+      "clientWidth": 761,
+      "scrollWidth": 761,
+      "initialScrollLeft": 0,
+      "nativeOverflow": true,
+      "pageContained": true,
+      "zeroVisibleInitial": true,
+      "bothSigns": true,
+      "positiveDirection": true,
+      "negativeDirection": true,
+      "labelsWithinSvg": true,
+      "categoryLabelsVisible": true,
+      "cueVisible": true,
+      "mouseGrabNotEnabled": true,
+      "compactInnerScroll": true,
+      "negativeExtremeReadable": true,
+      "positiveExtremeReadable": true,
+      "wheelNative": true,
+      "touchNative": true,
+      "touchPageContained": true,
+      "screenshot": ""
+    },
+    "heatmapInteraction": null
+  }
+]

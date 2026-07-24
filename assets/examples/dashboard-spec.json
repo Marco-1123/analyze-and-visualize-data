@@ -123,6 +123,7 @@
     {
       "id": "regional-contribution",
       "type": "bar",
+      "layout": "diverging",
       "span": 7,
       "title": "华东和华北贡献了近八成增量",
       "subtitle": "各区域同比收入增量，单位：万元",

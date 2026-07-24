@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -20,6 +21,10 @@ SUPPORTED_TYPES = {
     "table",
     "divider",
 }
+SEMVER_PATTERN = re.compile(
+    r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
+    r"(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$"
+)
 
 
 def fail(message: str) -> None:
@@ -174,10 +179,14 @@ def compile_artifact(spec_path: Path, output_path: Path) -> None:
     shell = (assets / "shell.html").read_text(encoding="utf-8")
     css = (assets / "theme.css").read_text(encoding="utf-8")
     runtime = (assets / "visual-runtime.js").read_text(encoding="utf-8")
+    skill_version = (skill_root / "VERSION").read_text(encoding="utf-8").strip()
+    if not SEMVER_PATTERN.fullmatch(skill_version):
+        fail(f"VERSION is not valid semantic version: {skill_version!r}")
     description = spec.get("description") or spec.get("subtitle") or spec["title"]
     replacements = {
         "__DOCUMENT_TITLE__": str(spec["title"]).replace("<", "").replace(">", ""),
         "__DOCUMENT_DESCRIPTION__": safe_meta_text(description),
+        "__SKILL_VERSION__": skill_version,
         "__HEIGHT_MODE__": "viewport" if spec["mode"] == "dashboard" else "auto",
         "/*__THEME_CSS__*/": css,
         "__SPEC_JSON__": safe_json_for_script(spec),

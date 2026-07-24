@@ -85,12 +85,21 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
         errors.append("unresolved build markers found")
     if "__HEIGHT_MODE__" in text or "__DOCUMENT_DESCRIPTION__" in text:
         errors.append("unresolved Feishu HTML block markers found")
+    if "__SKILL_VERSION__" in text:
+        errors.append("unresolved Skill version marker found")
     if '<meta name="use-iframe" content="true">' not in text:
         errors.append("Feishu iframe meta tag is missing")
     if not re.search(r'<meta name="html-box-height-mode" content="(?:auto|viewport)">', text):
         errors.append("Feishu html-box-height-mode must be auto or viewport")
     if not re.search(r'<meta name="description" content="[^"]+">', text):
         errors.append("Feishu HTML block description is missing")
+    if not re.search(
+        r'<meta name="generator" content="analyze-and-visualize-data '
+        r'(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)'
+        r'(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?">',
+        text,
+    ):
+        errors.append("Skill generator semantic-version metadata is missing")
     if re.search(r"\b(TODO|FIXME|PLACEHOLDER)\b", text):
         errors.append("unfinished placeholder text found")
     if re.search(r"<script[^>]+\bsrc\s*=", text, re.IGNORECASE):

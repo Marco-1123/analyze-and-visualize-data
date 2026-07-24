@@ -14,6 +14,9 @@ Turn a fixed dataset into an accurate, explanatory, visually refined report or d
 - Read [dashboard-mode.md](references/dashboard-mode.md) only when the user explicitly requests a dashboard or accepts a dashboard recommendation.
 - Read [visualization-grammar.md](references/visualization-grammar.md) before choosing or building charts.
 - Read [feishu-embedding.md](references/feishu-embedding.md) when creating or updating a Feishu/Lark document or preparing HTML for its component container.
+- Read [maintenance.md](references/maintenance.md) only when changing or
+  releasing the Skill itself. Use the root `VERSION` file as the version source
+  of truth.
 
 ## Route the output mode
 
@@ -141,6 +144,7 @@ Do not declare completion until:
 - `scripts/profile_data.py`: profile CSV, JSON, and XLSX inputs.
 - `scripts/build_artifact.py`: compile a JSON artifact specification into self-contained HTML.
 - `scripts/validate_artifact.py`: enforce structural, portability, and accessibility checks.
+- `scripts/check_version.py`: verify semantic version metadata and release tags.
 - `assets/design-tokens.json`: machine-readable visual tokens.
 - `assets/theme.css`: shared light editorial visual language.
 - `assets/visual-runtime.js`: dependency-free chart and component runtime.

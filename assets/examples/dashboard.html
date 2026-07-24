@@ -379,6 +379,42 @@ a:focus-visible,
   shape-rendering: crispEdges;
 }
 
+.vda-line-focus-layer {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.vda-line-focus-layer[data-open="true"] {
+  opacity: 1;
+}
+
+.vda-crosshair-line {
+  stroke: var(--vda-text-3);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-crosshair-point {
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-line-hitbox {
+  cursor: crosshair;
+  pointer-events: all;
+  stroke: transparent;
+  stroke-width: 2;
+  touch-action: pan-y;
+}
+
+.vda-line-hitbox:focus-visible {
+  stroke: rgba(49, 92, 245, 0.58);
+  stroke-dasharray: 4 4;
+  outline: none;
+  vector-effect: non-scaling-stroke;
+}
+
 .vda-tooltip {
   position: fixed;
   z-index: 100;
@@ -398,9 +434,50 @@ a:focus-visible,
   transition: opacity 120ms ease, transform 120ms ease;
 }
 
+.vda-tooltip[data-shared="true"] {
+  min-width: 176px;
+  padding: 11px 12px;
+}
+
 .vda-tooltip[data-open="true"] {
   opacity: 1;
   transform: translateY(0);
+}
+
+.vda-tooltip-title {
+  padding-bottom: 7px;
+  margin-bottom: 7px;
+  color: rgba(255, 255, 255, 0.74);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.vda-tooltip-row {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 24px;
+}
+
+.vda-tooltip-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.vda-tooltip-name {
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.82);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-tooltip-value {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
 }
 
 .vda-legend {
@@ -669,6 +746,10 @@ a:focus-visible,
 
   .vda-chart {
     min-height: 0;
+  }
+
+  .vda-tooltip {
+    max-width: calc(100vw - 24px);
   }
 
   .vda-divider {
@@ -945,19 +1026,6 @@ window.__VDA_SPEC__ = {"mode":"dashboard","title":"2026 Q2 全渠道经营概览
         opacity: entry.emphasis === "secondary" ? 0.55 : 1
       }));
 
-      points.forEach(function (point) {
-        var circle = svgEl("circle", {
-          cx: point[0], cy: point[1], r: 7,
-          fill: "transparent",
-          stroke: "transparent",
-          tabindex: "0",
-          "data-tip": (entry.name ? entry.name + " · " : "") +
-            esc(labels[point[3]] || "") + ": " + esc(formatValue(point[2], component.format))
-        });
-        circle.setAttribute("aria-label", circle.getAttribute("data-tip"));
-        svg.appendChild(circle);
-      });
-
       var last = points[points.length - 1];
       if (component.endLabels !== false) {
         svg.appendChild(svgEl("text", {
@@ -984,6 +1052,54 @@ window.__VDA_SPEC__ = {"mode":"dashboard","title":"2026 Q2 全渠道经营概览
         fill: "#7357D6"
       }, component.annotation.label || ""));
     }
+
+    var focusLayer = svgEl("g", {
+      class: "vda-line-focus-layer",
+      "data-open": "false",
+      "aria-hidden": "true"
+    });
+    focusLayer.appendChild(svgEl("line", {
+      x1: margin.left,
+      x2: margin.left,
+      y1: margin.top,
+      y2: height - margin.bottom,
+      class: "vda-crosshair-line"
+    }));
+    series.forEach(function (entry, seriesIndex) {
+      focusLayer.appendChild(svgEl("circle", {
+        cx: margin.left,
+        cy: margin.top,
+        r: 4.5,
+        class: "vda-crosshair-point",
+        fill: "#FFFFFF",
+        stroke: entry.color || palette[seriesIndex % palette.length],
+        "stroke-width": 2.5,
+        "data-series-index": seriesIndex
+      }));
+    });
+    svg.appendChild(focusLayer);
+
+    svg.appendChild(svgEl("rect", {
+      x: margin.left,
+      y: margin.top,
+      width: innerW,
+      height: innerH,
+      class: "vda-line-hitbox",
+      fill: "transparent",
+      tabindex: "0",
+      role: "slider",
+      "aria-label": (component.title || "趋势图") + "，使用左右方向键查看各时间点数值",
+      "aria-valuemin": 0,
+      "aria-valuemax": Math.max(0, labels.length - 1),
+      "aria-valuenow": 0,
+      "data-line-hitbox": "true",
+      "data-plot-left": margin.left,
+      "data-plot-right": width - margin.right,
+      "data-plot-top": margin.top,
+      "data-plot-bottom": height - margin.bottom,
+      "data-min-y": minY,
+      "data-max-y": maxY
+    }));
 
     var container = document.createElement("div");
     container.className = "vda-chart";
@@ -1345,16 +1461,53 @@ window.__VDA_SPEC__ = {"mode":"dashboard","title":"2026 Q2 全渠道经营概览
     tooltip.setAttribute("role", "tooltip");
     document.body.appendChild(tooltip);
 
-    function show(target, event) {
+    function position(x, y) {
+      var rect = tooltip.getBoundingClientRect();
+      var left = clamp(x, 12, Math.max(12, window.innerWidth - rect.width - 12));
+      var top = clamp(y, 12, Math.max(12, window.innerHeight - rect.height - 12));
+      tooltip.style.left = left + "px";
+      tooltip.style.top = top + "px";
+    }
+
+    function showText(target, event) {
       var text = target.getAttribute("data-tip");
       if (!text) return;
+      tooltip.removeAttribute("data-shared");
       tooltip.textContent = text.replace(/&amp;/g, "&");
       tooltip.dataset.open = "true";
       var x = event && event.clientX ? event.clientX + 12 : target.getBoundingClientRect().left + 12;
       var y = event && event.clientY ? event.clientY + 12 : target.getBoundingClientRect().top + 12;
-      var rect = tooltip.getBoundingClientRect();
-      tooltip.style.left = Math.min(x, window.innerWidth - rect.width - 12) + "px";
-      tooltip.style.top = Math.min(y, window.innerHeight - rect.height - 12) + "px";
+      position(x, y);
+    }
+
+    function showShared(label, rows, x, y) {
+      tooltip.replaceChildren();
+      tooltip.dataset.shared = "true";
+      var title = document.createElement("div");
+      title.className = "vda-tooltip-title";
+      title.textContent = label;
+      tooltip.appendChild(title);
+      rows.forEach(function (row, index) {
+        var item = document.createElement("div");
+        item.className = "vda-tooltip-row";
+        item.dataset.seriesIndex = String(index);
+        item.dataset.rawValue = row.raw == null ? "" : String(row.raw);
+        var swatch = document.createElement("span");
+        swatch.className = "vda-tooltip-swatch";
+        swatch.style.background = row.color;
+        var name = document.createElement("span");
+        name.className = "vda-tooltip-name";
+        name.textContent = row.name;
+        var value = document.createElement("strong");
+        value.className = "vda-tooltip-value";
+        value.textContent = row.display;
+        item.appendChild(swatch);
+        item.appendChild(name);
+        item.appendChild(value);
+        tooltip.appendChild(item);
+      });
+      tooltip.dataset.open = "true";
+      position(x, y);
     }
 
     function hide() {
@@ -1363,20 +1516,175 @@ window.__VDA_SPEC__ = {"mode":"dashboard","title":"2026 Q2 全渠道经营概览
 
     document.addEventListener("pointerover", function (event) {
       var target = event.target.closest("[data-tip]");
-      if (target) show(target, event);
+      if (target) showText(target, event);
     });
     document.addEventListener("pointermove", function (event) {
       var target = event.target.closest("[data-tip]");
-      if (target && tooltip.dataset.open === "true") show(target, event);
+      if (target && tooltip.dataset.open === "true") showText(target, event);
     });
     document.addEventListener("pointerout", function (event) {
       if (event.target.closest("[data-tip]")) hide();
     });
     document.addEventListener("focusin", function (event) {
       var target = event.target.closest("[data-tip]");
-      if (target) show(target);
+      if (target) showText(target);
     });
     document.addEventListener("focusout", hide);
+
+    return {
+      element: tooltip,
+      hide: hide,
+      showShared: showShared
+    };
+  }
+
+  function setupLineChartInteractions(tooltipApi) {
+    var components = Array.isArray(spec.components) ? spec.components : [];
+    document.querySelectorAll("[data-line-hitbox]").forEach(function (hitbox) {
+      var section = hitbox.closest("[data-component-id]");
+      var componentId = section ? section.getAttribute("data-component-id") : "";
+      var component = components.find(function (item) {
+        return item && item.id === componentId && item.type === "line";
+      });
+      if (!component) return;
+
+      var labels = Array.isArray(component.labels) ? component.labels : [];
+      var series = Array.isArray(component.series) ? component.series : [];
+      if (!labels.length || !series.length) return;
+
+      var svg = hitbox.ownerSVGElement;
+      var focusLayer = svg.querySelector(".vda-line-focus-layer");
+      var crosshair = focusLayer.querySelector(".vda-crosshair-line");
+      var points = Array.from(focusLayer.querySelectorAll(".vda-crosshair-point"));
+      var plotLeft = finite(hitbox.dataset.plotLeft, 0);
+      var plotRight = finite(hitbox.dataset.plotRight, 1);
+      var plotTop = finite(hitbox.dataset.plotTop, 0);
+      var plotBottom = finite(hitbox.dataset.plotBottom, 1);
+      var minY = finite(hitbox.dataset.minY, 0);
+      var maxY = finite(hitbox.dataset.maxY, 1);
+      var yRange = maxY - minY || 1;
+      var currentIndex = null;
+      var pinned = false;
+
+      function chartX(index) {
+        return labels.length > 1
+          ? plotLeft + ((plotRight - plotLeft) * index) / (labels.length - 1)
+          : (plotLeft + plotRight) / 2;
+      }
+
+      function chartY(value) {
+        return plotTop + ((maxY - value) / yRange) * (plotBottom - plotTop);
+      }
+
+      function clientPoint(index) {
+        var rect = svg.getBoundingClientRect();
+        var viewBox = svg.viewBox.baseVal;
+        var x = chartX(index);
+        return {
+          x: rect.left + ((x - viewBox.x) / viewBox.width) * rect.width,
+          y: rect.top + ((plotTop - viewBox.y) / viewBox.height) * rect.height
+        };
+      }
+
+      function accessibleText(index, rows) {
+        return [labels[index]].concat(rows.map(function (row) {
+          return row.name + " " + row.display;
+        })).join("，");
+      }
+
+      function selectIndex(index, clientX, clientY) {
+        index = clamp(index, 0, labels.length - 1);
+        currentIndex = index;
+        var x = chartX(index);
+        crosshair.setAttribute("x1", x);
+        crosshair.setAttribute("x2", x);
+        var rows = series.map(function (entry, seriesIndex) {
+          var raw = Array.isArray(entry.values) ? entry.values[index] : null;
+          var numeric = Number(raw);
+          var valid = raw != null && raw !== "" && Number.isFinite(numeric);
+          var point = points[seriesIndex];
+          point.setAttribute("cx", x);
+          if (valid) {
+            point.setAttribute("cy", chartY(numeric));
+            point.style.display = "";
+          } else {
+            point.style.display = "none";
+          }
+          return {
+            name: entry.name || "系列 " + (seriesIndex + 1),
+            raw: valid ? raw : null,
+            display: valid ? formatValue(raw, entry.format || component.format) : "—",
+            color: entry.color || palette[seriesIndex % palette.length]
+          };
+        });
+        focusLayer.dataset.open = "true";
+        hitbox.setAttribute("aria-valuenow", index);
+        hitbox.setAttribute("aria-valuetext", accessibleText(index, rows));
+        var anchor = clientPoint(index);
+        tooltipApi.showShared(
+          labels[index],
+          rows,
+          clientX == null ? anchor.x + 12 : clientX + 12,
+          clientY == null ? anchor.y + 12 : clientY + 12
+        );
+      }
+
+      function hide() {
+        if (pinned) return;
+        focusLayer.dataset.open = "false";
+        tooltipApi.hide();
+      }
+
+      function indexFromPointer(event) {
+        var rect = svg.getBoundingClientRect();
+        var viewBox = svg.viewBox.baseVal;
+        var svgX = viewBox.x + ((event.clientX - rect.left) / rect.width) * viewBox.width;
+        var ratio = clamp((svgX - plotLeft) / (plotRight - plotLeft || 1), 0, 1);
+        return Math.round(ratio * Math.max(0, labels.length - 1));
+      }
+
+      hitbox.addEventListener("pointerenter", function (event) {
+        if (event.pointerType === "touch") return;
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("pointermove", function (event) {
+        if (event.pointerType === "touch" || pinned) return;
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("pointerleave", hide);
+      hitbox.addEventListener("pointerdown", function (event) {
+        pinned = event.pointerType === "touch" || event.pointerType === "pen";
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("focus", function () {
+        selectIndex(currentIndex == null ? 0 : currentIndex);
+      });
+      hitbox.addEventListener("blur", function () {
+        if (!pinned) hide();
+      });
+      hitbox.addEventListener("keydown", function (event) {
+        var index = currentIndex == null ? 0 : currentIndex;
+        if (event.key === "ArrowRight") index += 1;
+        else if (event.key === "ArrowLeft") index -= 1;
+        else if (event.key === "Home") index = 0;
+        else if (event.key === "End") index = labels.length - 1;
+        else if (event.key === "Escape") {
+          pinned = false;
+          hide();
+          return;
+        } else {
+          return;
+        }
+        event.preventDefault();
+        pinned = true;
+        selectIndex(index);
+      });
+      document.addEventListener("pointerdown", function (event) {
+        if (event.target === hitbox || section.contains(event.target)) return;
+        pinned = false;
+        hide();
+      });
+    });
   }
 
   function init() {
@@ -1391,7 +1699,8 @@ window.__VDA_SPEC__ = {"mode":"dashboard","title":"2026 Q2 全渠道经营概览
         "</div>" +
         renderFooter() +
         "</div>";
-      setupTooltips();
+      var tooltipApi = setupTooltips();
+      setupLineChartInteractions(tooltipApi);
       document.documentElement.dataset.vdaReady = "true";
       window.dispatchEvent(new CustomEvent("vda:ready"));
     } catch (error) {

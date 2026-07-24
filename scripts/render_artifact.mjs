@@ -66,6 +66,154 @@ async function main() {
         await page.locator("[data-tip]").first().focus();
         keyboardTooltipOpen =
           (await page.locator('.vda-tooltip[data-open="true"]').count()) === 1;
+        await page.evaluate(() => {
+          if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+          } else if (document.activeElement?.blur) {
+            document.activeElement.blur();
+          }
+        });
+      }
+      const lineHitboxes = await page.locator("[data-line-hitbox]").count();
+      let lineInteraction = null;
+      if (lineHitboxes > 0) {
+        const hitbox = page.locator("[data-line-hitbox]").first();
+        const box = await hitbox.boundingBox();
+        if (!box) throw new Error("line hitbox has no bounding box");
+
+        await hitbox.hover({
+          position: {
+            x: box.width * 0.52,
+            y: box.height * 0.45,
+          },
+        });
+        const pointerState = await page.evaluate(() => {
+          const target = document.querySelector("[data-line-hitbox]");
+          const section = target.closest("[data-component-id]");
+          const component = window.__VDA_SPEC__.components.find(
+            (item) => item.id === section.dataset.componentId
+          );
+          const expectedIndex = Math.round((component.labels.length - 1) * 0.52);
+          return {
+            selectedIndex: Number(target.getAttribute("aria-valuenow")),
+            expectedIndex,
+            focusLayerOpen:
+              section.querySelector(".vda-line-focus-layer").dataset.open ===
+              "true",
+            tooltipOpen:
+              document.querySelector(".vda-tooltip").dataset.open === "true",
+            shared:
+              document.querySelector(".vda-tooltip").dataset.shared === "true",
+          };
+        });
+        await page.waitForFunction(
+          () =>
+            window.getComputedStyle(
+              document.querySelector(".vda-tooltip")
+            ).opacity === "1"
+        );
+        const crosshairFilename = `${path.basename(
+          input,
+          path.extname(input)
+        )}-${viewport.width}x${viewport.height}-crosshair.png`;
+        await page.locator(".skip-link").evaluate((element) => {
+          element.style.visibility = "hidden";
+        });
+        await page.screenshot({
+          path: path.join(outputDir, crosshairFilename),
+          fullPage: true,
+        });
+        await page.locator(".skip-link").evaluate((element) => {
+          element.style.visibility = "";
+        });
+
+        const touchBox = await hitbox.boundingBox();
+        if (!touchBox) throw new Error("line hitbox disappeared before touch test");
+        const touchPoint = {
+          clientX: touchBox.x + touchBox.width * 0.36,
+          clientY: touchBox.y + touchBox.height * 0.5,
+          pointerType: "touch",
+          bubbles: true,
+        };
+        await hitbox.dispatchEvent("pointerdown", touchPoint);
+        await hitbox.dispatchEvent("pointerleave", touchPoint);
+        const touchPersistent = await page.evaluate(() => {
+          const section = document
+            .querySelector("[data-line-hitbox]")
+            .closest("[data-component-id]");
+          return (
+            section.querySelector(".vda-line-focus-layer").dataset.open ===
+              "true" &&
+            document.querySelector(".vda-tooltip").dataset.open === "true"
+          );
+        });
+        await page.locator("body").dispatchEvent("pointerdown", {
+          clientX: 4,
+          clientY: 4,
+          pointerType: "touch",
+          bubbles: true,
+        });
+        const touchDismissesOutside = await page.evaluate(
+          () =>
+            document.querySelector(".vda-tooltip").dataset.open !== "true"
+        );
+
+        await hitbox.focus();
+        await hitbox.press("End");
+        const endState = await page.evaluate(() => {
+          const target = document.querySelector("[data-line-hitbox]");
+          const section = target.closest("[data-component-id]");
+          const component = window.__VDA_SPEC__.components.find(
+            (item) => item.id === section.dataset.componentId
+          );
+          const index = component.labels.length - 1;
+          const tooltip = document.querySelector(".vda-tooltip");
+          const rows = Array.from(
+            tooltip.querySelectorAll(".vda-tooltip-row")
+          );
+          return {
+            selectedIndex: Number(target.getAttribute("aria-valuenow")),
+            expectedIndex: index,
+            tooltipLabel:
+              tooltip.querySelector(".vda-tooltip-title")?.textContent || "",
+            expectedLabel: String(component.labels[index]),
+            rowCount: rows.length,
+            expectedRowCount: component.series.length,
+            rawValues: rows.map((row) => row.dataset.rawValue),
+            expectedRawValues: component.series.map((entry) => {
+              const value = entry.values[index];
+              return value == null || value === "" ? "" : String(value);
+            }),
+            ariaValueText: target.getAttribute("aria-valuetext") || "",
+          };
+        });
+        await hitbox.press("ArrowLeft");
+        const leftIndex = Number(
+          await hitbox.getAttribute("aria-valuenow")
+        );
+        lineInteraction = {
+          hitboxes: lineHitboxes,
+          pointerSnap:
+            pointerState.selectedIndex === pointerState.expectedIndex,
+          pointerTooltip:
+            pointerState.focusLayerOpen &&
+            pointerState.tooltipOpen &&
+            pointerState.shared,
+          touchPersistent,
+          touchDismissesOutside,
+          keyboardEnd:
+            endState.selectedIndex === endState.expectedIndex,
+          keyboardLeft:
+            leftIndex === Math.max(0, endState.expectedIndex - 1),
+          labelMatches: endState.tooltipLabel === endState.expectedLabel,
+          rowsMatch:
+            endState.rowCount === endState.expectedRowCount,
+          rawValuesMatch:
+            JSON.stringify(endState.rawValues) ===
+            JSON.stringify(endState.expectedRawValues),
+          ariaValueTextPresent: endState.ariaValueText.length > 0,
+          screenshot: crosshairFilename,
+        };
       }
       results.push({
         viewport,
@@ -74,6 +222,7 @@ async function main() {
         consoleErrors,
         dimensions,
         interaction: { tooltipTargets, keyboardTooltipOpen },
+        lineInteraction,
       });
       await page.close();
     }
@@ -88,7 +237,12 @@ async function main() {
     result.consoleErrors.length > 0 ||
     result.dimensions.scrollWidth > result.dimensions.clientWidth + 1 ||
     (result.interaction.tooltipTargets > 0 &&
-      result.interaction.keyboardTooltipOpen !== true)
+      result.interaction.keyboardTooltipOpen !== true) ||
+    (result.lineInteraction &&
+      Object.entries(result.lineInteraction).some(
+        ([key, value]) =>
+          !["hitboxes", "screenshot"].includes(key) && value !== true
+      ))
   );
   process.stdout.write(`${JSON.stringify(results, null, 2)}\n`);
   if (failed) process.exitCode = 1;

@@ -13,8 +13,22 @@
       "scrollHeight": 844
     },
     "interaction": {
-      "tooltipTargets": 26,
-      "keyboardTooltipOpen": true
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    },
+    "lineInteraction": {
+      "hitboxes": 1,
+      "pointerSnap": true,
+      "pointerTooltip": true,
+      "touchPersistent": true,
+      "touchDismissesOutside": true,
+      "keyboardEnd": true,
+      "keyboardLeft": true,
+      "labelMatches": true,
+      "rowsMatch": true,
+      "rawValuesMatch": true,
+      "ariaValueTextPresent": true,
+      "screenshot": "02-weekly-trend-390x844-crosshair.png"
     }
   },
   {
@@ -31,8 +45,22 @@
       "scrollHeight": 1000
     },
     "interaction": {
-      "tooltipTargets": 26,
-      "keyboardTooltipOpen": true
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    },
+    "lineInteraction": {
+      "hitboxes": 1,
+      "pointerSnap": true,
+      "pointerTooltip": true,
+      "touchPersistent": true,
+      "touchDismissesOutside": true,
+      "keyboardEnd": true,
+      "keyboardLeft": true,
+      "labelMatches": true,
+      "rowsMatch": true,
+      "rawValuesMatch": true,
+      "ariaValueTextPresent": true,
+      "screenshot": "02-weekly-trend-880x1000-crosshair.png"
     }
   },
   {
@@ -49,8 +77,22 @@
       "scrollHeight": 1000
     },
     "interaction": {
-      "tooltipTargets": 26,
-      "keyboardTooltipOpen": true
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    },
+    "lineInteraction": {
+      "hitboxes": 1,
+      "pointerSnap": true,
+      "pointerTooltip": true,
+      "touchPersistent": true,
+      "touchDismissesOutside": true,
+      "keyboardEnd": true,
+      "keyboardLeft": true,
+      "labelMatches": true,
+      "rowsMatch": true,
+      "rawValuesMatch": true,
+      "ariaValueTextPresent": true,
+      "screenshot": "02-weekly-trend-1440x1000-crosshair.png"
     }
   }
 ]

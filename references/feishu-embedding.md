@@ -53,6 +53,9 @@ Confirmed:
 - all three existing HTML blocks were later replaced in place with rebuilt files
   by `block_replace`; the document advanced to a new revision and a second fetch
   again returned exactly three valid HTML references.
+- the blocks were replaced again after adding the shared multi-series line-chart
+  crosshair runtime; revision 9 returned three HTML blocks and three reference
+  files, all containing the updated interaction code.
 
 Not yet confirmed:
 

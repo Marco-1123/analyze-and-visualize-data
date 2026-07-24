@@ -15,7 +15,8 @@
     "interaction": {
       "tooltipTargets": 0,
       "keyboardTooltipOpen": null
-    }
+    },
+    "lineInteraction": null
   },
   {
     "viewport": {
@@ -33,7 +34,8 @@
     "interaction": {
       "tooltipTargets": 0,
       "keyboardTooltipOpen": null
-    }
+    },
+    "lineInteraction": null
   },
   {
     "viewport": {
@@ -51,6 +53,7 @@
     "interaction": {
       "tooltipTargets": 0,
       "keyboardTooltipOpen": null
-    }
+    },
+    "lineInteraction": null
   }
 ]

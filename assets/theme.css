@@ -368,6 +368,42 @@ a:focus-visible,
   shape-rendering: crispEdges;
 }
 
+.vda-line-focus-layer {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.vda-line-focus-layer[data-open="true"] {
+  opacity: 1;
+}
+
+.vda-crosshair-line {
+  stroke: var(--vda-text-3);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-crosshair-point {
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-line-hitbox {
+  cursor: crosshair;
+  pointer-events: all;
+  stroke: transparent;
+  stroke-width: 2;
+  touch-action: pan-y;
+}
+
+.vda-line-hitbox:focus-visible {
+  stroke: rgba(49, 92, 245, 0.58);
+  stroke-dasharray: 4 4;
+  outline: none;
+  vector-effect: non-scaling-stroke;
+}
+
 .vda-tooltip {
   position: fixed;
   z-index: 100;
@@ -387,9 +423,50 @@ a:focus-visible,
   transition: opacity 120ms ease, transform 120ms ease;
 }
 
+.vda-tooltip[data-shared="true"] {
+  min-width: 176px;
+  padding: 11px 12px;
+}
+
 .vda-tooltip[data-open="true"] {
   opacity: 1;
   transform: translateY(0);
+}
+
+.vda-tooltip-title {
+  padding-bottom: 7px;
+  margin-bottom: 7px;
+  color: rgba(255, 255, 255, 0.74);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.vda-tooltip-row {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 24px;
+}
+
+.vda-tooltip-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.vda-tooltip-name {
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.82);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-tooltip-value {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
 }
 
 .vda-legend {
@@ -658,6 +735,10 @@ a:focus-visible,
 
   .vda-chart {
     min-height: 0;
+  }
+
+  .vda-tooltip {
+    max-width: calc(100vw - 24px);
   }
 
   .vda-divider {

@@ -148,6 +148,13 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
 
 - Use interaction to reveal detail, not to hide basic meaning.
 - Support keyboard focus for interactive controls.
+- Treat a multi-series line chart as one comparison surface: pointer or touch
+  position selects the nearest x-axis value, a vertical guide aligns the
+  comparison, and one shared tooltip lists every series value.
+- Make chart exploration available through Left/Right/Home/End keys and expose
+  the selected label and values as accessible text.
+- Keep touch selection persistent until the viewer chooses another point or
+  taps outside the chart.
 - Keep animation between 120 and 240 ms.
 - Animate state changes only when continuity aids understanding.
 - Respect reduced-motion preferences.

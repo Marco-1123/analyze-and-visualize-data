@@ -87,6 +87,9 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
 - Render every final component rather than trusting source inspection alone.
 - Inspect the common Feishu width, a narrow/mobile width, and full-screen width.
 - Check clipping, overflow, label collisions, hierarchy, empty space, color semantics, number formatting, and interaction.
+- For every multi-series line chart, verify nearest-x pointer snapping, a shared
+  crosshair tooltip containing all series values, touch selection, and keyboard
+  navigation. Per-point hover targets alone are not acceptable.
 - Iterate after visual inspection. One-pass HTML generation is not complete.
 
 ### 7. Assemble the delivery

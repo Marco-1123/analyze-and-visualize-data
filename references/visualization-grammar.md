@@ -32,6 +32,15 @@
 - Keep time intervals continuous or disclose gaps.
 - Use no more than four emphasized series.
 - Direct-label the final value when possible.
+- For two or more series, use a shared x-axis crosshair tooltip by default:
+  snap to the nearest time point, highlight every available series point, and
+  show the time label plus all series values in one comparison panel.
+- Preserve exact or appropriately formatted values in the shared tooltip even
+  when the visible axis uses compact notation.
+- Support pointer movement, touch selection, and Left/Right/Home/End keyboard
+  navigation. Do not require precise hovering on an individual point.
+- Keep missing series values visible as unavailable (`—`) rather than silently
+  removing the series from the comparison.
 - Do not smooth lines when smoothing implies unobserved values.
 
 ### Bar

@@ -46,6 +46,11 @@ Check:
 - semantic color use;
 - contrast and focus state;
 - tooltip visibility;
+- multi-series line-chart pointer snapping;
+- shared tooltip label, series count, and numeric-value correctness;
+- synchronized crosshair and point highlighting;
+- Left/Right/Home/End keyboard navigation and accessible selected-value text;
+- persistent touch selection without blocking vertical page scrolling;
 - table scrolling;
 - reduced-motion behavior;
 - consistency across report components.

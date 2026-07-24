@@ -111,6 +111,11 @@ pre-splitting or duplicating the data:
 - Keep the 24-column matrix once. Grouping is a presentation instruction, not a
   data transformation.
 - Every group uses the component's one shared `domain` and legend.
+- The runtime first fits all 12 columns into the available component width when
+  every cell can remain readable. It enables native module-level horizontal
+  scrolling only when the calculated minimum cell width, row-label rail, and
+  formatted values genuinely cannot fit. Agents must not force scrolling with
+  fixed cell widths.
 
 Give every component:
 
@@ -118,7 +123,35 @@ Give every component:
 - a question-led or finding-led `title`;
 - optional `subtitle` for unit, scope, or method;
 - accessible `ariaLabel` when the visual alone is not self-explanatory;
-- source or note when interpretation depends on scope.
+- source or a structured note when interpretation depends on scope.
+
+Component notes use a constrained formal contract:
+
+```json
+{
+  "note": {
+    "kind": "definition",
+    "text": "方向仅表示增量的正负，不自动等同于经营表现的最终好坏。",
+    "evidenceIds": ["fact.revenue.delta"]
+  }
+}
+```
+
+- `kind` is one of `definition`, `scope`, `method`, `limitation`, or `source`.
+- `text` contains only a neutral definition, scope, method, limitation, or
+  source statement. Do not place findings, causal explanations,
+  recommendations, conversational drafting notes, or uncertain claims in the
+  gray-note position.
+- `evidenceIds` is optional and contains stable fact/finding IDs.
+- A legacy string is accepted only when it begins with an explicit formal
+  prefix such as `口径：`, `范围：`, `方法：`, `限制：`, `来源：`, or
+  `数据状态：` (or the English equivalents). New specifications should use
+  the object form.
+- Put analytical claims in the component title, insight block, annotation, or
+  native report prose where their evidence and certainty can be stated.
+- The builder rejects common drafting/uncertainty phrases and metric-change
+  claims in component notes. This lint supplements, but does not replace,
+  editorial review.
 
 For multi-series line components, the runtime provides an interactive legend by
 default. Keep every `series` entry in the original specification and let the
@@ -157,6 +190,13 @@ For a signed bar comparison, use:
   inside its own container. The initial view keeps the zero axis visible when
   possible; native trackpad/wheel, touch, scrollbar, and keyboard behavior are
   retained. Mouse grab-to-drag is not part of the contract.
+- The main plot always preserves one true linear scale. When the smaller signed
+  side would receive fewer than 24 plotted pixels, the runtime adds an
+  explicitly labeled small-side detail with an independent local scale. The
+  detail is for identifying exact small-side items only and states that its bar
+  lengths must not be compared with the main plot.
+- Scrollable bars expose `负向极值`, `零轴`, and `正向极值` quick-position
+  controls. These controls supplement, rather than replace, native scrolling.
 
 ## 3. Numeric rules
 

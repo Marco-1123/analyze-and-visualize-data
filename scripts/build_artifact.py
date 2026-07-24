@@ -25,6 +25,27 @@ SEMVER_PATTERN = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
     r"(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$"
 )
+COMPONENT_NOTE_KINDS = {
+    "definition",
+    "scope",
+    "method",
+    "limitation",
+    "source",
+}
+FORMAL_LEGACY_NOTE_PATTERN = re.compile(
+    r"^(口径|范围|方法|限制|来源|数据状态|definition|scope|method|"
+    r"limitation|source|data status)\s*[：:]",
+    re.IGNORECASE,
+)
+AMBIGUOUS_NOTE_PATTERN = re.compile(
+    r"(我觉得|感觉|大概|或许|可能不错|应该是|待补充|待确认|先这样|"
+    r"暂时|TODO|FIXME|TBD)",
+    re.IGNORECASE,
+)
+ANALYTICAL_CLAIM_NOTE_PATTERN = re.compile(
+    r"(收入|利润|订单|销量|转化率|客单价|用户数|访问量|同比|环比)"
+    r".{0,16}(增长|下降|提升|减少|集中|高于|低于|领先|落后|贡献|异常|显著)"
+)
 
 
 def fail(message: str) -> None:
@@ -59,6 +80,52 @@ def validate_spec(spec: dict[str, Any]) -> None:
         if component_type not in {"metrics", "insight", "divider"}:
             if not isinstance(component.get("title"), str) or not component["title"].strip():
                 fail(f"{path}.title is required for {component_type}")
+
+        note = component.get("note")
+        if note is not None:
+            note_text_for_lint = ""
+            if isinstance(note, str):
+                if not FORMAL_LEGACY_NOTE_PATTERN.match(note.strip()):
+                    fail(
+                        f"{path}.note free text is ambiguous; use a structured "
+                        "note with kind and text, or a formal legacy prefix "
+                        "such as '口径：' or '限制：'"
+                    )
+                note_text_for_lint = note
+            elif isinstance(note, dict):
+                note_kind = note.get("kind")
+                note_text = note.get("text")
+                if note_kind not in COMPONENT_NOTE_KINDS:
+                    fail(
+                        f"{path}.note.kind must be one of "
+                        f"{sorted(COMPONENT_NOTE_KINDS)}"
+                    )
+                if not isinstance(note_text, str) or not note_text.strip():
+                    fail(f"{path}.note.text must be a non-empty string")
+                note_text_for_lint = note_text
+                evidence_ids = note.get("evidenceIds")
+                if evidence_ids is not None and (
+                    not isinstance(evidence_ids, list)
+                    or not all(
+                        isinstance(item, str) and item.strip()
+                        for item in evidence_ids
+                    )
+                ):
+                    fail(f"{path}.note.evidenceIds must be an array of strings")
+            else:
+                fail(f"{path}.note must be a string or structured object")
+            if AMBIGUOUS_NOTE_PATTERN.search(note_text_for_lint):
+                fail(
+                    f"{path}.note contains drafting or uncertain language; "
+                    "rewrite it as a formal definition, scope, method, "
+                    "limitation, or source statement"
+                )
+            if ANALYTICAL_CLAIM_NOTE_PATTERN.search(note_text_for_lint):
+                fail(
+                    f"{path}.note appears to contain an analytical claim; "
+                    "move findings to the title, insight, annotation, or "
+                    "native report prose"
+                )
 
         if component_type == "metrics":
             items = component.get("items")

@@ -21,7 +21,7 @@
       {
         "id": "signed-contribution",
         "heading": "3. 正负增量分化",
-        "nativeNarrative": "不同区域与渠道组合同时存在扩张和收缩。双向条以零轴为共同基准，在窄容器中保留可读宽度并支持组件内部左右滑动。",
+        "nativeNarrative": "不同区域与渠道组合同时存在扩张和收缩。该极端比例样例以零轴和真实共同尺度为主图；小量级负向项目通过明确标注的独立比例局部读数辨认，并可快速定位两端与零轴。",
         "findingIds": ["finding_signed_contribution"],
         "components": ["04-diverging-bar.html"]
       }

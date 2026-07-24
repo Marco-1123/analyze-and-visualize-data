@@ -67,6 +67,31 @@
     return formatValue(item ? item.value : null, item ? item.format : null);
   }
 
+  function renderComponentNote(note) {
+    if (!note) return "";
+    if (typeof note === "string") {
+      return '<p class="vda-note" data-note-kind="legacy">' +
+        esc(note) + "</p>";
+    }
+    var labels = {
+      definition: "口径说明",
+      scope: "范围说明",
+      method: "方法说明",
+      limitation: "限制说明",
+      source: "来源说明"
+    };
+    var kind = note.kind || "definition";
+    var text = note.text || "";
+    if (!text) return "";
+    return (
+      '<p class="vda-note" data-note-kind="' + esc(kind) + '">' +
+      '<span class="vda-note-label">' +
+      esc(labels[kind] || "补充说明") +
+      "：</span>" +
+      '<span class="vda-note-text">' + esc(text) + "</span></p>"
+    );
+  }
+
   function svgEl(name, attrs, text) {
     var element = document.createElementNS(NS, name);
     Object.keys(attrs || {}).forEach(function (key) {
@@ -85,9 +110,7 @@
     var subtitle = component.subtitle
       ? '<p class="vda-panel-subtitle">' + esc(component.subtitle) + "</p>"
       : "";
-    var note = component.note
-      ? '<p class="vda-note">' + esc(component.note) + "</p>"
-      : "";
+    var note = renderComponentNote(component.note);
     var title = component.title
       ? '<div><h2 class="vda-panel-title">' + esc(component.title) + "</h2>" + subtitle + "</div>"
       : "";
@@ -215,6 +238,9 @@
     plotWidth = clamp(Math.ceil(plotWidth), 520, 640);
     var plotLeft = valueGutter + 20;
     var right = valueGutter + 20;
+    var minorSidePixels = plotWidth * Math.min(negativeShare, positiveShare);
+    var extremeRatio = Math.max(negativeMagnitude, positiveMagnitude) /
+      Math.max(1e-9, Math.min(negativeMagnitude, positiveMagnitude));
     return {
       diverging: true,
       width: Math.ceil(plotLeft + plotWidth + right),
@@ -222,8 +248,68 @@
       categoryX: null,
       labelWidth: labelWidth,
       valueGutter: valueGutter,
-      plotWidth: plotWidth
+      plotWidth: plotWidth,
+      negativeMagnitude: negativeMagnitude,
+      positiveMagnitude: positiveMagnitude,
+      minorSidePixels: minorSidePixels,
+      extremeRatio: extremeRatio,
+      extreme: hasPositive && hasNegative && minorSidePixels < 24,
+      minorityDirection: negativeMagnitude <= positiveMagnitude
+        ? "negative"
+        : "positive"
     };
+  }
+
+  function renderDivergingBarDetail(component, categories, values, layout) {
+    if (!layout.extreme) return "";
+    var direction = layout.minorityDirection;
+    var items = categories.map(function (category, index) {
+      return {
+        category: category,
+        value: Number.isFinite(values[index]) ? values[index] : 0,
+        index: index
+      };
+    }).filter(function (item) {
+      return direction === "negative" ? item.value < 0 : item.value > 0;
+    });
+    var maxMagnitude = items.reduce(function (largest, item) {
+      return Math.max(largest, Math.abs(item.value));
+    }, 0) || 1;
+    var title = direction === "negative" ? "小量级负向局部放大" : "小量级正向局部放大";
+    return (
+      '<aside class="vda-bar-detail" data-bar-detail="true" data-minority-direction="' +
+      direction + '" aria-label="' + title + '">' +
+      '<div class="vda-bar-detail-head">' +
+      '<strong>' + title + '</strong>' +
+      '<span>独立比例，仅用于辨认小量级项目，不与主图条长比较</span>' +
+      '</div>' +
+      '<div class="vda-bar-detail-list">' +
+      items.map(function (item) {
+        var ratio = Math.abs(item.value) / maxMagnitude;
+        return (
+          '<div class="vda-bar-detail-row" data-bar-detail-row="' + item.index + '">' +
+          '<span class="vda-bar-detail-label" title="' + esc(item.category) + '">' +
+          esc(item.category) + '</span>' +
+          '<span class="vda-bar-detail-track" aria-hidden="true">' +
+          '<span class="vda-bar-detail-fill" data-direction="' + direction +
+          '" style="width:' + Math.max(4, ratio * 100) + '%"></span></span>' +
+          '<strong class="vda-bar-detail-value">' +
+          esc(formatValue(item.value, component.format)) + '</strong>' +
+          '</div>'
+        );
+      }).join("") +
+      '</div></aside>'
+    );
+  }
+
+  function renderDivergingBarNavigation() {
+    return (
+      '<div class="vda-bar-navigation" role="group" aria-label="双向条形图快速定位">' +
+      '<button type="button" data-bar-jump="negative">负向极值</button>' +
+      '<button type="button" data-bar-jump="zero">零轴</button>' +
+      '<button type="button" data-bar-jump="positive">正向极值</button>' +
+      '</div>'
+    );
   }
 
   function renderLineChart(component) {
@@ -440,7 +526,7 @@
       var barH = rowHeight * 0.56;
       var valueX = margin.left + ((value - Math.min(0, min)) / range) * innerW;
       var x = Math.min(zeroX, valueX);
-      var barW = Math.max(1, Math.abs(valueX - zeroX));
+      var barW = value === 0 ? 0 : Math.abs(valueX - zeroX);
       var color = (component.colors && component.colors[index]) ||
         (component.highlightIndex === index ? "#315CF5" : index === 0 ? "#315CF5" : "#A8B0BF");
 
@@ -487,6 +573,9 @@
       container.setAttribute("data-bar-layout", "diverging");
       container.setAttribute("data-bar-zero-ratio", zeroX / width);
       container.setAttribute("data-bar-chart-width", width);
+      container.setAttribute("data-bar-extreme", layout.extreme ? "true" : "false");
+      container.setAttribute("data-bar-extreme-ratio", layout.extremeRatio);
+      container.setAttribute("data-bar-minor-side-pixels", layout.minorSidePixels);
       container.setAttribute("role", "group");
       container.setAttribute("tabindex", "0");
       container.setAttribute(
@@ -512,8 +601,10 @@
         '<div class="vda-diverging-bar-layout" style="--bar-label-width:' +
           layout.labelWidth + "px;--bar-row-height:" + rowHeight + 'px">' +
           labelRail + frame.outerHTML + "</div>" +
+          renderDivergingBarNavigation() +
           '<p class="vda-scroll-cue vda-bar-scroll-cue">' +
-          "可左右滑动查看正负两侧 →</p>"
+          "可左右滑动，或用上方按钮快速查看两端 →</p>" +
+          renderDivergingBarDetail(component, categories, values, layout)
       );
     }
     return componentFrame(component, container.outerHTML);
@@ -666,7 +757,26 @@
     var range = max - min || 1;
     var cellW = grouped ? (compact ? 48 : 54) : (compact ? 60 : 86);
     var cellH = grouped ? 36 : 40;
-    var left = grouped ? (compact ? 72 : 94) : (compact ? 76 : 112);
+    var rowLabelWidth = rows.reduce(function (largest, row) {
+      return Math.max(largest, estimateTextWidth(row, 11));
+    }, 0);
+    var formattedValueWidth = matrix.reduce(function (largest, row) {
+      return Math.max(
+        largest,
+        (row || []).reduce(function (rowLargest, value) {
+          return Math.max(
+            rowLargest,
+            estimateTextWidth(formatValue(value, component.format), 10.5)
+          );
+        }, 0)
+      );
+    }, 0);
+    var left = grouped
+      ? clamp(rowLabelWidth + 14, 62, 94)
+      : clamp(rowLabelWidth + 18, 76, 112);
+    var minimumCellWidth = grouped
+      ? clamp(formattedValueWidth + 8, 28, 38)
+      : clamp(formattedValueWidth + 12, 36, 60);
     var top = 42;
     var width = left + indices.length * cellW + 18;
     var height = top + rows.length * cellH + 20;
@@ -677,7 +787,11 @@
         (group ? "，" + group.label : ""),
       "data-heatmap-svg": "true",
       "data-domain-min": min,
-      "data-domain-max": max
+      "data-domain-max": max,
+      "data-column-count": indices.length,
+      "data-row-label-width": left,
+      "data-min-cell-width": minimumCellWidth,
+      "data-preferred-cell-width": cellW
     });
     svg.style.minWidth = width + "px";
 
@@ -686,7 +800,9 @@
         x: left + localIndex * cellW + cellW / 2,
         y: 25,
         "text-anchor": "middle",
-        class: "vda-axis-label"
+        class: "vda-axis-label",
+        "data-heatmap-column-label": "true",
+        "data-local-column-index": localIndex
       }, columns[columnIndex]));
     });
 
@@ -695,7 +811,8 @@
         x: left - 10,
         y: top + rowIndex * cellH + cellH / 2 + 4,
         "text-anchor": "end",
-        class: "vda-axis-label"
+        class: "vda-axis-label",
+        "data-heatmap-row-label": "true"
       }, row));
       indices.forEach(function (columnIndex, localIndex) {
         var value = matrix[rowIndex] ? Number(matrix[rowIndex][columnIndex]) : NaN;
@@ -714,6 +831,7 @@
           "data-heatmap-cell": "true",
           "data-row-index": rowIndex,
           "data-column-index": columnIndex,
+          "data-local-column-index": localIndex,
           "data-raw-value": rawValue,
           "data-tip": esc(row) + " · " + esc(columns[columnIndex]) + ": " +
             esc(Number.isFinite(value) ? formatValue(value, component.format) : "无数据")
@@ -728,7 +846,9 @@
             fill: textColor,
             "font-size": grouped ? "10.5" : "11",
             "font-weight": "650",
-            "pointer-events": "none"
+            "pointer-events": "none",
+            "data-heatmap-value-label": "true",
+            "data-local-column-index": localIndex
           }, formatValue(value, component.format)));
         }
       });
@@ -737,6 +857,7 @@
     var chart = document.createElement("div");
     chart.className = "vda-chart vda-heatmap-chart";
     chart.style.setProperty("--chart-height", height + "px");
+    chart.setAttribute("data-heatmap-min-width", left + indices.length * minimumCellWidth + 18);
     chart.appendChild(svg);
     return chart;
   }
@@ -797,7 +918,7 @@
     container.appendChild(legend);
     if (groups.length) {
       var cue = document.createElement("p");
-      cue.className = "vda-scroll-cue";
+      cue.className = "vda-scroll-cue vda-heatmap-scroll-cue";
       cue.textContent = "每个时段组可左右滑动查看完整 12 小时 →";
       container.appendChild(cue);
     }
@@ -1225,20 +1346,176 @@
     document.querySelectorAll(
       '.vda-bar-chart[data-bar-layout="diverging"]'
     ).forEach(function (chart) {
-      var maxScroll = Math.max(0, chart.scrollWidth - chart.clientWidth);
-      var zeroRatio = clamp(finite(chart.dataset.barZeroRatio, 0.5), 0, 1);
-      var zeroPixel = zeroRatio * chart.scrollWidth;
-      var target = zeroPixel > chart.clientWidth * 0.99
-        ? zeroPixel - chart.clientWidth * 0.98
-        : 0;
-      chart.scrollLeft = clamp(target, 0, maxScroll);
+      var component = chart.closest("[data-component-id]");
+      var controls = component
+        ? Array.from(component.querySelectorAll("[data-bar-jump]"))
+        : [];
+      var requestedPosition = "zero";
+      var programmaticPosition = null;
+
+      function metrics() {
+        var maxScroll = Math.max(0, chart.scrollWidth - chart.clientWidth);
+        var zeroRatio = clamp(finite(chart.dataset.barZeroRatio, 0.5), 0, 1);
+        return {
+          maxScroll: maxScroll,
+          zeroPixel: zeroRatio * chart.scrollWidth
+        };
+      }
+
+      function targetFor(position) {
+        var state = metrics();
+        if (position === "negative") return 0;
+        if (position === "positive") return state.maxScroll;
+        return clamp(
+          state.zeroPixel - chart.clientWidth / 2,
+          0,
+          state.maxScroll
+        );
+      }
+
+      function setControlState(position) {
+        controls.forEach(function (control) {
+          var selected = control.dataset.barJump === position;
+          control.dataset.current = selected ? "true" : "false";
+          control.setAttribute("aria-pressed", selected ? "true" : "false");
+        });
+      }
+
+      function updateCurrentPosition(preferredPosition) {
+        var state = metrics();
+        var positions = {
+          negative: 0,
+          zero: targetFor("zero"),
+          positive: state.maxScroll
+        };
+        var current = preferredPosition || requestedPosition || "zero";
+        if (Math.abs(chart.scrollLeft - positions[current]) > 2) {
+          var nearest = Infinity;
+          Object.keys(positions).forEach(function (position) {
+            var distance = Math.abs(chart.scrollLeft - positions[position]);
+            if (distance < nearest - 0.5) {
+              nearest = distance;
+              current = position;
+            }
+          });
+        }
+        requestedPosition = current;
+        setControlState(current);
+      }
+
+      var target = targetFor("zero");
+      chart.scrollLeft = target;
+      var maxScroll = metrics().maxScroll;
       chart.dataset.scrollable = maxScroll > 1 ? "true" : "false";
       chart.dataset.initialScrollLeft = String(chart.scrollLeft);
       var frame = chart.closest("[data-bar-scroll-frame]");
       if (frame) frame.dataset.scrollable = chart.dataset.scrollable;
-      var component = chart.closest("[data-component-id]");
       if (component) component.dataset.barScrollable = chart.dataset.scrollable;
+      controls.forEach(function (control) {
+        control.addEventListener("click", function () {
+          requestedPosition = control.dataset.barJump;
+          programmaticPosition = requestedPosition;
+          var requestedTarget = targetFor(requestedPosition);
+          setControlState(requestedPosition);
+          chart.scrollTo({
+            left: requestedTarget,
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+              ? "auto"
+              : "smooth"
+          });
+          window.setTimeout(function () {
+            updateCurrentPosition(programmaticPosition);
+            programmaticPosition = null;
+          }, 500);
+        });
+      });
+      chart.addEventListener("scroll", function () {
+        if (programmaticPosition) {
+          setControlState(programmaticPosition);
+          return;
+        }
+        updateCurrentPosition();
+      }, { passive: true });
+      updateCurrentPosition();
     });
+  }
+
+  function layoutHeatmapChart(chart) {
+    var svg = chart.querySelector("[data-heatmap-svg]");
+    if (!svg || chart.clientWidth <= 0) return;
+    var columnCount = Math.max(1, finite(svg.dataset.columnCount, 1));
+    var left = finite(svg.dataset.rowLabelWidth, 72);
+    var minimumCellWidth = finite(svg.dataset.minCellWidth, 28);
+    var preferredCellWidth = finite(svg.dataset.preferredCellWidth, 54);
+    var availableForCells = Math.max(
+      0,
+      chart.clientWidth - left - 18
+    );
+    var fittedCellWidth = availableForCells / columnCount;
+    var cellWidth = fittedCellWidth >= minimumCellWidth
+      ? Math.min(preferredCellWidth, fittedCellWidth)
+      : minimumCellWidth;
+    var width = Math.ceil(left + columnCount * cellWidth + 18);
+    var viewBox = String(svg.getAttribute("viewBox") || "").split(/\s+/);
+    var height = finite(viewBox[3], 240);
+    svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+    svg.style.width = width + "px";
+    svg.style.minWidth = width + "px";
+
+    svg.querySelectorAll("[data-heatmap-column-label]").forEach(function (label) {
+      var localIndex = finite(label.dataset.localColumnIndex, 0);
+      label.setAttribute("x", left + localIndex * cellWidth + cellWidth / 2);
+    });
+    svg.querySelectorAll("[data-heatmap-row-label]").forEach(function (label) {
+      label.setAttribute("x", left - 10);
+    });
+    svg.querySelectorAll("[data-heatmap-cell]").forEach(function (cell) {
+      var localIndex = finite(cell.dataset.localColumnIndex, 0);
+      cell.setAttribute("x", left + localIndex * cellWidth + 2);
+      cell.setAttribute("width", Math.max(1, cellWidth - 4));
+    });
+    svg.querySelectorAll("[data-heatmap-value-label]").forEach(function (label) {
+      var localIndex = finite(label.dataset.localColumnIndex, 0);
+      label.setAttribute("x", left + localIndex * cellWidth + cellWidth / 2);
+    });
+
+    var scrollable = chart.scrollWidth > chart.clientWidth + 1;
+    chart.dataset.scrollable = scrollable ? "true" : "false";
+    var group = chart.closest("[data-heatmap-group]");
+    if (group) group.dataset.scrollable = chart.dataset.scrollable;
+  }
+
+  function setupHeatmapSizing() {
+    var charts = Array.from(document.querySelectorAll(".vda-heatmap-chart"));
+    charts.forEach(layoutHeatmapChart);
+    document.querySelectorAll('[data-heatmap-layout="stacked-groups"]').forEach(function (stack) {
+      var component = stack.closest("[data-component-id]");
+      var scrollable = Array.from(
+        stack.querySelectorAll(".vda-heatmap-chart")
+      ).some(function (chart) {
+        return chart.dataset.scrollable === "true";
+      });
+      if (component) {
+        component.dataset.heatmapScrollable = scrollable ? "true" : "false";
+      }
+    });
+    if (typeof ResizeObserver === "function") {
+      charts.forEach(function (chart) {
+        var observer = new ResizeObserver(function () {
+          layoutHeatmapChart(chart);
+          var stack = chart.closest('[data-heatmap-layout="stacked-groups"]');
+          var component = chart.closest("[data-component-id]");
+          if (stack && component) {
+            component.dataset.heatmapScrollable = Array.from(
+              stack.querySelectorAll(".vda-heatmap-chart")
+            ).some(function (item) {
+              return item.scrollWidth > item.clientWidth + 1;
+            }) ? "true" : "false";
+          }
+        });
+        observer.observe(chart);
+      });
+    }
   }
 
   function init() {
@@ -1256,6 +1533,7 @@
       var tooltipApi = setupTooltips();
       setupLineChartInteractions(tooltipApi);
       window.requestAnimationFrame(function () {
+        setupHeatmapSizing();
         setupDivergingBarScrolling();
         document.documentElement.dataset.vdaReady = "true";
         window.dispatchEvent(new CustomEvent("vda:ready"));

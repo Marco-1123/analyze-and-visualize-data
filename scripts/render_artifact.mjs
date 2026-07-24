@@ -9,7 +9,7 @@ import { pathToFileURL } from "node:url";
 const require = createRequire(import.meta.url);
 
 function parseArgs(argv) {
-  const result = { viewports: "390x844,520x900,880x1000,1440x1000" };
+  const result = { viewports: "390x844,520x900,818x1000,880x1000,1440x1000" };
   for (let index = 2; index < argv.length; index += 1) {
     const key = argv[index];
     const value = argv[index + 1];
@@ -113,6 +113,24 @@ async function main() {
                 }),
               }
             : null,
+        };
+      });
+      const contentIntegrity = await page.evaluate(() => {
+        const notes = Array.from(document.querySelectorAll(".vda-note"));
+        const allowedKinds = new Set([
+          "definition",
+          "scope",
+          "method",
+          "limitation",
+          "source",
+        ]);
+        return {
+          structuredComponentNotes: notes.every(
+            (note) =>
+              allowedKinds.has(note.dataset.noteKind) &&
+              Boolean(note.querySelector(".vda-note-label")) &&
+              Boolean(note.querySelector(".vda-note-text"))
+          ),
         };
       });
       const tooltipTargets = await page.locator("[data-tip]").count();
@@ -440,6 +458,37 @@ async function main() {
           const chartRect = chart.getBoundingClientRect();
           const zeroRect = zero.getBoundingClientRect();
           const viewBoxWidth = svg.viewBox.baseVal.width;
+          const section = chart.closest("[data-component-id]");
+          const cue = section.querySelector(".vda-bar-scroll-cue");
+          const detail = section.querySelector("[data-bar-detail]");
+          const extreme = chart.dataset.barExtreme === "true";
+          const minorityDirection = detail
+            ? detail.dataset.minorityDirection
+            : null;
+          const expectedMinorityValues = marks
+            .filter(
+              (mark) =>
+                mark.dataset.barDirection === minorityDirection
+            )
+            .map((mark) => Number(mark.dataset.barValue))
+            .sort((a, b) => a - b);
+          const detailValues = detail
+            ? Array.from(detail.querySelectorAll(".vda-bar-detail-value"))
+                .map((value) =>
+                  Number(
+                    value.textContent
+                      .replace(/[^\d.+-]/g, "")
+                  )
+                )
+                .sort((a, b) => a - b)
+            : [];
+          const pixelsPerUnit = marks
+            .filter((mark) => Number(mark.dataset.barValue) !== 0)
+            .map(
+              (mark) =>
+                Number(mark.getAttribute("width")) /
+                Math.abs(Number(mark.dataset.barValue))
+            );
           return {
             count: marks.length,
             clientWidth: chart.clientWidth,
@@ -490,13 +539,22 @@ async function main() {
                   bounds.height > 0
                 );
               }),
-            cueVisible:
-              window.innerWidth > 520 ||
-              window.getComputedStyle(
-                chart
-                  .closest("[data-component-id]")
-                  .querySelector(".vda-bar-scroll-cue")
-              ).display !== "none",
+            cueMatchesOverflow:
+              (chart.scrollWidth > chart.clientWidth + 1) ===
+              (window.getComputedStyle(cue).display !== "none"),
+            mainScaleLinear:
+              pixelsPerUnit.length < 2 ||
+              Math.max(...pixelsPerUnit) -
+                Math.min(...pixelsPerUnit) <
+                Math.max(...pixelsPerUnit) * 0.02,
+            extremeDetailValid:
+              !extreme ||
+              (Boolean(detail) &&
+                detail.textContent.includes("独立比例") &&
+                detail.textContent.includes("不与主图条长比较") &&
+                JSON.stringify(detailValues) ===
+                  JSON.stringify(expectedMinorityValues)),
+            extremeDetailAbsentWhenUnneeded: extreme || !detail,
             mouseGrabNotEnabled:
               !["grab", "grabbing"].includes(
                 window.getComputedStyle(chart).cursor
@@ -510,6 +568,66 @@ async function main() {
           0,
           initialState.scrollWidth - initialState.clientWidth
         );
+        let navigationWorks = true;
+        const component = barChart.locator("xpath=ancestor::*[@data-component-id][1]");
+        const navigation = component.locator("[data-bar-navigation], .vda-bar-navigation");
+        if (maxScroll > 1) {
+          const negativeButton = component.locator('[data-bar-jump="negative"]');
+          const zeroButton = component.locator('[data-bar-jump="zero"]');
+          const positiveButton = component.locator('[data-bar-jump="positive"]');
+          navigationWorks =
+            (await navigation.count()) === 1 &&
+            (await negativeButton.count()) === 1 &&
+            (await zeroButton.count()) === 1 &&
+            (await positiveButton.count()) === 1;
+          if (navigationWorks) {
+            await negativeButton.click();
+            await page.waitForTimeout(700);
+            const negativePosition = await barChart.evaluate((chart) => ({
+              scrollLeft: chart.scrollLeft,
+              pressed:
+                chart
+                  .closest("[data-component-id]")
+                  .querySelector('[data-bar-jump="negative"]')
+                  .getAttribute("aria-pressed") === "true",
+            }));
+            await positiveButton.click();
+            await page.waitForTimeout(700);
+            const positivePosition = await barChart.evaluate((chart) => ({
+              scrollLeft: chart.scrollLeft,
+              pressed:
+                chart
+                  .closest("[data-component-id]")
+                  .querySelector('[data-bar-jump="positive"]')
+                  .getAttribute("aria-pressed") === "true",
+            }));
+            await zeroButton.click();
+            await page.waitForTimeout(700);
+            const zeroPosition = await barChart.evaluate((chart) => ({
+              actual: chart.scrollLeft,
+              expected: Math.max(
+                0,
+                Math.min(
+                  chart.scrollWidth - chart.clientWidth,
+                  Number(chart.dataset.barZeroRatio) * chart.scrollWidth -
+                  chart.clientWidth / 2
+                )
+              ),
+              pressed:
+                chart
+                  .closest("[data-component-id]")
+                  .querySelector('[data-bar-jump="zero"]')
+                  .getAttribute("aria-pressed") === "true",
+            }));
+            navigationWorks =
+              negativePosition.scrollLeft <= 2 &&
+              negativePosition.pressed &&
+              positivePosition.scrollLeft >= maxScroll - 2 &&
+              positivePosition.pressed &&
+              Math.abs(zeroPosition.actual - zeroPosition.expected) <= 2 &&
+              zeroPosition.pressed;
+          }
+        }
 
         await barChart.evaluate((chart) => {
           chart.scrollLeft = 0;
@@ -647,6 +765,7 @@ async function main() {
           wheelNative,
           touchNative,
           touchPageContained,
+          navigationWorks,
           screenshot: barScreenshot,
         };
       }
@@ -680,6 +799,10 @@ async function main() {
           const charts = Array.from(
             stack.querySelectorAll(".vda-heatmap-chart")
           );
+          const overflows = charts.map(
+            (chart) => chart.scrollWidth > chart.clientWidth + 1
+          );
+          const cue = stack.querySelector(".vda-heatmap-scroll-cue");
           return {
             groupCount: groups.length,
             groupCountMatches:
@@ -709,11 +832,18 @@ async function main() {
                 domain[0] === expectedDomain[0] &&
                 domain[1] === expectedDomain[1]
             ),
-            compactInnerScroll:
-              window.innerWidth > 520 ||
-              charts.every(
-                (chart) => chart.scrollWidth > chart.clientWidth + 1
-              ),
+            fitWithoutUnnecessaryScroll:
+              window.innerWidth < 520 ||
+              overflows.every((overflow) => !overflow),
+            narrowScrollWhenRequired:
+              window.innerWidth >= 520 ||
+              overflows.every(Boolean),
+            cueMatchesOverflow:
+              overflows.some(Boolean) ===
+              (window.getComputedStyle(cue).display !== "none"),
+            pageContained:
+              document.documentElement.scrollWidth <=
+              document.documentElement.clientWidth + 1,
           };
         });
 
@@ -773,6 +903,7 @@ async function main() {
         consoleErrors,
         dimensions,
         layoutIntegrity,
+        contentIntegrity,
         interaction: { tooltipTargets, keyboardTooltipOpen },
         lineInteraction,
         barInteraction,
@@ -807,6 +938,7 @@ async function main() {
         (result.viewport.width >= 760 &&
           result.layoutIntegrity.meta.count === 3 &&
           result.layoutIntegrity.meta.renderedRows !== 1))) ||
+    result.contentIntegrity.structuredComponentNotes !== true ||
     (result.interaction.tooltipTargets > 0 &&
       result.interaction.keyboardTooltipOpen !== true) ||
     (result.lineInteraction &&

@@ -1,0 +1,37 @@
+{
+  "mode": "report-component",
+  "title": "负向极值远大于正向极值时的双向变化",
+  "eyebrow": "QA · DIVERGING BAR · NEGATIVE EXTREME",
+  "subtitle": "主图保持真实共同尺度，小量级正向项目另设明确标注的局部放大；金额单位：万元。",
+  "description": "用负向极值约为正向极值 100 倍的反向场景验证共同尺度、快速定位与小量级局部读数。",
+  "components": [
+    {
+      "id": "regional-channel-change-negative-extreme",
+      "type": "bar",
+      "layout": "diverging",
+      "title": "负向极值约为正向极值的 100 倍",
+      "subtitle": "收入增量，单位：万元",
+      "ariaLabel": "五个区域与渠道组合收入增量的极端负向双向比较",
+      "categories": [
+        "华东 · 代理渠道",
+        "华北 · 代理渠道",
+        "华中 · 代理渠道",
+        "西南 · 直营渠道",
+        "华南 · 电商平台"
+      ],
+      "values": [-1000, -420, -75, 2, 10],
+      "colors": ["#C33D45", "#D97B81", "#A8B0BF", "#7390F9", "#315CF5"],
+      "format": {
+        "decimals": 0
+      },
+      "note": {
+        "kind": "definition",
+        "text": "方向仅表示收入增量的正负，不自动等同于经营表现的最终好坏。"
+      }
+    }
+  ],
+  "footer": {
+    "source": "数据来源：极端比例回归测试数据",
+    "note": "口径：本期收入减去可比基期收入"
+  }
+}

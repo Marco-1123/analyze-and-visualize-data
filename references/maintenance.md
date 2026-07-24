@@ -40,6 +40,7 @@ Run:
 
 ```bash
 python3 scripts/check_version.py assets/examples/*.html
+python3 scripts/test_spec_contracts.py
 python3 scripts/validate_artifact.py <each-artifact.html>
 python3 <skill-creator>/scripts/quick_validate.py .
 git diff --check

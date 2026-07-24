@@ -102,11 +102,19 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
 - For a canonical 24-hour heatmap, default to one HTML component with 0–11 and
   12–23 rendered as vertically stacked groups. Both groups must share one color
   domain and one legend; never squeeze all 24 hours into one horizontal row.
+  Fit each 12-hour group into the component when its calculated readable cell
+  width permits; use native module-level scrolling only when it does not fit.
 - For a bar containing both negative and positive values, verify the common
   zero axis, directionally correct marks, unclipped category and endpoint
   labels, and native component-level horizontal scrolling at 390 px and
   520 px. Trackpad/wheel and touch scrolling must work without causing
   page-level overflow; do not add grab-to-drag JavaScript.
+- For extreme positive/negative ratios, keep the main plot on one linear scale,
+  require the labeled independent-scale small-side detail, and verify all three
+  quick-position controls.
+- Use structured component notes only for definitions, scope, methods,
+  limitations, and sources. Put findings and recommendations in analytical
+  content, not in subdued gray notes.
 - Iterate after visual inspection. One-pass HTML generation is not complete.
 
 ### 7. Assemble the delivery

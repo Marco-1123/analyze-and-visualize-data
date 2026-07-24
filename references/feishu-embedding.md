@@ -77,6 +77,23 @@ Confirmed:
   page-contained. The fixed category rail stayed visible, the shared zero axis
   remained valid, the positive endpoint became readable, and positive/negative
   marks remained on the correct sides.
+- the dashboard and canonical hourly heatmap were replaced with Skill v0.8.0,
+  and two dedicated 100:1 positive-dominant / negative-dominant diverging-bar
+  blocks were appended. Final revision 26 returned six HTML blocks. The four
+  v0.8.0 reference files were byte-identical to their local artifacts.
+- in the authenticated 818 px Feishu embed, each 12-hour heatmap module had a
+  710 px viewport and a 710 px canvas, so neither module scrolled and the
+  horizontal-scroll cue stayed hidden. Both groups contained exactly 12 ordered
+  columns, shared one legend, and the iframe page remained contained.
+- the positive-dominant and negative-dominant 100:1 bars retained a linear main
+  scale, correct signed directions, a visible zero axis, and labeled
+  independent-scale small-side details. Their native `overflow-x: auto`
+  viewports were 635 px wide over 774 px and 782 px canvases respectively.
+  A real horizontal wheel/trackpad event moved the positive fixture from
+  `scrollLeft = 0` to `120` without page-level overflow. Quick positioning
+  reached the signed extreme and zero targets, including the case where two
+  targets share the same physical scroll offset; the selected button state
+  remained faithful to the user's last choice.
 
 Not yet confirmed:
 

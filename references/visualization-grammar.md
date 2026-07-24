@@ -63,6 +63,14 @@
   browser behavior instead of compressing or clipping it.
 - On narrow screens, begin with the zero axis visible when possible and show a
   concise horizontal-scroll cue. Do not implement mouse grab-to-drag.
+- Preserve one true linear scale even when positive and negative extremes differ
+  sharply. If the smaller side would occupy fewer than 24 pixels, add a clearly
+  named small-side detail with exact values and an explicit independent-scale
+  disclaimer; never use an unlabeled broken axis or silently normalize the two
+  sides.
+- For scrollable plots, expose quick positioning to the negative extreme, zero
+  axis, and positive extreme so a large domain does not require a long manual
+  traversal.
 
 ### Stacked bar
 
@@ -89,8 +97,10 @@
   colors always mean equal values.
 - Preserve exact cell values in keyboard-accessible and pointer-accessible
   tooltips even when visible labels are reduced.
-- On narrow screens, keep each 12-hour module legible and allow module-level
-  horizontal scrolling; do not make the page itself overflow.
+- Size cells from the actual module width and formatted values. Fit all 12
+  columns without scrolling when readability permits; otherwise allow
+  module-level native horizontal scrolling and show the cue only while overflow
+  exists. Never make the page itself overflow.
 
 ### Table
 

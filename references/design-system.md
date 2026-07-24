@@ -188,6 +188,13 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
 - Keep the zero axis visible in the initial narrow view when possible. Preserve
   the common quantitative scale while scrolling; never rescale the two sides
   independently.
+- When an extreme signed-domain ratio compresses the smaller side below 24
+  pixels, keep the main plot linear and add a restrained, explicitly labeled
+  small-side detail. State that the detail uses an independent scale and is not
+  comparable to the main plot's bar lengths.
+- On scrollable diverging bars, provide three compact quick-position controls
+  for the negative extreme, zero axis, and positive extreme. Native scrolling
+  remains the primary gesture.
 - Keep animation between 120 and 240 ms.
 - Animate state changes only when continuity aids understanding.
 - Respect reduced-motion preferences.
@@ -220,7 +227,12 @@ For high-cardinality heatmaps:
 - use a subtle shared container hierarchy rather than two unrelated cards;
 - repeat row labels for scanability;
 - retain one shared color scale and legend;
-- prefer readable cells plus inner horizontal scrolling over compressed labels.
+- calculate cell width from the component's actual width, row labels, and
+  formatted cell values;
+- fit both 12-hour modules without scrolling whenever that calculated minimum
+  remains readable, including ordinary Feishu widths;
+- enable module-level native scrolling and its cue only when the minimum
+  readable width truly exceeds the module.
 
 ## 8. Content design
 
@@ -231,6 +243,9 @@ For high-cardinality heatmaps:
 - Use consistent Chinese punctuation and spacing around Latin text, numbers, and units.
 - Distinguish “上升 3%” from “上升 3 个百分点”.
 - Avoid empty executive language such as “持续赋能” or “表现亮眼” without evidence.
+- Reserve subdued gray notes for structured definitions, scope, methods,
+  limitations, and sources. Never render analytical findings, causal claims,
+  recommendations, or drafting commentary as a gray footnote.
 
 ## 9. Accessibility
 

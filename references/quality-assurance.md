@@ -72,13 +72,27 @@ Check:
   container via native horizontal wheel/trackpad and touch movement;
 - the diverging-bar initial narrow view exposes the zero axis, scrolling
   reaches both signed extremes, and the document itself never overflows;
+- extreme positive-dominant and negative-dominant fixtures preserve a linear
+  main scale, identify the compressed side, show exact values in a labeled
+  independent-scale detail, and never imply that detail-bar length is
+  comparable to the main plot;
+- the negative-extreme, zero-axis, and positive-extreme quick-position controls
+  reach their targets at 390 px, 520 px, common Feishu width, and desktop width;
 - diverging bars do not install mouse grab-to-drag or custom touch gestures;
 - canonical 24-hour heatmaps render exactly two groups with 12 columns each;
 - all 24 heatmap columns appear exactly once and preserve their original order;
 - stacked heatmap groups expose identical color-domain bounds and one shared
   legend;
-- narrow heatmaps scroll within each module without causing page-level overflow;
+- canonical heatmaps fit both 12-column modules without horizontal scrolling at
+  520 px, common Feishu width, and wider viewports when the calculated minimum
+  cells permit it;
+- at narrower widths, heatmaps scroll only inside the affected module; the
+  scroll cue appears if and only if overflow exists, and the page never
+  overflows;
 - heatmap cell tooltips preserve the exact source value and row/column labels;
+- every component gray note uses a recognized structured kind and label;
+  ambiguous analytical claims and drafting language fail specification
+  validation instead of reaching the artifact;
 - reduced-motion behavior;
 - consistency across report components.
 

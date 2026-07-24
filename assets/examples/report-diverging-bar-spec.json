@@ -1,15 +1,15 @@
 {
   "mode": "report-component",
-  "title": "区域与渠道的收入增量出现明显分化",
+  "title": "极端量级差异下仍需辨认双向变化",
   "eyebrow": "EVIDENCE 04 · DIVERGING BAR",
-  "subtitle": "正值代表收入增加，负值代表收入减少；金额单位：万元。",
-  "description": "五个区域与渠道组合的收入增量双向条形图，支持在窄容器中左右滑动查看。",
+  "subtitle": "主图保持真实共同尺度，小量级负向项目另设明确标注的局部放大；金额单位：万元。",
+  "description": "五个区域与渠道组合的收入增量双向条形图，用极端正负比例验证共同尺度、快速定位与小量级局部读数。",
   "components": [
     {
       "id": "regional-channel-change",
       "type": "bar",
       "layout": "diverging",
-      "title": "直营增长未完全抵消代理渠道的收缩",
+      "title": "正向极值约为负向极值的 100 倍",
       "subtitle": "收入增量，单位：万元",
       "ariaLabel": "五个区域与渠道组合收入增量的正负双向比较",
       "categories": [
@@ -19,12 +19,15 @@
         "西南 · 代理渠道",
         "华南 · 代理渠道"
       ],
-      "values": [82, 54, 23, -18, -46],
+      "values": [1000, 420, 75, -2, -10],
       "colors": ["#315CF5", "#7390F9", "#A8B0BF", "#D97B81", "#C33D45"],
       "format": {
         "decimals": 0
       },
-      "note": "方向表示收入增量的正负，不自动等同于经营表现的最终好坏。"
+      "note": {
+        "kind": "definition",
+        "text": "方向仅表示收入增量的正负，不自动等同于经营表现的最终好坏。"
+      }
     }
   ],
   "footer": {

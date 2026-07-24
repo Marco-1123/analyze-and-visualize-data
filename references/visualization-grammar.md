@@ -39,6 +39,11 @@
   when the visible axis uses compact notation.
 - Support pointer movement, touch selection, and Left/Right/Home/End keyboard
   navigation. Do not require precise hovering on an individual point.
+- Render the legend as a visible, keyboard-accessible series filter. Clicking
+  or activating an item toggles its line, end label, crosshair point, tooltip
+  row, and accessible selected-value text as one state change.
+- Keep at least one series visible and keep the original y-domain stable while
+  toggling.
 - Keep missing series values visible as unavailable (`—`) rather than silently
   removing the series from the comparison.
 - Do not smooth lines when smoothing implies unobserved values.

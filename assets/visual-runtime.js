@@ -215,7 +215,11 @@
       var d = points.map(function (point, index) {
         return (index === 0 ? "M" : "L") + point[0].toFixed(2) + "," + point[1].toFixed(2);
       }).join(" ");
-      svg.appendChild(svgEl("path", {
+      var seriesMarks = svgEl("g", {
+        "data-series-mark": "true",
+        "data-series-index": seriesIndex
+      });
+      seriesMarks.appendChild(svgEl("path", {
         d: d,
         fill: "none",
         stroke: color,
@@ -227,7 +231,7 @@
 
       var last = points[points.length - 1];
       if (component.endLabels !== false) {
-        svg.appendChild(svgEl("text", {
+        seriesMarks.appendChild(svgEl("text", {
           x: last[0] - 2,
           y: last[1] - 10,
           "text-anchor": "end",
@@ -235,6 +239,7 @@
           fill: color
         }, formatValue(last[2], component.format)));
       }
+      svg.appendChild(seriesMarks);
     });
 
     if (component.annotation && Number.isInteger(component.annotation.index)) {
@@ -307,10 +312,23 @@
 
     var legend = "";
     if (series.length > 1) {
-      legend = '<div class="vda-legend">' + series.map(function (entry, index) {
-        return '<span class="vda-legend-item"><span class="vda-legend-swatch" style="background:' +
-          esc(entry.color || palette[index % palette.length]) + '"></span>' + esc(entry.name || "系列 " + (index + 1)) + "</span>";
-      }).join("") + "</div>";
+      legend =
+        '<div class="vda-legend" role="group" aria-label="图例，点击显示或隐藏数据系列" data-line-legend="true">' +
+        series.map(function (entry, index) {
+          var name = entry.name || "系列 " + (index + 1);
+          return (
+            '<button class="vda-legend-item" type="button" ' +
+            'data-series-toggle="true" data-series-index="' + index + '" ' +
+            'data-state="visible" aria-pressed="true" ' +
+            'aria-label="' + esc(name) + '，当前显示，点击隐藏">' +
+            '<span class="vda-legend-swatch" style="--series-color:' +
+            esc(entry.color || palette[index % palette.length]) + '"></span>' +
+            '<span class="vda-legend-label">' + esc(name) + "</span>" +
+            "</button>"
+          );
+        }).join("") +
+        '<span class="vda-sr-only" aria-live="polite" data-line-legend-status></span>' +
+        "</div>";
     }
     return componentFrame(component, container.outerHTML + legend);
   }
@@ -797,7 +815,9 @@
       rows.forEach(function (row, index) {
         var item = document.createElement("div");
         item.className = "vda-tooltip-row";
-        item.dataset.seriesIndex = String(index);
+        item.dataset.seriesIndex = String(
+          row.seriesIndex == null ? index : row.seriesIndex
+        );
         item.dataset.rawValue = row.raw == null ? "" : String(row.raw);
         var swatch = document.createElement("span");
         swatch.className = "vda-tooltip-swatch";
@@ -863,6 +883,11 @@
       var focusLayer = svg.querySelector(".vda-line-focus-layer");
       var crosshair = focusLayer.querySelector(".vda-crosshair-line");
       var points = Array.from(focusLayer.querySelectorAll(".vda-crosshair-point"));
+      var marks = Array.from(svg.querySelectorAll("[data-series-mark]"));
+      var toggles = Array.from(
+        section.querySelectorAll("[data-series-toggle]")
+      );
+      var legendStatus = section.querySelector("[data-line-legend-status]");
       var plotLeft = finite(hitbox.dataset.plotLeft, 0);
       var plotRight = finite(hitbox.dataset.plotRight, 1);
       var plotTop = finite(hitbox.dataset.plotTop, 0);
@@ -872,6 +897,7 @@
       var yRange = maxY - minY || 1;
       var currentIndex = null;
       var pinned = false;
+      var visibleSeries = series.map(function () { return true; });
 
       function chartX(index) {
         return labels.length > 1
@@ -905,24 +931,27 @@
         var x = chartX(index);
         crosshair.setAttribute("x1", x);
         crosshair.setAttribute("x2", x);
-        var rows = series.map(function (entry, seriesIndex) {
+        var rows = [];
+        series.forEach(function (entry, seriesIndex) {
           var raw = Array.isArray(entry.values) ? entry.values[index] : null;
           var numeric = Number(raw);
           var valid = raw != null && raw !== "" && Number.isFinite(numeric);
           var point = points[seriesIndex];
           point.setAttribute("cx", x);
-          if (valid) {
+          if (visibleSeries[seriesIndex] && valid) {
             point.setAttribute("cy", chartY(numeric));
             point.style.display = "";
           } else {
             point.style.display = "none";
           }
-          return {
+          if (!visibleSeries[seriesIndex]) return;
+          rows.push({
+            seriesIndex: seriesIndex,
             name: entry.name || "系列 " + (seriesIndex + 1),
             raw: valid ? raw : null,
             display: valid ? formatValue(raw, entry.format || component.format) : "—",
             color: entry.color || palette[seriesIndex % palette.length]
-          };
+          });
         });
         focusLayer.dataset.open = "true";
         hitbox.setAttribute("aria-valuenow", index);
@@ -934,6 +963,49 @@
           clientX == null ? anchor.x + 12 : clientX + 12,
           clientY == null ? anchor.y + 12 : clientY + 12
         );
+      }
+
+      function visibleCount() {
+        return visibleSeries.filter(Boolean).length;
+      }
+
+      function updateLegendState(message) {
+        var count = visibleCount();
+        toggles.forEach(function (toggle, seriesIndex) {
+          var visible = visibleSeries[seriesIndex];
+          var name = series[seriesIndex].name || "系列 " + (seriesIndex + 1);
+          var lastVisible = visible && count === 1;
+          toggle.setAttribute("aria-pressed", visible ? "true" : "false");
+          toggle.setAttribute("aria-disabled", lastVisible ? "true" : "false");
+          toggle.dataset.state = visible ? "visible" : "hidden";
+          toggle.setAttribute(
+            "aria-label",
+            visible
+              ? name + (lastVisible
+                ? "，当前显示，至少保留一个系列"
+                : "，当前显示，点击隐藏")
+              : name + "，当前隐藏，点击显示"
+          );
+        });
+        if (legendStatus) legendStatus.textContent = message || "";
+        hitbox.setAttribute(
+          "aria-label",
+          (component.title || "趋势图") + "，当前显示 " + count +
+          " 个系列，使用左右方向键查看各时间点数值"
+        );
+      }
+
+      function setSeriesVisibility(seriesIndex, visible) {
+        visibleSeries[seriesIndex] = visible;
+        var mark = marks.find(function (candidate) {
+          return Number(candidate.dataset.seriesIndex) === seriesIndex;
+        });
+        if (mark) {
+          mark.dataset.visible = visible ? "true" : "false";
+          mark.style.display = visible ? "" : "none";
+        }
+        var point = points[seriesIndex];
+        if (point && !visible) point.style.display = "none";
       }
 
       function hide() {
@@ -986,6 +1058,24 @@
         pinned = true;
         selectIndex(index);
       });
+      toggles.forEach(function (toggle, seriesIndex) {
+        toggle.addEventListener("click", function () {
+          var name = series[seriesIndex].name || "系列 " + (seriesIndex + 1);
+          if (visibleSeries[seriesIndex] && visibleCount() === 1) {
+            updateLegendState("至少保留一个可见系列");
+            return;
+          }
+          var nextVisible = !visibleSeries[seriesIndex];
+          setSeriesVisibility(seriesIndex, nextVisible);
+          updateLegendState(
+            name + (nextVisible ? "已显示" : "已隐藏")
+          );
+          if (currentIndex != null && focusLayer.dataset.open === "true") {
+            selectIndex(currentIndex);
+          }
+        });
+      });
+      updateLegendState("");
       document.addEventListener("pointerdown", function (event) {
         if (event.target === hitbox || section.contains(event.target)) return;
         pinned = false;

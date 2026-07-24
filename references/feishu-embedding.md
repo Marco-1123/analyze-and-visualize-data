@@ -61,6 +61,11 @@ Confirmed:
   The new file was byte-identical to the local artifact and contained automatic
   0–23 hour detection, vertically stacked 0–11 / 12–23 groups, exact cell
   tooltips, and one shared color legend.
+- all four blocks were replaced with Skill v0.5.0 artifacts after adding
+  interactive multi-series line legends. Revision 14 returned four blocks and
+  four byte-identical reference files; the shared runtime contained legend
+  toggle buttons, series-visibility state, filtered crosshair tooltips, and
+  semantic generator-version metadata.
 
 Not yet confirmed:
 

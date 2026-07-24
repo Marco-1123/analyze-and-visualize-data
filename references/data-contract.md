@@ -120,6 +120,12 @@ Give every component:
 - accessible `ariaLabel` when the visual alone is not self-explanatory;
 - source or note when interpretation depends on scope.
 
+For multi-series line components, the runtime provides an interactive legend by
+default. Keep every `series` entry in the original specification and let the
+runtime maintain local visibility state. Hiding a series must not mutate,
+discard, or recalculate its source values, and must not change the shared
+y-domain.
+
 ## 3. Numeric rules
 
 - Calculate with full available precision.

@@ -49,6 +49,11 @@ Check:
 - multi-series line-chart pointer snapping;
 - shared tooltip label, series count, and numeric-value correctness;
 - synchronized crosshair and point highlighting;
+- legend buttons expose correct pressed state and keyboard activation;
+- hiding a legend series removes its line, end label, crosshair point, tooltip
+  row, and accessible value while keeping the y-domain stable;
+- restoring a series returns all linked marks and values;
+- attempting to hide the final visible series is prevented and announced;
 - Left/Right/Home/End keyboard navigation and accessible selected-value text;
 - persistent touch selection without blocking vertical page scrolling;
 - table scrolling;

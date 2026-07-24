@@ -95,7 +95,9 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
 - Check clipping, overflow, label collisions, hierarchy, empty space, color semantics, number formatting, and interaction.
 - For every multi-series line chart, verify nearest-x pointer snapping, a shared
   crosshair tooltip containing all series values, touch selection, and keyboard
-  navigation. Per-point hover targets alone are not acceptable.
+  navigation. Render the legend as keyboard-accessible series toggles; hidden
+  series must also disappear from crosshair points and the shared tooltip.
+  Per-point hover targets or static legends alone are not acceptable.
 - For a canonical 24-hour heatmap, default to one HTML component with 0–11 and
   12–23 rendered as vertically stacked groups. Both groups must share one color
   domain and one legend; never squeeze all 24 hours into one horizontal row.

@@ -151,6 +151,14 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
 - Treat a multi-series line chart as one comparison surface: pointer or touch
   position selects the nearest x-axis value, a vertical guide aligns the
   comparison, and one shared tooltip lists every series value.
+- Render each multi-series legend item as a toggle button. Use color plus
+  pressed state, opacity, and label treatment to distinguish visible and hidden
+  series; do not rely on color alone.
+- Keep at least one series visible. Hiding a series must update its line, end
+  label, crosshair point, shared tooltip row, and accessible selected-value
+  text together.
+- Keep the y-domain stable while toggling series so visibility changes do not
+  visually exaggerate or compress the remaining data.
 - Make chart exploration available through Left/Right/Home/End keys and expose
   the selected label and values as accessible text.
 - Keep touch selection persistent until the viewer chooses another point or

@@ -191,6 +191,132 @@ async function main() {
         const leftIndex = Number(
           await hitbox.getAttribute("aria-valuenow")
         );
+        const lineSection = hitbox.locator(
+          "xpath=ancestor::*[@data-component-id][1]"
+        );
+        const legendButtons = lineSection.locator("[data-series-toggle]");
+        const legendButtonCount = await legendButtons.count();
+        const legendInitial =
+          legendButtonCount === endState.expectedRowCount &&
+          (await legendButtons.evaluateAll((buttons) =>
+            buttons.every(
+              (button) =>
+                button.getAttribute("aria-pressed") === "true" &&
+                button.dataset.state === "visible"
+            )
+          ));
+        const domainBeforeToggle = {
+          min: await hitbox.getAttribute("data-min-y"),
+          max: await hitbox.getAttribute("data-max-y"),
+        };
+
+        const toggleTarget = legendButtons.nth(1);
+        await toggleTarget.click();
+        await page.waitForTimeout(180);
+        const hiddenLegendState = await page.evaluate(() => {
+          const target = document.querySelector("[data-line-hitbox]");
+          const section = target.closest("[data-component-id]");
+          const component = window.__VDA_SPEC__.components.find(
+            (item) => item.id === section.dataset.componentId
+          );
+          const hiddenIndex = 1;
+          const button = section.querySelector(
+            `[data-series-toggle][data-series-index="${hiddenIndex}"]`
+          );
+          const mark = section.querySelector(
+            `[data-series-mark][data-series-index="${hiddenIndex}"]`
+          );
+          const point = section.querySelector(
+            `.vda-crosshair-point[data-series-index="${hiddenIndex}"]`
+          );
+          const tooltipRows = Array.from(
+            document.querySelectorAll(".vda-tooltip-row")
+          );
+          const hiddenName =
+            component.series[hiddenIndex].name ||
+            `系列 ${hiddenIndex + 1}`;
+          return {
+            buttonHidden:
+              button.getAttribute("aria-pressed") === "false" &&
+              button.dataset.state === "hidden",
+            markHidden:
+              !mark || window.getComputedStyle(mark).display === "none",
+            pointHidden:
+              !point || window.getComputedStyle(point).display === "none",
+            tooltipFiltered:
+              tooltipRows.length === component.series.length - 1 &&
+              !tooltipRows.some(
+                (row) => Number(row.dataset.seriesIndex) === hiddenIndex
+              ),
+            ariaFiltered:
+              !(target.getAttribute("aria-valuetext") || "").includes(
+                hiddenName
+              ),
+          };
+        });
+        const domainAfterToggle = {
+          min: await hitbox.getAttribute("data-min-y"),
+          max: await hitbox.getAttribute("data-max-y"),
+        };
+        const legendFilename = `${path.basename(
+          input,
+          path.extname(input)
+        )}-${viewport.width}x${viewport.height}-legend-hidden.png`;
+        await page.locator(".skip-link").evaluate((element) => {
+          element.style.visibility = "hidden";
+        });
+        await page.screenshot({
+          path: path.join(outputDir, legendFilename),
+          fullPage: true,
+        });
+        await page.locator(".skip-link").evaluate((element) => {
+          element.style.visibility = "";
+        });
+
+        const lastVisibleButton = legendButtons.nth(0);
+        await lastVisibleButton.dispatchEvent("click");
+        const lastSeriesProtected =
+          (await lastVisibleButton.getAttribute("aria-pressed")) === "true" &&
+          (await lastVisibleButton.getAttribute("aria-disabled")) === "true" &&
+          (await lineSection
+            .locator("[data-line-legend-status]")
+            .textContent()).includes("至少保留");
+
+        await toggleTarget.click();
+        const legendRestore =
+          (await legendButtons.evaluateAll((buttons) =>
+            buttons.every(
+              (button) =>
+                button.getAttribute("aria-pressed") === "true" &&
+                button.dataset.state === "visible"
+            )
+          )) &&
+          (await lineSection.locator("[data-series-mark]").evaluateAll(
+            (marks) =>
+              marks.every(
+                (mark) => window.getComputedStyle(mark).display !== "none"
+              )
+          )) &&
+          (await page.locator(".vda-tooltip-row").count()) ===
+            endState.expectedRowCount;
+
+        await toggleTarget.focus();
+        await toggleTarget.press("Space");
+        const keyboardHidden =
+          (await toggleTarget.getAttribute("aria-pressed")) === "false";
+        await toggleTarget.press("Space");
+        const spaceRestored =
+          keyboardHidden &&
+          (await toggleTarget.getAttribute("aria-pressed")) === "true";
+        await toggleTarget.press("Enter");
+        const enterHidden =
+          (await toggleTarget.getAttribute("aria-pressed")) === "false";
+        await toggleTarget.press("Enter");
+        const legendKeyboard =
+          spaceRestored &&
+          enterHidden &&
+          (await toggleTarget.getAttribute("aria-pressed")) === "true";
+
         lineInteraction = {
           hitboxes: lineHitboxes,
           pointerSnap:
@@ -212,7 +338,21 @@ async function main() {
             JSON.stringify(endState.rawValues) ===
             JSON.stringify(endState.expectedRawValues),
           ariaValueTextPresent: endState.ariaValueText.length > 0,
+          legendButtons: legendButtonCount,
+          legendInitial,
+          legendHide: hiddenLegendState.buttonHidden,
+          legendMarkHidden: hiddenLegendState.markHidden,
+          legendPointHidden: hiddenLegendState.pointHidden,
+          legendTooltipFiltered: hiddenLegendState.tooltipFiltered,
+          legendAriaFiltered: hiddenLegendState.ariaFiltered,
+          legendDomainStable:
+            JSON.stringify(domainBeforeToggle) ===
+            JSON.stringify(domainAfterToggle),
+          lastSeriesProtected,
+          legendRestore,
+          legendKeyboard,
           screenshot: crosshairFilename,
+          legendScreenshot: legendFilename,
         };
       }
       const groupedHeatmaps = await page.locator(
@@ -358,7 +498,12 @@ async function main() {
     (result.lineInteraction &&
       Object.entries(result.lineInteraction).some(
         ([key, value]) =>
-          !["hitboxes", "screenshot"].includes(key) && value !== true
+          ![
+            "hitboxes",
+            "legendButtons",
+            "screenshot",
+            "legendScreenshot",
+          ].includes(key) && value !== true
       )) ||
     (result.heatmapInteraction &&
       Object.entries(result.heatmapInteraction).some(

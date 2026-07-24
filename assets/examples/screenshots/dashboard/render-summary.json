@@ -10,7 +10,7 @@
     "dimensions": {
       "scrollWidth": 390,
       "clientWidth": 390,
-      "scrollHeight": 3341
+      "scrollHeight": 3363
     },
     "interaction": {
       "tooltipTargets": 29,
@@ -28,7 +28,19 @@
       "rowsMatch": true,
       "rawValuesMatch": true,
       "ariaValueTextPresent": true,
-      "screenshot": "dashboard-390x844-crosshair.png"
+      "legendButtons": 2,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "dashboard-390x844-crosshair.png",
+      "legendScreenshot": "dashboard-390x844-legend-hidden.png"
     },
     "heatmapInteraction": null
   },
@@ -43,7 +55,7 @@
     "dimensions": {
       "scrollWidth": 880,
       "clientWidth": 880,
-      "scrollHeight": 3241
+      "scrollHeight": 3263
     },
     "interaction": {
       "tooltipTargets": 29,
@@ -61,7 +73,19 @@
       "rowsMatch": true,
       "rawValuesMatch": true,
       "ariaValueTextPresent": true,
-      "screenshot": "dashboard-880x1000-crosshair.png"
+      "legendButtons": 2,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "dashboard-880x1000-crosshair.png",
+      "legendScreenshot": "dashboard-880x1000-legend-hidden.png"
     },
     "heatmapInteraction": null
   },
@@ -76,7 +100,7 @@
     "dimensions": {
       "scrollWidth": 1440,
       "clientWidth": 1440,
-      "scrollHeight": 2075
+      "scrollHeight": 2097
     },
     "interaction": {
       "tooltipTargets": 29,
@@ -94,7 +118,19 @@
       "rowsMatch": true,
       "rawValuesMatch": true,
       "ariaValueTextPresent": true,
-      "screenshot": "dashboard-1440x1000-crosshair.png"
+      "legendButtons": 2,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "dashboard-1440x1000-crosshair.png",
+      "legendScreenshot": "dashboard-1440x1000-legend-hidden.png"
     },
     "heatmapInteraction": null
   }

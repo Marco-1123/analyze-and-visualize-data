@@ -28,7 +28,19 @@
       "rowsMatch": true,
       "rawValuesMatch": true,
       "ariaValueTextPresent": true,
-      "screenshot": "02-weekly-trend-390x844-crosshair.png"
+      "legendButtons": 2,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "02-weekly-trend-390x844-crosshair.png",
+      "legendScreenshot": "02-weekly-trend-390x844-legend-hidden.png"
     },
     "heatmapInteraction": null
   },
@@ -61,7 +73,19 @@
       "rowsMatch": true,
       "rawValuesMatch": true,
       "ariaValueTextPresent": true,
-      "screenshot": "02-weekly-trend-880x1000-crosshair.png"
+      "legendButtons": 2,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "02-weekly-trend-880x1000-crosshair.png",
+      "legendScreenshot": "02-weekly-trend-880x1000-legend-hidden.png"
     },
     "heatmapInteraction": null
   },
@@ -94,7 +118,19 @@
       "rowsMatch": true,
       "rawValuesMatch": true,
       "ariaValueTextPresent": true,
-      "screenshot": "02-weekly-trend-1440x1000-crosshair.png"
+      "legendButtons": 2,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "02-weekly-trend-1440x1000-crosshair.png",
+      "legendScreenshot": "02-weekly-trend-1440x1000-legend-hidden.png"
     },
     "heatmapInteraction": null
   }

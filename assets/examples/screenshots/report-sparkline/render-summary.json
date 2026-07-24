@@ -1,0 +1,232 @@
+[
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "output": "11-sparkline-390x844.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 926
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 4,
+          "requestedColumns": 4,
+          "renderedColumns": 2,
+          "renderedRows": 2,
+          "fontSizes": [
+            24,
+            24,
+            24,
+            24
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": {
+        "count": 3,
+        "renderedRows": 3,
+        "pairsStayInline": true
+      }
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    },
+    "lineInteraction": null,
+    "barInteraction": null,
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 520,
+      "height": 900
+    },
+    "output": "11-sparkline-520x900.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 520,
+      "clientWidth": 520,
+      "scrollHeight": 939
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 4,
+          "requestedColumns": 4,
+          "renderedColumns": 2,
+          "renderedRows": 2,
+          "fontSizes": [
+            24,
+            24,
+            24,
+            24
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": {
+        "count": 3,
+        "renderedRows": 3,
+        "pairsStayInline": true
+      }
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    },
+    "lineInteraction": null,
+    "barInteraction": null,
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 818,
+      "height": 1000
+    },
+    "output": "11-sparkline-818x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 818,
+      "clientWidth": 818,
+      "scrollHeight": 1000
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 4,
+          "requestedColumns": 4,
+          "renderedColumns": 4,
+          "renderedRows": 1,
+          "fontSizes": [
+            24.54,
+            24.54,
+            24.54,
+            24.54
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": {
+        "count": 3,
+        "renderedRows": 1,
+        "pairsStayInline": true
+      }
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    },
+    "lineInteraction": null,
+    "barInteraction": null,
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 880,
+      "height": 1000
+    },
+    "output": "11-sparkline-880x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 880,
+      "clientWidth": 880,
+      "scrollHeight": 1000
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 4,
+          "requestedColumns": 4,
+          "renderedColumns": 4,
+          "renderedRows": 1,
+          "fontSizes": [
+            26.4,
+            26.4,
+            26.4,
+            26.4
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": {
+        "count": 3,
+        "renderedRows": 1,
+        "pairsStayInline": true
+      }
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    },
+    "lineInteraction": null,
+    "barInteraction": null,
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "output": "11-sparkline-1440x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 1000
+    },
+    "layoutIntegrity": {
+      "metrics": [
+        {
+          "count": 4,
+          "requestedColumns": 4,
+          "renderedColumns": 4,
+          "renderedRows": 1,
+          "fontSizes": [
+            32,
+            32,
+            32,
+            32
+          ],
+          "fontInRange": true
+        }
+      ],
+      "meta": {
+        "count": 3,
+        "renderedRows": 1,
+        "pairsStayInline": true
+      }
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 0,
+      "keyboardTooltipOpen": null
+    },
+    "lineInteraction": null,
+    "barInteraction": null,
+    "heatmapInteraction": null
+  }
+]

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "report-component",
+  "title": "两个周期之间，改善集中在三个高优先级队列",
+  "eyebrow": "P1 · RANGE",
+  "subtitle": "水平哑铃图展示同一对象的两期端点，不暗示中间存在连续趋势",
+  "meta": {
+    "period": "2025 Q2 vs 2026 Q2",
+    "scope": "重点服务队列",
+    "source": "队列绩效快照"
+  },
+  "components": [
+    {
+      "id": "range-queue-resolution",
+      "type": "range",
+      "title": "一次解决率的配对变化",
+      "subtitle": "单位：百分比；按绝对变化从大到小排序",
+      "startLabel": "2025 Q2",
+      "endLabel": "2026 Q2",
+      "sort": "absolute-delta-desc",
+      "items": [
+        {
+          "id": "queue_enterprise_recovery_priority_tier_01",
+          "label": "queue_enterprise_recovery_priority_tier_01",
+          "displayLabel": "企业恢复优先队列",
+          "start": 61.2,
+          "end": 78.9
+        },
+        {
+          "id": "queue_partner_risk_followup_tier_02",
+          "label": "queue_partner_risk_followup_tier_02",
+          "displayLabel": "伙伴风险跟进队列",
+          "start": 73.8,
+          "end": 83.6
+        },
+        {
+          "id": "queue_apac_north_enterprise_renewal_recovery_priority_tier_04",
+          "label": "queue_apac_north_enterprise_renewal_recovery_priority_tier_04",
+          "displayLabel": "APAC North 续约恢复",
+          "start": 67.5,
+          "end": 75.1
+        },
+        {
+          "id": "queue_after_sales_standard",
+          "label": "queue_after_sales_standard",
+          "displayLabel": "售后标准队列",
+          "start": 82.4,
+          "end": 78.8
+        },
+        {
+          "id": "queue_billing_exception",
+          "label": "queue_billing_exception",
+          "displayLabel": "账单异常队列",
+          "start": 76.1,
+          "end": 76.1
+        }
+      ],
+      "format": {
+        "type": "percent",
+        "input": "percent",
+        "decimals": 1
+      },
+      "evidenceIds": ["series.queue-fcr-paired"],
+      "note": {
+        "kind": "limitation",
+        "text": "图中仅比较两个固定周期；相对变化在起点为零时不计算。",
+        "evidenceIds": ["limitation.two-period"]
+      },
+      "ariaLabel": "五个队列在 2025 Q2 与 2026 Q2 的一次解决率配对变化"
+    }
+  ]
+}

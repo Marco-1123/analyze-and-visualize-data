@@ -145,6 +145,39 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
 - Use accent rules or subtle backgrounds, not oversized icons.
 - Keep one primary message per block.
 
+### Decision blocks
+
+- Express finding, interpretation, risk, action, and evidence with semantic
+  labels and restrained borders rather than decorative status cards.
+- Keep the decision statement, confidence or risk level, evidence trace, and
+  any owner/due status visible without interaction.
+- Use different semantics for an observed finding and an interpretation; a
+  caveat is part of the interpretation, not a gray afterthought.
+
+### Target and range comparisons
+
+- Separate actual, target, baseline, gap, and attainment through labels before
+  color.
+- Use quality bands only when their thresholds have a real definition.
+- Show a compact visual key for actual, target, and baseline markers.
+- At narrow widths, prefer an exact paired-value list over an illegibly scaled
+  dumbbell chart.
+
+### Waterfall
+
+- Keep start, subtotal, and end visually structural; keep deltas directional.
+- Preserve ordered spacing and connector continuity.
+- When the bridge exceeds the component, contain it in a native horizontal
+  scroll viewport and keep the surrounding document fixed.
+
+### Sparklines
+
+- Keep sparklines subordinate to the primary KPI value.
+- Use shared scales among peer cards by default.
+- Use dashed or faded line segments for incomplete periods and visible gaps for
+  missing periods.
+- Avoid filled decorative areas or exaggerated independent slopes.
+
 ### Tables
 
 - Right-align numeric columns.
@@ -199,6 +232,11 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
 - On scrollable diverging bars, provide three compact quick-position controls
   for the negative extreme, zero axis, and positive extreme. Native scrolling
   remains the primary gesture.
+- Use native horizontal scrolling for long waterfalls as well. Do not install
+  custom pointer or touch gestures.
+- Standalone sparklines support pointer, touch, and keyboard point inspection.
+- Multi-event line plots use complete labels on roomy layouts, numbered plot
+  markers on narrow layouts, and an always-visible event list below.
 - Keep animation between 120 and 240 ms.
 - Animate state changes only when continuity aids understanding.
 - Respect reduced-motion preferences.
@@ -221,6 +259,9 @@ At narrow widths:
 - allow tables to scroll horizontally with a visible cue;
 - keep signed bars inside an independent horizontal scroll viewport, with a
   visible mobile cue and no page-level horizontal overflow;
+- switch paired range charts to an exact stacked list at 520 px and below;
+- keep long waterfalls inside their own scroll viewport;
+- use numbered in-plot event markers and a complete event list;
 - preserve the headline finding;
 - never shrink text below the defined minimum.
 

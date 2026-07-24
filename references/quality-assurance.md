@@ -97,6 +97,38 @@ Check:
   scroll cue appears if and only if overflow exists, and the page never
   overflows;
 - heatmap cell tooltips preserve the exact source value and row/column labels;
+- decision fixtures cover finding, interpretation, risk, action, and evidence
+  semantics; required confidence, caveat, likelihood, impact, ownership, and
+  evidence fields remain visible and correctly labeled;
+- target fixtures cover higher-is-better, lower-is-better, neutral, zero
+  target, zero actual, cross-sign values, ordered quality ranges, and multiple
+  targets; actual, target, gap, and derived attainment never disagree;
+- target marker keys remain understandable without relying on color, and
+  target components never cause page-level horizontal overflow;
+- paired-range fixtures cover positive, negative, equal, zero-start, extreme,
+  and long raw-label cases; raw labels remain available in accessible names and
+  tooltips;
+- paired ranges use a readable dumbbell at ordinary Feishu width and an exact
+  paired-value list at 390 px and 520 px, without clipped values or tiny text;
+- waterfall fixtures cover zero, positive, and negative deltas, subtotals, long
+  labels, and enough steps to overflow; invalid reconciliation fails before
+  rendering;
+- waterfall order, start, running totals, subtotals, and final end value match
+  the specification; at 390 px and 520 px native scrolling reaches all steps
+  while the page itself remains contained;
+- waterfall and other native-scroll components do not install mouse
+  grab-to-drag or custom touch handlers;
+- metric and standalone sparkline fixtures cover shared and independent
+  domains, single points, missing values, incomplete periods, target and
+  baseline lines, and line/bar variants;
+- incomplete sparkline segments use dashed/faded treatment, missing values do
+  not become zero, and standalone point inspection works by pointer, touch, and
+  Left/Right/Home/End keyboard navigation;
+- multi-event line fixtures cover fact and interpretation styles, date and
+  index addressing, more than three events, and closely spaced events;
+- at 390 px and 520 px line events use numbered plot markers with the complete
+  event content below; at wider widths no more than three full plot labels
+  appear and event lines do not hide the trend;
 - every component gray note uses a recognized structured kind and label;
   ambiguous analytical claims and drafting language fail specification
   validation instead of reaching the artifact;
@@ -124,3 +156,8 @@ Require:
 - visual inspection completed;
 - at least one visual refinement after the first render for new layouts;
 - explicit Feishu embedding or handoff status.
+
+For a new shared component, completion requires a real Feishu HTML-block
+mount/update and readback in addition to local screenshots. Confirm the mounted
+file reference, byte identity when the API exposes the stored file, and an
+authenticated browser render at an ordinary Feishu width and at a narrow width.

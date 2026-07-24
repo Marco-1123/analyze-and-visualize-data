@@ -23,6 +23,11 @@
 | How does a process convert? | funnel or staged bars |
 | How do cohorts retain? | cohort heatmap |
 | What needs attention? | exception table, annotated control/trend chart |
+| How far are we from a goal? | target/bullet view |
+| How did the same entities move between two endpoints? | paired range/dumbbell |
+| What bridges a starting value to an ending value? | waterfall |
+| What is the short local direction beside a KPI? | sparkline |
+| What decision, risk, or action follows from the evidence? | decision block |
 
 ## 2. Chart rules
 
@@ -106,6 +111,52 @@
   module-level native horizontal scrolling and show the cue only while overflow
   exists. Never make the page itself overflow.
 
+### Target
+
+- Use for actual versus target, not as decorative progress.
+- Show actual, target, signed gap, attainment when meaningful, and direction.
+- Include a baseline only when it is a real comparison point.
+- Use ordered quality ranges only when the boundaries are governed or
+  analytically justified.
+- Do not calculate attainment across zero or against a zero target.
+
+### Paired range
+
+- Use when every entity has exactly two comparable endpoints.
+- Keep both endpoint labels and values explicit; do not imply intermediate
+  observations.
+- Sort by delta only when ranking movement is the analytical point.
+- Use a mobile paired-value list when a compact dumbbell would require tiny
+  labels or ambiguous overlap.
+
+### Waterfall
+
+- Use for an additive bridge from a start value to a reconciled end value.
+- Preserve business sequence. Do not sort contributions after the fact.
+- Distinguish start/end/subtotal from deltas using structure and labels.
+- Treat positive and negative as mathematical direction unless business
+  semantics separately justify favorable/unfavorable colors.
+- Scroll the component natively when many steps cannot remain readable.
+
+### Sparkline
+
+- Use as a compact secondary trend, not as the only evidence for a complex
+  conclusion.
+- Share y-domains among peer KPI sparklines unless independent scaling is
+  explicitly disclosed.
+- Mark incomplete and missing periods; never draw missing observations as zero.
+- Retain exact point values through accessible pointer, touch, and keyboard
+  interaction for a standalone sparkline.
+
+### Decision
+
+- Use to make the status of a statement explicit: finding, interpretation,
+  risk, action, or evidence.
+- Keep core meaning, confidence, impact, owner, and due date visible when they
+  matter; tooltips may add detail but may not hide the decision.
+- Link factual findings and actions to stable evidence IDs.
+- Give interpretations an explicit caveat and never style them as proven facts.
+
 ### Table
 
 - Use when exact values or many dimensions matter.
@@ -118,6 +169,10 @@
 - Prefer a short label plus precise value.
 - Use reference lines for target, average, or policy threshold.
 - Distinguish observed annotation from interpretive commentary.
+- Multiple line events use stable IDs and a complete event list. On narrow
+  plots, replace long in-plot labels with numbered markers.
+- Event timing provides context only. Do not claim causality from temporal
+  overlap.
 - Do not cover data marks or create visual clutter.
 
 ## 4. Density and reduction

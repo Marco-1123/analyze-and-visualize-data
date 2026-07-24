@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "report-component",
+  "title": "服务质量尚未全面达标，成本控制优于目标",
+  "eyebrow": "P1 · TARGET",
+  "subtitle": "目标、实际、差距和达成率使用同一份派生值",
+  "meta": {
+    "period": "2026 年 7 月",
+    "scope": "企业服务团队",
+    "source": "运营目标台账"
+  },
+  "components": [
+    {
+      "id": "target-service-operations",
+      "type": "target",
+      "title": "三项核心目标的达成质量",
+      "subtitle": "质量区间来自季度经营目标，不代表统计置信区间",
+      "items": [
+        {
+          "id": "sla",
+          "label": "24 小时 SLA",
+          "actual": 91.8,
+          "target": 96,
+          "baseline": 89.4,
+          "direction": "higher-is-better",
+          "ranges": [
+            {"from": 80, "to": 90, "tone": "negative", "label": "风险"},
+            {"from": 90, "to": 96, "tone": "warning", "label": "关注"},
+            {"from": 96, "to": 102, "tone": "positive", "label": "达标"}
+          ],
+          "format": {"type": "percent", "input": "percent", "decimals": 1}
+        },
+        {
+          "id": "first-contact-resolution",
+          "label": "一次解决率",
+          "actual": 78.6,
+          "target": 80,
+          "baseline": 75.2,
+          "direction": "higher-is-better",
+          "ranges": [
+            {"from": 68, "to": 75, "tone": "negative", "label": "风险"},
+            {"from": 75, "to": 80, "tone": "warning", "label": "关注"},
+            {"from": 80, "to": 84, "tone": "positive", "label": "达标"}
+          ],
+          "format": {"type": "percent", "input": "percent", "decimals": 1}
+        },
+        {
+          "id": "cost-per-case",
+          "label": "单均处理成本",
+          "actual": 7.2,
+          "target": 7.5,
+          "baseline": 8.1,
+          "direction": "lower-is-better",
+          "ranges": [
+            {"from": 6.5, "to": 7.5, "tone": "positive", "label": "达标"},
+            {"from": 7.5, "to": 8.2, "tone": "warning", "label": "关注"},
+            {"from": 8.2, "to": 9.2, "tone": "negative", "label": "风险"}
+          ],
+          "format": {"type": "currency", "currency": "CNY", "decimals": 1}
+        }
+      ],
+      "evidenceIds": [
+        "fact.sla",
+        "fact.fcr",
+        "fact.cost-per-case"
+      ],
+      "note": {
+        "kind": "method",
+        "text": "达成率按方向计算；目标为零或实际与目标跨符号时显示为不可用。",
+        "evidenceIds": ["method.target-attainment"]
+      },
+      "ariaLabel": "目标达成组件，比较 SLA、一次解决率和单均处理成本的实际、目标、差距与达成率"
+    }
+  ]
+}

@@ -146,7 +146,18 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
             for component in components:
                 if not isinstance(component, dict):
                     continue
-                if component.get("type") in {"line", "bar", "donut", "heatmap", "table"}:
+                if component.get("type") in {
+                    "line",
+                    "bar",
+                    "donut",
+                    "heatmap",
+                    "table",
+                    "decision",
+                    "target",
+                    "range",
+                    "waterfall",
+                    "sparkline",
+                }:
                     if not component.get("title"):
                         errors.append(f"visual component {component.get('id')} has no title")
                     if not component.get("ariaLabel"):

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "report-component",
+  "title": "华东恢复队列：是否需要立即扩容？",
+  "eyebrow": "P1 · DECISION",
+  "subtitle": "把风险、证据与后续动作放在同一条可追溯判断中",
+  "meta": {
+    "period": "2026-07-01—2026-07-24",
+    "scope": "企业客户恢复队列",
+    "source": "客服运营数据集"
+  },
+  "components": [
+    {
+      "id": "decision-east-capacity-risk",
+      "type": "decision",
+      "kind": "risk",
+      "title": "如果下周咨询量维持当前水平，夜间 SLA 可能继续低于 90%",
+      "body": "当前积压主要集中在 20:00—23:00，且连续三个完整周期高于容量基线；扩容前应先确认夜间班次缺口与高优先级队列的转入规则。",
+      "likelihood": "high",
+      "impact": "medium",
+      "confidence": "high",
+      "evidenceIds": [
+        "finding.night-backlog",
+        "fact.sla-night",
+        "fact.capacity-gap"
+      ],
+      "details": [
+        "20:00—23:00 的待处理量占全天新增积压的 61%。",
+        "过去三个完整周期夜间 SLA 分别为 89.7%、88.9% 和 88.4%。",
+        "尚未验证新增人力能否在不降低一次解决率的情况下恢复 SLA。"
+      ],
+      "ariaLabel": "风险判断：夜间 SLA 可能继续低于 90%，包含可能性、影响、证据和补充边界"
+    }
+  ],
+  "footer": {
+    "source": "固定数据快照",
+    "note": "风险等级来自既定影响与可能性矩阵"
+  }
+}

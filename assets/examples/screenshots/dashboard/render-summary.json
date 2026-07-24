@@ -10,7 +10,7 @@
     "dimensions": {
       "scrollWidth": 390,
       "clientWidth": 390,
-      "scrollHeight": 3129
+      "scrollHeight": 3189
     },
     "layoutIntegrity": {
       "metrics": [
@@ -38,7 +38,7 @@
       "structuredComponentNotes": true
     },
     "interaction": {
-      "tooltipTargets": 34,
+      "tooltipTargets": 35,
       "keyboardTooltipOpen": true
     },
     "lineInteraction": {
@@ -115,7 +115,7 @@
     "dimensions": {
       "scrollWidth": 520,
       "clientWidth": 520,
-      "scrollHeight": 3049
+      "scrollHeight": 3110
     },
     "layoutIntegrity": {
       "metrics": [
@@ -143,7 +143,7 @@
       "structuredComponentNotes": true
     },
     "interaction": {
-      "tooltipTargets": 34,
+      "tooltipTargets": 35,
       "keyboardTooltipOpen": true
     },
     "lineInteraction": {
@@ -220,7 +220,7 @@
     "dimensions": {
       "scrollWidth": 818,
       "clientWidth": 818,
-      "scrollHeight": 2883
+      "scrollHeight": 2943
     },
     "layoutIntegrity": {
       "metrics": [
@@ -248,7 +248,7 @@
       "structuredComponentNotes": true
     },
     "interaction": {
-      "tooltipTargets": 34,
+      "tooltipTargets": 35,
       "keyboardTooltipOpen": true
     },
     "lineInteraction": {
@@ -325,7 +325,7 @@
     "dimensions": {
       "scrollWidth": 880,
       "clientWidth": 880,
-      "scrollHeight": 2909
+      "scrollHeight": 2970
     },
     "layoutIntegrity": {
       "metrics": [
@@ -353,7 +353,7 @@
       "structuredComponentNotes": true
     },
     "interaction": {
-      "tooltipTargets": 34,
+      "tooltipTargets": 35,
       "keyboardTooltipOpen": true
     },
     "lineInteraction": {
@@ -430,7 +430,7 @@
     "dimensions": {
       "scrollWidth": 1440,
       "clientWidth": 1440,
-      "scrollHeight": 2066
+      "scrollHeight": 2127
     },
     "layoutIntegrity": {
       "metrics": [
@@ -458,7 +458,7 @@
       "structuredComponentNotes": true
     },
     "interaction": {
-      "tooltipTargets": 34,
+      "tooltipTargets": 35,
       "keyboardTooltipOpen": true
     },
     "lineInteraction": {

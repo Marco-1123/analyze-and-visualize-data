@@ -27,6 +27,27 @@
           "04-diverging-bar.html",
           "06-diverging-bar-long-label.html"
         ]
+      },
+      {
+        "id": "decision-and-goals",
+        "heading": "4. 判断与目标",
+        "nativeNarrative": "将风险判断、证据链和目标差距分开表达，避免把分析解释包装成已证实事实，也避免手工维护可能互相矛盾的达成率。",
+        "findingIds": ["finding.night-backlog", "fact.sla"],
+        "components": ["07-decision.html", "08-target.html"]
+      },
+      {
+        "id": "paired-movement-and-bridge",
+        "heading": "5. 配对变化与贡献桥接",
+        "nativeNarrative": "两期端点使用配对范围表达；从基期到本期的加性贡献使用经过对账的瀑布图表达。",
+        "findingIds": ["series.queue-fcr-paired", "series.revenue-bridge"],
+        "components": ["09-range.html", "10-waterfall.html"]
+      },
+      {
+        "id": "compact-trend-and-events",
+        "heading": "6. 短趋势与事件上下文",
+        "nativeNarrative": "微型趋势支持快速扫描并保留完整期状态；多事件标注区分事实与解释，时间重合仅作为上下文。",
+        "findingIds": ["series.sla-weekly", "event.routing-release"],
+        "components": ["11-sparkline.html", "12-trend-annotations.html"]
       }
     ]
   }

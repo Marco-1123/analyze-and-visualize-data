@@ -1,0 +1,211 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "report-component",
+  "title": "P1 组件极端场景回归",
+  "eyebrow": "QA · ADVERSARIAL",
+  "subtitle": "零目标、跨符号、长标签、多步骤、缺失周期和密集事件",
+  "meta": {
+    "period": "固定测试数据",
+    "scope": "共享运行时回归",
+    "source": "P1 adversarial fixture"
+  },
+  "components": [
+    {
+      "id": "decision-interpretation-edge",
+      "type": "decision",
+      "kind": "interpretation",
+      "title": "夜间积压与队列调整同期出现，但尚不能确认因果",
+      "body": "当前数据只证明时间重合，需要控制咨询量、班次和队列结构后再判断。",
+      "confidence": "medium",
+      "caveat": "未完成反事实或对照组验证。",
+      "ariaLabel": "分析判断：夜间积压与队列调整同期出现，但尚不能确认因果，并注明置信度和验证边界",
+      "details": [
+        "事实事件与解释使用不同语义。",
+        "核心判断和边界无需悬停即可阅读。"
+      ]
+    },
+    {
+      "id": "target-edge-cases",
+      "type": "target",
+      "title": "目标达成率的边界值",
+      "items": [
+        {
+          "id": "zero-target",
+          "label": "零目标",
+          "actual": 12,
+          "target": 0,
+          "direction": "higher-is-better",
+          "format": {"decimals": 0}
+        },
+        {
+          "id": "cross-sign",
+          "label": "跨符号目标",
+          "actual": 5,
+          "target": -4,
+          "direction": "higher-is-better",
+          "format": {"decimals": 0}
+        },
+        {
+          "id": "zero-actual-lower",
+          "label": "零实际且越低越好",
+          "actual": 0,
+          "target": 3,
+          "direction": "lower-is-better",
+          "format": {"decimals": 0}
+        },
+        {
+          "id": "neutral-negative",
+          "label": "负值中性对照",
+          "actual": -2,
+          "target": -2,
+          "baseline": -5,
+          "direction": "neutral",
+          "format": {"decimals": 0}
+        }
+      ],
+      "evidenceIds": ["qa.target.edge"],
+      "ariaLabel": "目标达成率边界测试，覆盖零目标、跨符号、零实际和负值中性对照"
+    },
+    {
+      "id": "range-edge-cases",
+      "type": "range",
+      "title": "两期配对值覆盖长标签、负值、相等和零起点",
+      "startLabel": "起点",
+      "endLabel": "终点",
+      "sort": "none",
+      "items": [
+        {
+          "id": "long",
+          "label": "queue_enterprise_recovery_priority_tier_01_with_an_unbroken_identifier_abcdefghijklmnopqrstuvwxyz",
+          "displayLabel": "企业恢复优先队列（极长源标识）",
+          "start": -1200,
+          "end": 4800
+        },
+        {
+          "id": "zero",
+          "label": "zero_start_queue",
+          "displayLabel": "零起点队列",
+          "start": 0,
+          "end": 8
+        },
+        {
+          "id": "equal",
+          "label": "equal_queue",
+          "displayLabel": "无变化队列",
+          "start": 42,
+          "end": 42
+        },
+        {
+          "id": "negative",
+          "label": "negative_queue",
+          "displayLabel": "两期均为负值",
+          "start": -18,
+          "end": -32
+        }
+      ],
+      "format": {"decimals": 0},
+      "evidenceIds": ["qa.range.edge"],
+      "ariaLabel": "两期配对值边界测试，覆盖极长源标识、零起点、无变化和负值"
+    },
+    {
+      "id": "waterfall-edge-cases",
+      "type": "waterfall",
+      "title": "十二步桥接覆盖零值、负向累计、长标签与多次小计",
+      "steps": [
+        {"id": "start", "label": "极长名称的基期起始值", "kind": "start", "value": 100},
+        {"id": "d1", "label": "大幅增长贡献", "kind": "delta", "value": 900},
+        {"id": "d2", "label": "完全抵消项", "kind": "delta", "value": -1000},
+        {"id": "s1", "label": "归零小计", "kind": "subtotal", "value": 0},
+        {"id": "d3", "label": "进入负区间", "kind": "delta", "value": -80},
+        {"id": "d4", "label": "零贡献", "kind": "delta", "value": 0},
+        {"id": "d5", "label": "负区间恢复", "kind": "delta", "value": 30},
+        {"id": "s2", "label": "负值小计", "kind": "subtotal", "value": -50},
+        {"id": "d6", "label": "回到正区间的长名称贡献项", "kind": "delta", "value": 100},
+        {"id": "d7", "label": "细小减少", "kind": "delta", "value": -1},
+        {"id": "d8", "label": "细小增加", "kind": "delta", "value": 2},
+        {"id": "end", "label": "最终结束值", "kind": "end", "value": 51}
+      ],
+      "reconciliationTolerance": 0.001,
+      "format": {"decimals": 0},
+      "evidenceIds": ["qa.waterfall.edge"],
+      "ariaLabel": "十二步贡献桥接边界测试，覆盖零值、负向累计、长标签和多次小计"
+    },
+    {
+      "id": "sparkline-edge-cases",
+      "type": "metrics",
+      "columns": 4,
+      "items": [
+        {
+          "label": "单点",
+          "value": 7,
+          "sparkline": {
+            "points": [{"x": "W1", "value": 7}],
+            "domainMode": "shared",
+            "variant": "line"
+          }
+        },
+        {
+          "label": "缺失中段",
+          "value": 9,
+          "sparkline": {
+            "points": [
+              {"x": "W1", "value": 4},
+              {"x": "W2", "value": null, "status": "missing"},
+              {"x": "W3", "value": 9}
+            ],
+            "domainMode": "shared",
+            "variant": "line"
+          }
+        },
+        {
+          "label": "未完整柱形",
+          "value": -2,
+          "sparkline": {
+            "points": [
+              {"x": "W1", "value": -5},
+              {"x": "W2", "value": 3},
+              {"x": "W3", "value": -2, "status": "incomplete"}
+            ],
+            "domainMode": "shared",
+            "variant": "bar",
+            "baseline": 0
+          }
+        },
+        {
+          "label": "独立尺度",
+          "value": 1200,
+          "sparkline": {
+            "points": [
+              {"x": "W1", "value": 1000},
+              {"x": "W2", "value": 1100},
+              {"x": "W3", "value": 1200}
+            ],
+            "domainMode": "independent",
+            "variant": "line",
+            "target": 1300
+          }
+        }
+      ],
+      "evidenceIds": ["qa.sparkline.edge"]
+    },
+    {
+      "id": "line-dense-events",
+      "type": "line",
+      "title": "五个密集事件不遮挡完整事件信息",
+      "labels": ["D1", "D2", "D3", "D4", "D5", "D6"],
+      "series": [
+        {"name": "指标", "values": [10, 12, 9, 11, 8, 13]}
+      ],
+      "annotations": [
+        {"id": "e1", "index": 1, "label": "事件一", "kind": "fact", "evidenceIds": ["event.e1"]},
+        {"id": "e2", "index": 2, "label": "事件二", "kind": "fact", "evidenceIds": ["event.e2"]},
+        {"id": "e3", "index": 2, "label": "解释三", "kind": "interpretation"},
+        {"id": "e4", "index": 3, "label": "事件四", "kind": "fact", "evidenceIds": ["event.e4"]},
+        {"id": "e5", "index": 4, "label": "事件五", "kind": "fact", "evidenceIds": ["event.e5"]}
+      ],
+      "format": {"decimals": 0},
+      "evidenceIds": ["qa.line.annotations"],
+      "ariaLabel": "六个时间点上的五个密集事件与单系列指标趋势"
+    }
+  ]
+}

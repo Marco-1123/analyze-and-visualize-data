@@ -1,0 +1,4777 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="use-iframe" content="true">
+  <meta name="html-box-height-mode" content="auto">
+  <meta name="description" content="同组迷你趋势默认共享 y 域；不完整周期使用虚线和淡化">
+  <meta name="generator" content="analyze-and-visualize-data 0.10.0">
+  <meta name="color-scheme" content="light">
+  <title>关键指标的短趋势支持快速扫描，但保留尺度与完整期说明</title>
+  <style>
+:root {
+  --vda-canvas: #f4f6f8;
+  --vda-surface: #ffffff;
+  --vda-surface-subtle: #f8f9fb;
+  --vda-text-1: #181c23;
+  --vda-text-2: #545b68;
+  --vda-text-3: #7d8593;
+  --vda-border: #e6e9ee;
+  --vda-border-strong: #d8dce3;
+  --vda-accent: #315cf5;
+  --vda-accent-soft: #eef2ff;
+  --vda-positive: #14804a;
+  --vda-positive-soft: #eaf8f0;
+  --vda-negative: #c33d45;
+  --vda-negative-soft: #fdeeef;
+  --vda-warning: #a55f00;
+  --vda-warning-soft: #fff4dc;
+  --vda-info: #246bce;
+  --vda-info-soft: #eaf3ff;
+  --vda-target: #7357d6;
+  --vda-neutral: #a8b0bf;
+  --vda-focus: #7c9bff;
+  --vda-shadow-raised: 0 8px 24px rgba(25, 32, 45, 0.06);
+  --vda-shadow-overlay: 0 16px 40px rgba(25, 32, 45, 0.14);
+  --vda-radius-sm: 6px;
+  --vda-radius-md: 10px;
+  --vda-radius-lg: 14px;
+  --vda-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --vda-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--vda-canvas);
+  color: var(--vda-text-1);
+  font-family: var(--vda-font);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background:
+    radial-gradient(circle at 8% -5%, rgba(49, 92, 245, 0.055), transparent 32rem),
+    var(--vda-canvas);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid rgba(124, 155, 255, 0.52);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  left: 12px;
+  top: -64px;
+  z-index: 999;
+  padding: 8px 12px;
+  color: #fff;
+  background: var(--vda-text-1);
+  border-radius: var(--vda-radius-sm);
+  transition: top 120ms ease;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+.vda-app {
+  width: min(100%, 1440px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.vda-app[data-mode="report-component"] {
+  width: min(100%, 960px);
+  min-height: 0;
+  padding: 24px;
+}
+
+.vda-shell {
+  display: grid;
+  gap: 24px;
+}
+
+.vda-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, auto);
+  gap: 24px;
+  align-items: end;
+  padding: 28px 30px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(216, 220, 227, 0.88);
+  border-radius: var(--vda-radius-lg);
+  box-shadow: var(--vda-shadow-raised);
+}
+
+.vda-app[data-mode="report-component"] .vda-header {
+  padding: 22px 24px 20px;
+  box-shadow: none;
+}
+
+.vda-eyebrow {
+  margin: 0 0 8px;
+  color: var(--vda-accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.vda-title {
+  max-width: 22ch;
+  margin: 0;
+  color: var(--vda-text-1);
+  font-size: clamp(24px, 3.2vw, 36px);
+  font-weight: 680;
+  letter-spacing: -0.035em;
+  line-height: 1.18;
+}
+
+.vda-app[data-mode="report-component"] .vda-title {
+  max-width: none;
+  font-size: clamp(22px, 3vw, 30px);
+}
+
+.vda-subtitle {
+  max-width: 66ch;
+  margin: 10px 0 0;
+  color: var(--vda-text-2);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.vda-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  max-width: 540px;
+  color: var(--vda-text-3);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.vda-meta-item {
+  display: inline-flex;
+  gap: 5px;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.vda-meta strong {
+  color: var(--vda-text-2);
+  font-weight: 600;
+}
+
+.vda-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.vda-component {
+  grid-column: span var(--span, 12);
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.vda-panel {
+  height: 100%;
+  padding: 22px;
+  overflow: hidden;
+  background: var(--vda-surface);
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-lg);
+}
+
+.vda-panel[data-tone="quiet"] {
+  background: var(--vda-surface-subtle);
+}
+
+.vda-panel[data-emphasis="primary"] {
+  border-color: rgba(49, 92, 245, 0.26);
+  box-shadow: 0 10px 30px rgba(49, 92, 245, 0.07);
+}
+
+.vda-panel-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.vda-panel-title {
+  margin: 0;
+  color: var(--vda-text-1);
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.4;
+}
+
+.vda-panel-subtitle,
+.vda-note {
+  margin: 5px 0 0;
+  color: var(--vda-text-3);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.vda-note {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--vda-border);
+}
+
+.vda-note-label {
+  color: var(--vda-text-2);
+  font-weight: 650;
+}
+
+.vda-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 8px;
+  color: var(--vda-accent);
+  background: var(--vda-accent-soft);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.vda-metrics {
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 4), minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  background: var(--vda-border);
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-lg);
+}
+
+.vda-metric {
+  min-width: 0;
+  padding: 20px;
+  background: var(--vda-surface);
+}
+
+.vda-metric-label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+  color: var(--vda-text-2);
+  font-size: 12px;
+  font-weight: 550;
+}
+
+.vda-metric-value {
+  margin: 8px 0 0;
+  color: var(--vda-text-1);
+  font-size: clamp(24px, 3vw, 32px);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 680;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+}
+
+@container (max-width: 640px) {
+  .vda-metrics[data-count="4"] {
+    --columns: 2 !important;
+  }
+
+  .vda-metrics[data-count="5"],
+  .vda-metrics[data-count="6"] {
+    --columns: 3 !important;
+  }
+}
+
+@container (min-width: 641px) and (max-width: 900px) {
+  .vda-metrics[data-count="4"] .vda-metric {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .vda-metrics[data-count="4"] .vda-metric-context {
+    gap: 4px;
+  }
+}
+
+@container (max-width: 500px) {
+  .vda-metrics[data-count="3"] {
+    --columns: 1 !important;
+  }
+
+  .vda-metrics[data-count="4"],
+  .vda-metrics[data-count="5"],
+  .vda-metrics[data-count="6"] {
+    --columns: 2 !important;
+  }
+}
+
+@container (max-width: 340px) {
+  .vda-metrics {
+    --columns: 1 !important;
+  }
+}
+
+.vda-metric-unit {
+  margin-left: 4px;
+  color: var(--vda-text-3);
+  font-size: 12px;
+  font-weight: 550;
+  letter-spacing: 0;
+}
+
+.vda-metric-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+  color: var(--vda-text-3);
+  font-size: 11px;
+}
+
+.vda-change {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.vda-change[data-tone="positive"] {
+  color: var(--vda-positive);
+  background: var(--vda-positive-soft);
+}
+
+.vda-change[data-tone="negative"] {
+  color: var(--vda-negative);
+  background: var(--vda-negative-soft);
+}
+
+.vda-change[data-tone="warning"] {
+  color: var(--vda-warning);
+  background: var(--vda-warning-soft);
+}
+
+.vda-change[data-tone="neutral"] {
+  color: var(--vda-text-2);
+  background: var(--vda-surface-subtle);
+}
+
+.vda-decision {
+  --decision-color: var(--vda-accent);
+  --decision-soft: var(--vda-accent-soft);
+  display: grid;
+  grid-template-columns: 3px minmax(0, 1fr);
+  gap: 18px;
+  padding: 21px 22px;
+  background: linear-gradient(
+    90deg,
+    var(--decision-soft),
+    rgba(255, 255, 255, 0.96) 42%
+  );
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-lg);
+}
+
+.vda-decision[data-kind="interpretation"] {
+  --decision-color: var(--vda-target);
+  --decision-soft: #f2efff;
+}
+
+.vda-decision[data-kind="risk"] {
+  --decision-color: var(--vda-warning);
+  --decision-soft: var(--vda-warning-soft);
+}
+
+.vda-decision[data-kind="action"] {
+  --decision-color: var(--vda-positive);
+  --decision-soft: var(--vda-positive-soft);
+}
+
+.vda-decision[data-kind="evidence"] {
+  --decision-color: var(--vda-text-2);
+  --decision-soft: var(--vda-surface-subtle);
+}
+
+.vda-decision-rule {
+  width: 3px;
+  min-height: 78px;
+  background: var(--decision-color);
+  border-radius: 999px;
+}
+
+.vda-decision-kind {
+  margin: 0 0 5px;
+  color: var(--decision-color);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.vda-decision-title {
+  margin: 0;
+  color: var(--vda-text-1);
+  font-size: 17px;
+  font-weight: 660;
+  letter-spacing: -0.02em;
+  line-height: 1.42;
+}
+
+.vda-decision-body,
+.vda-decision-caveat {
+  margin: 7px 0 0;
+  color: var(--vda-text-2);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.vda-decision-caveat {
+  color: var(--vda-text-3);
+  font-size: 12px;
+}
+
+.vda-decision-caveat strong {
+  color: var(--vda-text-2);
+}
+
+.vda-decision-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 13px;
+}
+
+.vda-decision-meta span {
+  min-height: 24px;
+  padding: 3px 8px;
+  color: var(--vda-text-2);
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid var(--vda-border);
+  border-radius: 999px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.vda-decision-details {
+  margin-top: 13px;
+  color: var(--vda-text-2);
+  font-size: 12px;
+}
+
+.vda-decision-details summary {
+  width: fit-content;
+  min-height: 40px;
+  padding: 8px 0;
+  color: var(--decision-color);
+  cursor: pointer;
+  font-weight: 620;
+}
+
+.vda-decision-details ul {
+  margin: 3px 0 0;
+  padding-left: 20px;
+}
+
+.vda-target-list {
+  display: grid;
+  gap: 14px;
+}
+
+.vda-target-row {
+  padding: 16px;
+  background: var(--vda-surface-subtle);
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-md);
+}
+
+.vda-target-row-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vda-target-row-head strong {
+  color: var(--vda-text-1);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.vda-target-row-head span {
+  min-height: 24px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.vda-target-row-head span[data-tone="positive"] {
+  color: var(--vda-positive);
+  background: var(--vda-positive-soft);
+}
+
+.vda-target-row-head span[data-tone="warning"] {
+  color: var(--vda-warning);
+  background: var(--vda-warning-soft);
+}
+
+.vda-target-row-head span[data-tone="neutral"] {
+  color: var(--vda-text-2);
+  background: #eef0f3;
+}
+
+.vda-target-values {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.vda-target-values span {
+  min-width: 0;
+}
+
+.vda-target-values small,
+.vda-sparkline-summary small {
+  display: block;
+  color: var(--vda-text-3);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.vda-target-values strong {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--vda-text-1);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 660;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-target-track {
+  position: relative;
+  height: 28px;
+  margin-top: 14px;
+  overflow: hidden;
+  background: #edf0f4;
+  border: 1px solid var(--vda-border-strong);
+  border-radius: 6px;
+}
+
+.vda-target-band,
+.vda-target-actual,
+.vda-target-marker,
+.vda-target-baseline,
+.vda-target-zero {
+  position: absolute;
+}
+
+.vda-target-band {
+  top: 0;
+  bottom: 0;
+  opacity: 0.62;
+}
+
+.vda-target-band[data-tone="negative"] {
+  background: #f6dddf;
+}
+
+.vda-target-band[data-tone="warning"] {
+  background: #f8e9c5;
+}
+
+.vda-target-band[data-tone="positive"] {
+  background: #dcefe4;
+}
+
+.vda-target-band[data-tone="neutral"] {
+  background: #e5e8ed;
+}
+
+.vda-target-actual {
+  top: 8px;
+  z-index: 2;
+  height: 12px;
+  background: var(--vda-accent);
+  border-radius: 3px;
+}
+
+.vda-target-marker {
+  top: 2px;
+  bottom: 2px;
+  z-index: 4;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--vda-target);
+  border-radius: 2px;
+}
+
+.vda-target-baseline {
+  top: 5px;
+  bottom: 5px;
+  z-index: 3;
+  width: 1px;
+  background: var(--vda-text-2);
+  border-style: dashed;
+}
+
+.vda-target-zero {
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 1px;
+  background: rgba(84, 91, 104, 0.34);
+}
+
+.vda-target-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+  color: var(--vda-text-3);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.vda-target-key {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.vda-target-key i {
+  display: inline-block;
+  width: 9px;
+  height: 3px;
+  margin-left: 3px;
+  background: var(--vda-text-2);
+  border-radius: 2px;
+}
+
+.vda-target-key i[data-role="actual"] {
+  background: var(--vda-accent);
+}
+
+.vda-target-key i[data-role="target"] {
+  height: 9px;
+  width: 2px;
+  background: var(--vda-target);
+}
+
+.vda-target-key i[data-role="baseline"] {
+  height: 9px;
+  width: 2px;
+  background: var(--vda-text-1);
+}
+
+.vda-range-head {
+  display: grid;
+  grid-template-columns: minmax(104px, 24%) minmax(0, 1fr);
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.vda-range-head > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 62px;
+  color: var(--vda-text-3);
+  font-size: 10px;
+}
+
+.vda-range-head strong:first-child {
+  color: var(--vda-text-2);
+}
+
+.vda-range-head strong:last-child {
+  color: var(--vda-accent);
+}
+
+.vda-range-layout {
+  display: grid;
+  grid-template-columns: minmax(104px, 24%) minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.vda-range-labels {
+  display: grid;
+  grid-auto-rows: var(--range-row-height, 48px);
+}
+
+.vda-range-label {
+  display: block;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 4px 0;
+  color: var(--vda-text-2);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--vda-border);
+  cursor: help;
+  text-align: left;
+}
+
+.vda-range-label span {
+  display: -webkit-box;
+  max-height: 2.6em;
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.vda-range-label small {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--vda-text-3);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-range-plot {
+  min-width: 0;
+}
+
+.vda-range-plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.vda-range-connector {
+  stroke: var(--vda-border-strong);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.vda-range-start {
+  fill: var(--vda-surface);
+  stroke: var(--vda-neutral);
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-range-end {
+  fill: var(--vda-accent);
+  stroke: var(--vda-surface);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-range-end-label {
+  fill: var(--vda-accent);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.vda-range-mobile {
+  display: none;
+}
+
+.vda-range-mobile-row {
+  width: 100%;
+  padding: 12px 0;
+  color: var(--vda-text-2);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--vda-border);
+  cursor: help;
+  text-align: left;
+}
+
+.vda-range-mobile-row:last-child {
+  border-bottom: 0;
+}
+
+.vda-range-mobile-label {
+  display: block;
+  overflow: hidden;
+  color: var(--vda-text-1);
+  font-size: 12px;
+  font-weight: 620;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-range-mobile-values {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  margin-top: 7px;
+}
+
+.vda-range-mobile-values small,
+.vda-range-mobile-values strong {
+  display: block;
+}
+
+.vda-range-mobile-values small {
+  color: var(--vda-text-3);
+  font-size: 9px;
+}
+
+.vda-range-mobile-values strong {
+  margin-top: 1px;
+  color: var(--vda-text-2);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.vda-range-mobile-values > span:nth-of-type(2) strong {
+  color: var(--vda-accent);
+}
+
+.vda-range-mobile-values b {
+  padding-bottom: 1px;
+  color: var(--vda-text-3);
+  font-size: 12px;
+}
+
+.vda-range-mobile-values em {
+  padding: 3px 7px;
+  color: var(--vda-accent);
+  background: var(--vda-accent-soft);
+  border-radius: 999px;
+  font-size: 10px;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.vda-waterfall-frame {
+  position: relative;
+  min-width: 0;
+}
+
+.vda-waterfall-chart {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+  scroll-padding-inline: 20px;
+  touch-action: pan-x pan-y;
+}
+
+.vda-waterfall-chart svg {
+  display: block;
+  width: auto;
+  height: auto;
+}
+
+.vda-waterfall-bar {
+  fill: var(--vda-text-2);
+  cursor: default;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-waterfall-bar[data-kind="start"],
+.vda-waterfall-bar[data-kind="end"],
+.vda-waterfall-bar[data-kind="subtotal"] {
+  fill: #4f5867;
+}
+
+.vda-waterfall-bar[data-kind="delta"][data-sign="positive"] {
+  fill: var(--vda-accent);
+}
+
+.vda-waterfall-bar[data-kind="delta"][data-sign="negative"] {
+  fill: #c98924;
+}
+
+.vda-waterfall-bar[data-kind="delta"][data-sign="zero"] {
+  fill: var(--vda-neutral);
+}
+
+.vda-waterfall-bar:focus-visible {
+  stroke: var(--vda-focus);
+  stroke-width: 4;
+  outline: none;
+}
+
+.vda-waterfall-connector {
+  stroke: var(--vda-border-strong);
+  stroke-width: 1.25;
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-waterfall-value,
+.vda-waterfall-running {
+  fill: var(--vda-text-2);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.vda-waterfall-running {
+  fill: var(--vda-text-3);
+  font-size: 9px;
+  font-weight: 550;
+}
+
+.vda-waterfall-cue {
+  display: none;
+}
+
+.vda-component[data-waterfall-scrollable="true"] .vda-waterfall-cue {
+  display: block;
+}
+
+.vda-sparkline {
+  position: relative;
+  min-width: 0;
+}
+
+.vda-sparkline svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.vda-sparkline.is-compact {
+  width: min(100%, 156px);
+  margin-top: 10px;
+}
+
+.vda-sparkline-segment {
+  stroke: var(--vda-accent);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-segment.is-incomplete {
+  stroke-dasharray: 3 3;
+  opacity: 0.48;
+}
+
+.vda-sparkline-bar {
+  fill: var(--vda-accent);
+}
+
+.vda-sparkline-bar.is-incomplete {
+  opacity: 0.42;
+}
+
+.vda-sparkline-end {
+  fill: var(--vda-accent);
+  stroke: var(--vda-surface);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-end.is-incomplete {
+  fill: var(--vda-surface);
+  stroke: var(--vda-accent);
+}
+
+.vda-sparkline-target,
+.vda-sparkline-baseline {
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-target {
+  stroke: var(--vda-target);
+  stroke-dasharray: 3 3;
+}
+
+.vda-sparkline-baseline {
+  stroke: var(--vda-border-strong);
+}
+
+.vda-sparkline-focus {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.vda-sparkline-focus[data-open="true"] {
+  opacity: 1;
+}
+
+.vda-sparkline-focus-line {
+  stroke: var(--vda-text-3);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-focus-point {
+  fill: var(--vda-surface);
+  stroke: var(--vda-accent);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-hitbox {
+  cursor: crosshair;
+  pointer-events: all;
+  stroke: transparent;
+  stroke-width: 2;
+  touch-action: pan-y;
+}
+
+.vda-sparkline-hitbox:focus-visible {
+  stroke: rgba(49, 92, 245, 0.58);
+  stroke-dasharray: 4 4;
+  outline: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-scale-note {
+  color: var(--vda-warning);
+}
+
+.vda-sparkline-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.vda-sparkline-summary strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--vda-text-1);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 660;
+}
+
+.vda-sparkline-status {
+  margin: 8px 0 0;
+  color: var(--vda-warning);
+  font-size: 11px;
+}
+
+.vda-line-annotation-line {
+  stroke: var(--vda-target);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-line-annotation-line[data-kind="interpretation"] {
+  stroke: var(--vda-warning);
+  stroke-dasharray: 2 4;
+}
+
+.vda-line-annotation-label {
+  fill: var(--vda-target);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.vda-line-annotation-label[data-kind="interpretation"] {
+  fill: var(--vda-warning);
+}
+
+.vda-line-events {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.vda-line-event {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  min-height: 44px;
+  padding: 8px 9px;
+  color: var(--vda-text-2);
+  background: var(--vda-surface-subtle);
+  border: 1px solid var(--vda-border);
+  border-radius: 8px;
+  cursor: help;
+  text-align: left;
+}
+
+.vda-line-event[data-kind="interpretation"] {
+  background: var(--vda-warning-soft);
+  border-color: rgba(165, 95, 0, 0.18);
+}
+
+.vda-line-event-index {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  color: var(--vda-target);
+  background: #f0edff;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.vda-line-event[data-kind="interpretation"] .vda-line-event-index {
+  color: var(--vda-warning);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.vda-line-event strong,
+.vda-line-event small {
+  display: block;
+}
+
+.vda-line-event strong {
+  color: var(--vda-text-1);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.vda-line-event small {
+  margin-top: 2px;
+  color: var(--vda-text-3);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.vda-chart {
+  position: relative;
+  width: 100%;
+  min-height: var(--chart-height, 280px);
+}
+
+.vda-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.vda-diverging-bar-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(84px, min(var(--bar-label-width, 132px), 42%))
+    minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  min-width: 0;
+}
+
+.vda-bar-label-rail {
+  display: grid;
+  grid-auto-rows: var(--bar-row-height, 38px);
+  width: 100%;
+  padding-top: 6px;
+}
+
+.vda-bar-category-label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  height: var(--bar-row-height, 44px);
+  min-width: 0;
+  padding: 4px 0;
+  border: 0;
+  color: var(--vda-text-2);
+  background: transparent;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.25;
+  text-align: right;
+  cursor: help;
+}
+
+.vda-bar-category-label-text {
+  display: -webkit-box;
+  width: 100%;
+  max-height: 2.5em;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.vda-bar-category-label:focus-visible {
+  outline: 2px solid rgba(49, 92, 245, 0.58);
+  outline-offset: 2px;
+  border-radius: var(--vda-radius-sm);
+}
+
+.vda-bar-scroll-frame {
+  position: relative;
+  min-width: 0;
+}
+
+.vda-bar-chart {
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+  scroll-padding-inline: 16px;
+}
+
+.vda-bar-chart svg {
+  width: 100%;
+}
+
+.vda-bar-chart:focus-visible {
+  border-radius: var(--vda-radius-sm);
+}
+
+.vda-bar-scroll-cue {
+  margin-top: 8px;
+}
+
+.vda-bar-navigation {
+  display: none;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.vda-component[data-bar-scrollable="true"] .vda-bar-navigation {
+  display: flex;
+}
+
+.vda-bar-navigation button {
+  min-height: 30px;
+  padding: 5px 10px;
+  color: var(--vda-text-2);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 620;
+  background: var(--vda-surface-subtle);
+  border: 1px solid var(--vda-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.vda-bar-navigation button:hover {
+  color: var(--vda-primary);
+  border-color: rgba(49, 92, 245, 0.34);
+}
+
+.vda-bar-navigation button[data-current="true"] {
+  color: var(--vda-primary);
+  background: rgba(49, 92, 245, 0.08);
+  border-color: rgba(49, 92, 245, 0.28);
+}
+
+.vda-bar-navigation button:focus-visible {
+  outline: 2px solid rgba(49, 92, 245, 0.44);
+  outline-offset: 2px;
+}
+
+.vda-bar-detail {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--vda-surface-subtle);
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-sm);
+}
+
+.vda-bar-detail-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.vda-bar-detail-head strong {
+  color: var(--vda-text-2);
+  font-size: 12px;
+}
+
+.vda-bar-detail-head span {
+  color: var(--vda-text-3);
+  font-size: 10px;
+}
+
+.vda-bar-detail-list {
+  display: grid;
+  gap: 7px;
+}
+
+.vda-bar-detail-row {
+  display: grid;
+  grid-template-columns: minmax(74px, 132px) minmax(80px, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  min-width: 0;
+}
+
+.vda-bar-detail-label {
+  overflow: hidden;
+  color: var(--vda-text-2);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-bar-detail-track {
+  height: 7px;
+  overflow: hidden;
+  background: rgba(168, 176, 191, 0.2);
+  border-radius: 999px;
+}
+
+.vda-bar-detail-fill {
+  display: block;
+  height: 100%;
+  background: var(--vda-primary);
+  border-radius: inherit;
+}
+
+.vda-bar-detail-fill[data-direction="negative"] {
+  background: var(--vda-negative);
+}
+
+.vda-bar-detail-value {
+  color: var(--vda-text-2);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.vda-heatmap-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.vda-heatmap-group {
+  position: relative;
+  min-width: 0;
+  padding: 14px 14px 10px;
+  background: var(--vda-surface-subtle);
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-md);
+}
+
+.vda-heatmap-group-title {
+  margin: 0 0 6px;
+  color: var(--vda-text-2);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.vda-heatmap-chart {
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.vda-heatmap-chart svg {
+  width: 100%;
+}
+
+.vda-heatmap-legend {
+  display: grid;
+  grid-template-columns: auto minmax(96px, 180px) auto;
+  gap: 8px;
+  align-items: center;
+  justify-content: end;
+  color: var(--vda-text-3);
+  font-size: 11px;
+}
+
+.vda-heatmap-legend-ramp {
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, #eef2ff, #315cf5);
+  border: 1px solid rgba(49, 92, 245, 0.12);
+  border-radius: 999px;
+}
+
+.vda-heatmap-legend-value {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.vda-scroll-cue {
+  display: none;
+  margin: 0;
+  color: var(--vda-text-3);
+  font-size: 10px;
+  text-align: right;
+}
+
+.vda-component[data-heatmap-scrollable="true"] .vda-heatmap-scroll-cue,
+.vda-component[data-bar-scrollable="true"] .vda-bar-scroll-cue {
+  display: block;
+}
+
+.vda-component[data-bar-long-labels="true"] .vda-bar-label-cue {
+  display: block;
+  margin-top: 6px;
+}
+
+.vda-chart text {
+  font-family: var(--vda-font);
+}
+
+.vda-axis-label {
+  fill: var(--vda-text-3);
+  font-size: 11px;
+}
+
+.vda-value-label {
+  fill: var(--vda-text-2);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.vda-grid-line {
+  stroke: var(--vda-border);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.vda-zero-line {
+  stroke: var(--vda-border-strong);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.vda-line-focus-layer {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.vda-line-focus-layer[data-open="true"] {
+  opacity: 1;
+}
+
+.vda-crosshair-line {
+  stroke: var(--vda-text-3);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-crosshair-point {
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-line-hitbox {
+  cursor: crosshair;
+  pointer-events: all;
+  stroke: transparent;
+  stroke-width: 2;
+  touch-action: pan-y;
+}
+
+.vda-line-hitbox:focus-visible {
+  stroke: rgba(49, 92, 245, 0.58);
+  stroke-dasharray: 4 4;
+  outline: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-tooltip {
+  position: fixed;
+  z-index: 100;
+  width: max-content;
+  max-width: 260px;
+  padding: 9px 11px;
+  pointer-events: none;
+  color: #fff;
+  background: rgba(24, 28, 35, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  box-shadow: var(--vda-shadow-overlay);
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.vda-tooltip[data-shared="true"] {
+  min-width: 176px;
+  padding: 11px 12px;
+}
+
+.vda-tooltip[data-open="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.vda-tooltip-title {
+  padding-bottom: 7px;
+  margin-bottom: 7px;
+  color: rgba(255, 255, 255, 0.74);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.vda-tooltip-row {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 24px;
+}
+
+.vda-tooltip-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.vda-tooltip-name {
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.82);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-tooltip-value {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.vda-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 0;
+  color: var(--vda-text-2);
+  font-size: 11px;
+}
+
+.vda-legend-item {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  min-height: 40px;
+  padding: 6px 10px;
+  color: var(--vda-text-2);
+  background: var(--vda-surface-subtle);
+  border: 1px solid var(--vda-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    color 120ms ease,
+    background 120ms ease,
+    border-color 120ms ease,
+    opacity 120ms ease;
+}
+
+.vda-legend-item:hover {
+  background: var(--vda-accent-soft);
+  border-color: rgba(49, 92, 245, 0.24);
+}
+
+.vda-legend-item[aria-pressed="true"] {
+  color: var(--vda-text-1);
+  background: rgba(49, 92, 245, 0.045);
+  border-color: rgba(49, 92, 245, 0.18);
+}
+
+.vda-legend-item[aria-pressed="false"] {
+  color: var(--vda-text-3);
+  background: var(--vda-surface);
+  border-color: var(--vda-border);
+  opacity: 0.58;
+}
+
+.vda-legend-item[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+.vda-legend-item:focus-visible {
+  outline: 3px solid rgba(124, 155, 255, 0.52);
+  outline-offset: 1px;
+}
+
+.vda-legend-swatch {
+  width: 10px;
+  height: 10px;
+  background: var(--series-color);
+  border: 2px solid var(--series-color);
+  border-radius: 2px;
+}
+
+.vda-legend-item[aria-pressed="false"] .vda-legend-swatch {
+  background: transparent;
+}
+
+.vda-legend-item[aria-pressed="false"] .vda-legend-label {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.vda-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+}
+
+.vda-insight {
+  display: grid;
+  grid-template-columns: 3px minmax(0, 1fr);
+  gap: 16px;
+  height: 100%;
+  padding: 20px 22px;
+  color: var(--vda-text-1);
+  background: var(--vda-surface);
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-lg);
+}
+
+.vda-insight::before {
+  content: "";
+  width: 3px;
+  height: 100%;
+  min-height: 52px;
+  background: var(--tone-color, var(--vda-accent));
+  border-radius: 999px;
+}
+
+.vda-insight[data-tone="positive"] {
+  --tone-color: var(--vda-positive);
+}
+
+.vda-insight[data-tone="negative"] {
+  --tone-color: var(--vda-negative);
+}
+
+.vda-insight[data-tone="warning"] {
+  --tone-color: var(--vda-warning);
+}
+
+.vda-insight-kicker {
+  margin: 0 0 4px;
+  color: var(--tone-color, var(--vda-accent));
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.vda-insight-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+}
+
+.vda-insight-body {
+  margin: 7px 0 0;
+  color: var(--vda-text-2);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.vda-table-wrap {
+  max-width: 100%;
+  overflow: auto;
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-md);
+  overscroll-behavior: contain;
+}
+
+.vda-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--vda-text-2);
+  font-size: 12px;
+}
+
+.vda-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 10px 12px;
+  color: var(--vda-text-2);
+  background: var(--vda-surface-subtle);
+  border-bottom: 1px solid var(--vda-border);
+  font-weight: 650;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.vda-table td {
+  padding: 10px 12px;
+  background: var(--vda-surface);
+  border-bottom: 1px solid var(--vda-border);
+}
+
+.vda-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.vda-table th[data-align="right"],
+.vda-table td[data-align="right"] {
+  text-align: right;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.vda-table td[data-tone="positive"] {
+  color: var(--vda-positive);
+  font-weight: 600;
+}
+
+.vda-table td[data-tone="negative"] {
+  color: var(--vda-negative);
+  font-weight: 600;
+}
+
+.vda-divider {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: end;
+  margin: 10px 0 0;
+  padding: 4px 2px 10px;
+  border-bottom: 1px solid var(--vda-border-strong);
+}
+
+.vda-divider h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 680;
+  letter-spacing: -0.025em;
+}
+
+.vda-divider p {
+  margin: 0;
+  color: var(--vda-text-3);
+  font-size: 12px;
+}
+
+.vda-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 2px 0;
+  color: var(--vda-text-3);
+  font-size: 11px;
+}
+
+.vda-error {
+  padding: 20px;
+  color: var(--vda-negative);
+  background: var(--vda-negative-soft);
+  border: 1px solid rgba(195, 61, 69, 0.22);
+  border-radius: var(--vda-radius-md);
+}
+
+@media (max-width: 900px) {
+  .vda-app,
+  .vda-app[data-mode="report-component"] {
+    padding: 16px;
+  }
+
+  .vda-header {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 22px;
+  }
+
+  .vda-meta {
+    justify-content: flex-start;
+    max-width: none;
+    text-align: left;
+  }
+
+  .vda-component {
+    --span: 12 !important;
+  }
+
+}
+
+@media (max-width: 520px) {
+  .vda-app,
+  .vda-app[data-mode="report-component"] {
+    padding: 10px;
+  }
+
+  .vda-shell {
+    gap: 12px;
+  }
+
+  .vda-grid {
+    gap: 10px;
+  }
+
+  .vda-header,
+  .vda-app[data-mode="report-component"] .vda-header {
+    padding: 18px;
+    border-radius: var(--vda-radius-md);
+  }
+
+  .vda-title,
+  .vda-app[data-mode="report-component"] .vda-title {
+    font-size: 23px;
+  }
+
+  .vda-meta {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .vda-panel {
+    padding: 17px;
+    border-radius: var(--vda-radius-md);
+  }
+
+  .vda-panel-head {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .vda-metric {
+    padding: 17px;
+  }
+
+  .vda-metric-value {
+    font-size: 24px;
+  }
+
+  .vda-decision {
+    gap: 14px;
+    padding: 17px;
+  }
+
+  .vda-target-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vda-target-row {
+    padding: 14px;
+  }
+
+  .vda-target-row-head {
+    align-items: flex-start;
+  }
+
+  .vda-range-head,
+  .vda-range-layout {
+    display: none;
+  }
+
+  .vda-range-mobile {
+    display: block;
+  }
+
+  .vda-line-events {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vda-sparkline-summary {
+    gap: 8px;
+  }
+
+  .vda-sparkline-summary strong {
+    font-size: 14px;
+  }
+
+  .vda-insight {
+    padding: 17px;
+  }
+
+  .vda-chart {
+    min-height: 0;
+  }
+
+  .vda-heatmap-stack {
+    gap: 12px;
+  }
+
+  .vda-heatmap-group {
+    padding: 12px 10px 8px;
+  }
+
+  .vda-heatmap-group[data-scrollable="true"]::after {
+    position: absolute;
+    top: 42px;
+    right: 9px;
+    bottom: 8px;
+    width: 18px;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      rgba(247, 248, 250, 0),
+      rgba(247, 248, 250, 0.96)
+    );
+    content: "";
+  }
+
+  .vda-bar-scroll-frame[data-scrollable="true"]::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 20px;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.96)
+    );
+    content: "";
+  }
+
+  .vda-tooltip {
+    max-width: calc(100vw - 24px);
+  }
+
+  .vda-divider {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media print {
+  html,
+  body {
+    background: #fff;
+  }
+
+  .vda-app {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+  }
+
+  .vda-header,
+  .vda-panel,
+  .vda-decision,
+  .vda-target-row,
+  .vda-insight,
+  .vda-metrics {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至主要内容</a>
+  <main id="main" class="vda-app" tabindex="-1" aria-live="polite"></main>
+  <noscript>此数据分析组件需要启用 JavaScript 才能显示交互图表。</noscript>
+  <script>
+window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"关键指标的短趋势支持快速扫描，但保留尺度与完整期说明","eyebrow":"P1 · SPARKLINE","subtitle":"同组迷你趋势默认共享 y 域；不完整周期使用虚线和淡化","meta":{"period":"最近 8 周","scope":"企业服务运营","source":"周度运营快照"},"components":[{"id":"metrics-with-sparklines","type":"metrics","columns":4,"items":[{"label":"24 小时 SLA","value":91.8,"format":{"type":"percent","input":"percent","decimals":1},"change":{"label":"较首周 +3.4pp","tone":"positive"},"sparkline":{"points":[{"x":"W1","value":88.4},{"x":"W2","value":89.1},{"x":"W3","value":89.7},{"x":"W4","value":90.5},{"x":"W5","value":90.2},{"x":"W6","value":91.4},{"x":"W7","value":92.1},{"x":"W8","value":91.8,"status":"incomplete"}],"target":96,"domainMode":"shared","format":{"type":"percent","input":"percent","decimals":1}}},{"label":"一次解决率","value":78.6,"format":{"type":"percent","input":"percent","decimals":1},"change":{"label":"较首周 +1.8pp","tone":"positive"},"sparkline":{"points":[{"x":"W1","value":76.8},{"x":"W2","value":77.4},{"x":"W3","value":77.1},{"x":"W4","value":78.2},{"x":"W5","value":78.8},{"x":"W6","value":79.1},{"x":"W7","value":78.9},{"x":"W8","value":78.6,"status":"incomplete"}],"target":80,"domainMode":"shared","format":{"type":"percent","input":"percent","decimals":1}}},{"label":"客户满意度","value":93.2,"format":{"type":"percent","input":"percent","decimals":1},"change":{"label":"较首周 −0.6pp","tone":"warning"},"sparkline":{"points":[{"x":"W1","value":93.8},{"x":"W2","value":94.1},{"x":"W3","value":93.5},{"x":"W4","value":null,"status":"missing"},{"x":"W5","value":93.7},{"x":"W6","value":93.4},{"x":"W7","value":93.5},{"x":"W8","value":93.2,"status":"incomplete"}],"target":94,"domainMode":"shared","format":{"type":"percent","input":"percent","decimals":1}}},{"label":"质检通过率","value":96.4,"format":{"type":"percent","input":"percent","decimals":1},"change":{"label":"较首周 +1.1pp","tone":"positive"},"sparkline":{"points":[{"x":"W1","value":95.3},{"x":"W2","value":95.8},{"x":"W3","value":95.6},{"x":"W4","value":96.1},{"x":"W5","value":96.0},{"x":"W6","value":96.5},{"x":"W7","value":96.7},{"x":"W8","value":96.4,"status":"incomplete"}],"target":96,"domainMode":"shared","format":{"type":"percent","input":"percent","decimals":1}}}],"evidenceIds":["series.sla-weekly","series.fcr-weekly","series.csat-weekly","series.qa-weekly"]},{"id":"standalone-volume-sparkline","type":"sparkline","title":"新增咨询量仍在上升，最后一周尚未完整","subtitle":"独立组件保留当前值、首期变化、目标线和完整期状态","points":[{"x":"W1","value":18420},{"x":"W2","value":19130},{"x":"W3","value":18880},{"x":"W4","value":20410},{"x":"W5","value":21260},{"x":"W6","value":21980},{"x":"W7","value":23150},{"x":"W8","value":22540,"status":"incomplete"}],"baseline":19000,"target":21000,"domainMode":"independent","format":{"decimals":0},"evidenceIds":["series.inquiries-weekly"],"ariaLabel":"最近八周新增咨询量迷你趋势，最后一周尚未完整"}]};
+  </script>
+  <script>
+(function () {
+  "use strict";
+
+  var spec = window.__VDA_SPEC__ || {};
+  var root = document.getElementById("main");
+  var NS = "http://www.w3.org/2000/svg";
+  var palette = [
+    "#315CF5", "#17A6A1", "#7357D6", "#C98924",
+    "#D45B86", "#5D7B8A", "#7D8D31", "#AD6A3F"
+  ];
+
+  function esc(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function finite(value, fallback) {
+    var n = Number(value);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function formatValue(value, format) {
+    if (value == null || value === "" || !Number.isFinite(Number(value))) {
+      return "—";
+    }
+    var options = format || {};
+    var number = Number(value);
+    var decimals = Number.isInteger(options.decimals) ? options.decimals : null;
+    var locale = options.locale || "zh-CN";
+    var formatterOptions = {
+      maximumFractionDigits: decimals == null ? 1 : decimals,
+      minimumFractionDigits: decimals == null ? 0 : decimals
+    };
+
+    if (options.type === "percent") {
+      if (options.input !== "ratio") {
+        number = number / 100;
+      }
+      formatterOptions.style = "percent";
+    } else if (options.type === "currency") {
+      formatterOptions.style = "currency";
+      formatterOptions.currency = options.currency || "CNY";
+      formatterOptions.currencyDisplay = options.currencyDisplay || "narrowSymbol";
+    }
+    if (options.compact === true) {
+      formatterOptions.notation = "compact";
+      formatterOptions.compactDisplay = "short";
+    }
+
+    try {
+      return new Intl.NumberFormat(locale, formatterOptions).format(number);
+    } catch (error) {
+      return String(number);
+    }
+  }
+
+  function displayValue(item) {
+    if (item && item.display != null) return String(item.display);
+    return formatValue(item ? item.value : null, item ? item.format : null);
+  }
+
+  function signedLabel(value, format) {
+    var number = finite(value, 0);
+    var rendered = formatValue(Math.abs(number), format);
+    if (number > 0) return "+" + rendered;
+    if (number < 0) return "−" + rendered;
+    return rendered;
+  }
+
+  function sparklineNumericPoints(definition) {
+    return (Array.isArray(definition && definition.points)
+      ? definition.points
+      : []).map(function (point, index) {
+        var numeric = point && point.value != null
+          ? Number(point.value)
+          : NaN;
+        return {
+          index: index,
+          x: point ? point.x : index,
+          value: Number.isFinite(numeric) ? numeric : null,
+          status: point && point.status ? point.status : "complete"
+        };
+      });
+  }
+
+  function sparklineDomain(definitions) {
+    var values = [];
+    (definitions || []).forEach(function (definition) {
+      sparklineNumericPoints(definition).forEach(function (point) {
+        if (point.value != null) values.push(point.value);
+      });
+      ["baseline", "target"].forEach(function (field) {
+        if (Number.isFinite(Number(definition && definition[field]))) {
+          values.push(Number(definition[field]));
+        }
+      });
+    });
+    if (!values.length) return [0, 1];
+    var min = Math.min.apply(null, values);
+    var max = Math.max.apply(null, values);
+    if (min === max) {
+      var samePadding = Math.max(1, Math.abs(min) * 0.08);
+      return [min - samePadding, max + samePadding];
+    }
+    var padding = (max - min) * 0.08;
+    return [min - padding, max + padding];
+  }
+
+  function resolveSparklineDomain(definition, sharedDomain) {
+    if (
+      Array.isArray(definition.domain) &&
+      definition.domain.length === 2
+    ) {
+      return [
+        finite(definition.domain[0], 0),
+        finite(definition.domain[1], 1)
+      ];
+    }
+    if (definition.domainMode !== "independent" && sharedDomain) {
+      return sharedDomain;
+    }
+    return sparklineDomain([definition]);
+  }
+
+  function renderSparklineGraphic(definition, options) {
+    var opts = options || {};
+    var points = sparklineNumericPoints(definition);
+    var width = finite(opts.width, 180);
+    var height = finite(opts.height, 68);
+    var margin = opts.compact
+      ? { top: 7, right: 5, bottom: 7, left: 5 }
+      : { top: 12, right: 10, bottom: 12, left: 10 };
+    var innerW = width - margin.left - margin.right;
+    var innerH = height - margin.top - margin.bottom;
+    var domain = resolveSparklineDomain(definition, opts.domain);
+    var minY = finite(domain[0], 0);
+    var maxY = finite(domain[1], 1);
+    var yRange = maxY - minY || 1;
+    var xStep = points.length > 1
+      ? innerW / (points.length - 1)
+      : innerW;
+    var xAt = function (index) {
+      return points.length > 1
+        ? margin.left + xStep * index
+        : margin.left + innerW / 2;
+    };
+    var yAt = function (value) {
+      return margin.top + ((maxY - value) / yRange) * innerH;
+    };
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": definition.ariaLabel || opts.ariaLabel || "迷你趋势"
+    });
+
+    ["baseline", "target"].forEach(function (field) {
+      var numeric = Number(definition[field]);
+      if (!Number.isFinite(numeric)) return;
+      var y = yAt(numeric);
+      svg.appendChild(svgEl("line", {
+        x1: margin.left,
+        x2: width - margin.right,
+        y1: y,
+        y2: y,
+        class: field === "target"
+          ? "vda-sparkline-target"
+          : "vda-sparkline-baseline",
+        "data-sparkline-reference": field
+      }));
+    });
+
+    if (definition.variant === "bar") {
+      var barWidth = Math.max(
+        2,
+        Math.min(12, innerW / Math.max(1, points.length) * 0.62)
+      );
+      var zeroY = yAt(clamp(0, minY, maxY));
+      points.forEach(function (point) {
+        if (point.value == null) return;
+        var x = xAt(point.index) - barWidth / 2;
+        var valueY = yAt(point.value);
+        svg.appendChild(svgEl("rect", {
+          x: x,
+          y: Math.min(valueY, zeroY),
+          width: barWidth,
+          height: Math.max(1, Math.abs(valueY - zeroY)),
+          rx: 1.5,
+          class: point.status === "incomplete"
+            ? "vda-sparkline-bar is-incomplete"
+            : "vda-sparkline-bar"
+        }));
+      });
+    } else {
+      for (var segmentIndex = 1; segmentIndex < points.length; segmentIndex += 1) {
+        var previous = points[segmentIndex - 1];
+        var current = points[segmentIndex];
+        if (previous.value == null || current.value == null) continue;
+        svg.appendChild(svgEl("line", {
+          x1: xAt(previous.index),
+          y1: yAt(previous.value),
+          x2: xAt(current.index),
+          y2: yAt(current.value),
+          class:
+            previous.status === "incomplete" ||
+            current.status === "incomplete"
+              ? "vda-sparkline-segment is-incomplete"
+              : "vda-sparkline-segment"
+        }));
+      }
+    }
+
+    var lastNumeric = null;
+    points.forEach(function (point) {
+      if (point.value != null) lastNumeric = point;
+    });
+    if (lastNumeric) {
+      svg.appendChild(svgEl("circle", {
+        cx: xAt(lastNumeric.index),
+        cy: yAt(lastNumeric.value),
+        r: opts.compact ? 2.7 : 3.5,
+        class: lastNumeric.status === "incomplete"
+          ? "vda-sparkline-end is-incomplete"
+          : "vda-sparkline-end"
+      }));
+    }
+
+    var focus = svgEl("g", {
+      class: "vda-sparkline-focus",
+      "data-open": "false",
+      "aria-hidden": "true"
+    });
+    focus.appendChild(svgEl("line", {
+      x1: margin.left,
+      x2: margin.left,
+      y1: margin.top,
+      y2: height - margin.bottom,
+      class: "vda-sparkline-focus-line"
+    }));
+    focus.appendChild(svgEl("circle", {
+      cx: margin.left,
+      cy: margin.top,
+      r: opts.compact ? 3.2 : 4,
+      class: "vda-sparkline-focus-point"
+    }));
+    svg.appendChild(focus);
+    svg.appendChild(svgEl("rect", {
+      x: margin.left,
+      y: margin.top,
+      width: innerW,
+      height: innerH,
+      fill: "transparent",
+      tabindex: "0",
+      role: "slider",
+      class: "vda-sparkline-hitbox",
+      "data-sparkline-hitbox": "true",
+      "data-metric-index": opts.metricIndex == null ? "" : opts.metricIndex,
+      "data-plot-left": margin.left,
+      "data-plot-right": width - margin.right,
+      "data-plot-top": margin.top,
+      "data-plot-bottom": height - margin.bottom,
+      "data-min-y": minY,
+      "data-max-y": maxY,
+      "aria-valuemin": 0,
+      "aria-valuemax": Math.max(0, points.length - 1),
+      "aria-valuenow": 0,
+      "aria-label": (definition.ariaLabel || opts.ariaLabel || "迷你趋势") +
+        "，使用左右方向键查看各期数值"
+    }));
+
+    var wrapper = document.createElement("div");
+    wrapper.className = opts.compact
+      ? "vda-sparkline is-compact"
+      : "vda-sparkline";
+    wrapper.dataset.domainMode =
+      definition.domainMode === "independent" ? "independent" : "shared";
+    wrapper.appendChild(svg);
+    return wrapper.outerHTML;
+  }
+
+  function renderComponentNote(note) {
+    if (!note) return "";
+    if (typeof note === "string") {
+      return '<p class="vda-note" data-note-kind="legacy">' +
+        esc(note) + "</p>";
+    }
+    var labels = {
+      definition: "口径说明",
+      scope: "范围说明",
+      method: "方法说明",
+      limitation: "限制说明",
+      source: "来源说明"
+    };
+    var kind = note.kind || "definition";
+    var text = note.text || "";
+    if (!text) return "";
+    return (
+      '<p class="vda-note" data-note-kind="' + esc(kind) + '">' +
+      '<span class="vda-note-label">' +
+      esc(labels[kind] || "补充说明") +
+      "：</span>" +
+      '<span class="vda-note-text">' + esc(text) + "</span></p>"
+    );
+  }
+
+  function svgEl(name, attrs, text) {
+    var element = document.createElementNS(NS, name);
+    Object.keys(attrs || {}).forEach(function (key) {
+      element.setAttribute(key, String(attrs[key]));
+    });
+    if (text != null) element.textContent = String(text);
+    return element;
+  }
+
+  function componentFrame(component, body, options) {
+    var opts = options || {};
+    var span = clamp(finite(component.span, 12), 3, 12);
+    var badge = component.badge
+      ? '<span class="vda-badge">' + esc(component.badge) + "</span>"
+      : "";
+    var subtitle = component.subtitle
+      ? '<p class="vda-panel-subtitle">' + esc(component.subtitle) + "</p>"
+      : "";
+    var note = renderComponentNote(component.note);
+    var title = component.title
+      ? '<div><h2 class="vda-panel-title">' + esc(component.title) + "</h2>" + subtitle + "</div>"
+      : "";
+    var head = title || badge
+      ? '<header class="vda-panel-head">' + title + badge + "</header>"
+      : "";
+    var tone = component.tone ? ' data-tone="' + esc(component.tone) + '"' : "";
+    var emphasis = component.emphasis
+      ? ' data-emphasis="' + esc(component.emphasis) + '"'
+      : "";
+    var panelClass = opts.panel === false ? "" : " vda-panel";
+    return (
+      '<section class="vda-component' + panelClass + '" style="--span:' + span + '"' +
+      ' data-component-id="' + esc(component.id || "") + '"' + tone + emphasis +
+      ' aria-label="' + esc(component.ariaLabel || component.title || component.type || "数据组件") + '">' +
+      head + body + note + "</section>"
+    );
+  }
+
+  function renderMetrics(component) {
+    var items = Array.isArray(component.items) ? component.items : [];
+    var columns = clamp(finite(component.columns, Math.min(items.length || 1, 4)), 1, 6);
+    var sharedDefinitions = items
+      .map(function (item) { return item.sparkline; })
+      .filter(function (definition) {
+        return definition && definition.domainMode !== "independent";
+      });
+    var sharedSparklineDomain = sharedDefinitions.length
+      ? sparklineDomain(sharedDefinitions)
+      : null;
+    var html =
+      '<div class="vda-metrics" data-count="' + items.length +
+      '" data-requested-columns="' + columns +
+      '" style="--columns:' + columns + '">';
+    items.forEach(function (item, itemIndex) {
+      var change = item.change
+        ? '<span class="vda-change" data-tone="' + esc(item.change.tone || "neutral") + '">' +
+          esc(item.change.label || item.change.display || "") + "</span>"
+        : "";
+      var context = item.context ? "<span>" + esc(item.context) + "</span>" : "";
+      var unit = item.unit ? '<span class="vda-metric-unit">' + esc(item.unit) + "</span>" : "";
+      var sparkline = item.sparkline
+        ? renderSparklineGraphic(item.sparkline, {
+            width: 156,
+            height: 58,
+            compact: true,
+            metricIndex: itemIndex,
+            domain: sharedSparklineDomain,
+            ariaLabel: item.label + "迷你趋势"
+          })
+        : "";
+      var scaleNote = item.sparkline &&
+        item.sparkline.domainMode === "independent"
+        ? '<span class="vda-sparkline-scale-note">独立尺度</span>'
+        : "";
+      html +=
+        '<article class="vda-metric">' +
+        '<p class="vda-metric-label">' + esc(item.label) + "</p>" +
+        '<p class="vda-metric-value">' + esc(displayValue(item)) + unit + "</p>" +
+        sparkline +
+        '<div class="vda-metric-context">' + change + context + scaleNote + "</div>" +
+        "</article>";
+    });
+    html += "</div>";
+    return componentFrame(component, html, { panel: false });
+  }
+
+  function renderDecision(component) {
+    var labels = {
+      finding: "事实发现",
+      interpretation: "分析判断",
+      risk: "风险",
+      action: "建议行动",
+      evidence: "证据"
+    };
+    var meta = [];
+    if (component.confidence) {
+      meta.push("置信度 " + component.confidence);
+    }
+    if (component.likelihood) {
+      meta.push("可能性 " + component.likelihood);
+    }
+    if (component.impact) {
+      meta.push("影响 " + component.impact);
+    }
+    if (component.owner) {
+      meta.push("负责人 " + component.owner);
+    }
+    if (component.due) {
+      meta.push("截止 " + component.due);
+    }
+    if (component.status) {
+      meta.push("状态 " + component.status);
+    }
+    if (Array.isArray(component.evidenceIds) && component.evidenceIds.length) {
+      meta.push("证据 " + component.evidenceIds.join(" · "));
+    }
+    var details = Array.isArray(component.details) && component.details.length
+      ? '<details class="vda-decision-details"><summary>查看补充证据</summary><ul>' +
+        component.details.map(function (item) {
+          return "<li>" + esc(item) + "</li>";
+        }).join("") + "</ul></details>"
+      : "";
+    var caveat = component.caveat
+      ? '<p class="vda-decision-caveat"><strong>边界：</strong>' +
+        esc(component.caveat) + "</p>"
+      : "";
+    var body =
+      '<article class="vda-decision" data-kind="' + esc(component.kind) + '">' +
+      '<div class="vda-decision-rule" aria-hidden="true"></div>' +
+      '<div class="vda-decision-content">' +
+      '<p class="vda-decision-kind">' +
+      esc(labels[component.kind] || component.kind) + "</p>" +
+      '<h2 class="vda-decision-title">' + esc(component.title || "") + "</h2>" +
+      '<p class="vda-decision-body">' + esc(component.body || "") + "</p>" +
+      caveat +
+      (meta.length
+        ? '<div class="vda-decision-meta">' +
+          meta.map(function (item) {
+            return "<span>" + esc(item) + "</span>";
+          }).join("") + "</div>"
+        : "") +
+      details +
+      "</div></article>";
+    var frameComponent = Object.assign({}, component, {
+      title: "",
+      subtitle: "",
+      badge: ""
+    });
+    return componentFrame(frameComponent, body, { panel: false });
+  }
+
+  function targetItems(component) {
+    if (Array.isArray(component.items) && component.items.length) {
+      return component.items;
+    }
+    return [component];
+  }
+
+  function targetDerived(item) {
+    var actual = finite(item.actual, 0);
+    var target = finite(item.target, 0);
+    var gap = actual - target;
+    var sameSign = actual === 0 || target === 0 || actual * target >= 0;
+    var attainment = null;
+    if (target !== 0 && sameSign) {
+      if (item.direction === "lower-is-better") {
+        if (actual !== 0) attainment = target / actual;
+      } else {
+        attainment = actual / target;
+      }
+    }
+    var achieved = item.direction === "lower-is-better"
+      ? actual <= target
+      : item.direction === "higher-is-better"
+        ? actual >= target
+        : Math.abs(gap) <= Math.max(1e-9, Math.abs(target) * 0.001);
+    return {
+      actual: actual,
+      target: target,
+      gap: gap,
+      attainment: attainment,
+      achieved: achieved
+    };
+  }
+
+  function targetDomain(item, derived) {
+    var values = [0, derived.actual, derived.target];
+    if (Number.isFinite(Number(item.baseline))) {
+      values.push(Number(item.baseline));
+    }
+    (Array.isArray(item.ranges) ? item.ranges : []).forEach(function (band) {
+      values.push(finite(band.from, 0), finite(band.to, 0));
+    });
+    var min = Math.min.apply(null, values);
+    var max = Math.max.apply(null, values);
+    if (min === max) return [min - 1, max + 1];
+    var padding = (max - min) * 0.05;
+    return [min - padding, max + padding];
+  }
+
+  function renderTarget(component) {
+    var rows = targetItems(component).map(function (item, itemIndex) {
+      var derived = targetDerived(item);
+      var format = item.format || component.format;
+      var domain = targetDomain(item, derived);
+      var span = domain[1] - domain[0] || 1;
+      var position = function (value) {
+        return clamp(((value - domain[0]) / span) * 100, 0, 100);
+      };
+      var zeroPosition = position(0);
+      var actualPosition = position(derived.actual);
+      var targetPosition = position(derived.target);
+      var actualLeft = Math.min(zeroPosition, actualPosition);
+      var actualWidth = Math.max(1.2, Math.abs(actualPosition - zeroPosition));
+      var baseline = Number.isFinite(Number(item.baseline))
+        ? '<span class="vda-target-baseline" style="left:' +
+          position(Number(item.baseline)) + '%" aria-hidden="true"></span>'
+        : "";
+      var ranges = (Array.isArray(item.ranges) ? item.ranges : [])
+        .map(function (band) {
+          var left = position(finite(band.from, 0));
+          var right = position(finite(band.to, 0));
+          return '<span class="vda-target-band" data-tone="' +
+            esc(band.tone || "neutral") + '" style="left:' +
+            Math.min(left, right) + "%;width:" + Math.abs(right - left) +
+            '%" title="' + esc(
+              (band.label ? band.label + "：" : "") +
+              formatValue(band.from, format) + "–" +
+              formatValue(band.to, format)
+            ) + '"></span>';
+        }).join("");
+      var attainment = derived.attainment == null
+        ? "不可用"
+        : formatValue(derived.attainment, {
+            type: "percent",
+            input: "ratio",
+            decimals: 1
+          });
+      var label = item.label || component.title || "目标";
+      var directionLabel = item.direction === "higher-is-better"
+        ? "越高越好"
+        : item.direction === "lower-is-better"
+          ? "越低越好"
+          : "中性目标";
+      var status = item.direction === "neutral"
+        ? "对照目标"
+        : derived.achieved ? "已达标" : "未达标";
+      var tip = label + "；实际 " + formatValue(derived.actual, format) +
+        "；目标 " + formatValue(derived.target, format) +
+        "；差距 " + signedLabel(derived.gap, format) +
+        "；达成率 " + attainment + "；" + directionLabel;
+      return (
+        '<article class="vda-target-row" tabindex="0" data-target-row="' +
+        itemIndex + '" data-achieved="' +
+        (derived.achieved ? "true" : "false") + '" data-tip="' +
+        esc(tip) + '" aria-label="' + esc(tip) + '">' +
+        '<div class="vda-target-row-head">' +
+        '<strong>' + esc(label) + '</strong>' +
+        '<span data-tone="' +
+        (item.direction === "neutral"
+          ? "neutral"
+          : derived.achieved ? "positive" : "warning") + '">' +
+        status + "</span></div>" +
+        '<div class="vda-target-values">' +
+        '<span><small>实际</small><strong>' +
+        esc(formatValue(derived.actual, format)) + "</strong></span>" +
+        '<span><small>目标</small><strong>' +
+        esc(formatValue(derived.target, format)) + "</strong></span>" +
+        '<span><small>差距</small><strong>' +
+        esc(signedLabel(derived.gap, format)) + "</strong></span>" +
+        '<span><small>达成率</small><strong>' +
+        esc(attainment) + "</strong></span></div>" +
+        '<div class="vda-target-track" role="img" aria-label="' +
+        esc(tip) + '">' + ranges +
+        '<span class="vda-target-zero" style="left:' +
+        zeroPosition + '%" aria-hidden="true"></span>' +
+        '<span class="vda-target-actual" style="left:' +
+        actualLeft + "%;width:" + actualWidth + '%" aria-hidden="true"></span>' +
+        baseline +
+        '<span class="vda-target-marker" style="left:' +
+        targetPosition + '%" aria-hidden="true"></span>' +
+        "</div>" +
+        '<div class="vda-target-legend"><span>范围 ' +
+        esc(formatValue(domain[0], format)) + "–" +
+        esc(formatValue(domain[1], format)) +
+        '</span><span class="vda-target-key">' +
+        '<i data-role="actual"></i>实际 <i data-role="target"></i>目标' +
+        (Number.isFinite(Number(item.baseline))
+          ? ' <i data-role="baseline"></i>基线'
+          : "") +
+        "</span><span>" + directionLabel + "</span></div>" +
+        "</article>"
+      );
+    }).join("");
+    return componentFrame(
+      component,
+      '<div class="vda-target-list" data-count="' +
+      targetItems(component).length + '">' + rows + "</div>"
+    );
+  }
+
+  function sortedRangeItems(component) {
+    var items = (Array.isArray(component.items)
+      ? component.items
+      : []).map(function (item, index) {
+        return Object.assign({ _sourceIndex: index }, item, {
+          _delta: finite(item.end, 0) - finite(item.start, 0)
+        });
+      });
+    var mode = component.sort || "none";
+    var comparators = {
+      "start-asc": function (a, b) { return a.start - b.start; },
+      "start-desc": function (a, b) { return b.start - a.start; },
+      "end-asc": function (a, b) { return a.end - b.end; },
+      "end-desc": function (a, b) { return b.end - a.end; },
+      "delta-asc": function (a, b) { return a._delta - b._delta; },
+      "delta-desc": function (a, b) { return b._delta - a._delta; },
+      "absolute-delta-desc": function (a, b) {
+        return Math.abs(b._delta) - Math.abs(a._delta);
+      }
+    };
+    if (comparators[mode]) items.sort(comparators[mode]);
+    return items;
+  }
+
+  function renderRange(component) {
+    var items = sortedRangeItems(component);
+    var values = [];
+    items.forEach(function (item) {
+      values.push(finite(item.start, 0), finite(item.end, 0));
+    });
+    var min = Math.min.apply(null, values);
+    var max = Math.max.apply(null, values);
+    if (min === max) {
+      min -= Math.max(1, Math.abs(min) * 0.08);
+      max += Math.max(1, Math.abs(max) * 0.08);
+    } else {
+      var padding = (max - min) * 0.09;
+      min -= padding;
+      max += padding;
+    }
+    var width = 680;
+    var rowHeight = 48;
+    var margin = { top: 20, right: 64, bottom: 18, left: 64 };
+    var height = Math.max(160, margin.top + items.length * rowHeight + margin.bottom);
+    var innerW = width - margin.left - margin.right;
+    var span = max - min || 1;
+    var xAt = function (value) {
+      return margin.left + ((value - min) / span) * innerW;
+    };
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": component.ariaLabel || component.title || "两期变化比较",
+      "data-range-svg": "true",
+      "data-domain-min": min,
+      "data-domain-max": max
+    });
+    items.forEach(function (item, index) {
+      var start = finite(item.start, 0);
+      var end = finite(item.end, 0);
+      var delta = end - start;
+      var relative = start === 0
+        ? "不可用"
+        : formatValue(delta / Math.abs(start), {
+            type: "percent",
+            input: "ratio",
+            decimals: 1
+          });
+      var y = margin.top + index * rowHeight + rowHeight / 2;
+      var startX = xAt(start);
+      var endX = xAt(end);
+      var close = Math.abs(startX - endX) < 82;
+      var tip = item.label + "；" + component.startLabel + " " +
+        formatValue(start, component.format) + "；" + component.endLabel +
+        " " + formatValue(end, component.format) + "；变化 " +
+        signedLabel(delta, component.format) + "；相对变化 " + relative;
+      svg.appendChild(svgEl("line", {
+        x1: Math.min(startX, endX),
+        x2: Math.max(startX, endX),
+        y1: y,
+        y2: y,
+        class: "vda-range-connector"
+      }));
+      svg.appendChild(svgEl("circle", {
+        cx: startX,
+        cy: y,
+        r: 5,
+        class: "vda-range-start"
+      }));
+      svg.appendChild(svgEl("circle", {
+        cx: endX,
+        cy: y,
+        r: 6,
+        class: "vda-range-end"
+      }));
+      svg.appendChild(svgEl("text", {
+        x: startX,
+        y: y + (close ? -10 : 18),
+        "text-anchor": "middle",
+        class: "vda-value-label"
+      }, formatValue(start, component.format)));
+      svg.appendChild(svgEl("text", {
+        x: endX,
+        y: y + (close ? 20 : -10),
+        "text-anchor": "middle",
+        class: "vda-range-end-label"
+      }, formatValue(end, component.format)));
+      var hitbox = svgEl("rect", {
+        x: 0,
+        y: y - rowHeight / 2,
+        width: width,
+        height: rowHeight,
+        fill: "transparent",
+        "data-range-hitbox": "true",
+        "data-range-index": index,
+        "data-tip": tip
+      });
+      hitbox.setAttribute("aria-hidden", "true");
+      svg.appendChild(hitbox);
+    });
+    var labelRail =
+      '<div class="vda-range-labels" aria-label="比较对象">' +
+      items.map(function (item, index) {
+        var start = finite(item.start, 0);
+        var end = finite(item.end, 0);
+        var delta = end - start;
+        var relative = start === 0
+          ? "不可用"
+          : formatValue(delta / Math.abs(start), {
+              type: "percent",
+              input: "ratio",
+              decimals: 1
+            });
+        var tip = item.label + "；" + component.startLabel + " " +
+          formatValue(start, component.format) + "；" + component.endLabel +
+          " " + formatValue(end, component.format) + "；变化 " +
+          signedLabel(delta, component.format) + "；相对变化 " + relative;
+        return '<button type="button" class="vda-range-label" ' +
+          'data-range-label="' + index + '" data-tip="' + esc(tip) +
+          '" aria-label="' + esc(tip) + '"><span>' +
+          esc(item.displayLabel || item.label) + "</span><small>" +
+          esc(formatValue(start, component.format)) + " → " +
+          esc(formatValue(end, component.format)) + " · " +
+          esc(signedLabel(delta, component.format)) + "</small></button>";
+      }).join("") + "</div>";
+    var plot = document.createElement("div");
+    plot.className = "vda-range-plot";
+    plot.appendChild(svg);
+    var mobileRows =
+      '<div class="vda-range-mobile" aria-label="窄屏两期变化列表">' +
+      items.map(function (item) {
+        var start = finite(item.start, 0);
+        var end = finite(item.end, 0);
+        var delta = end - start;
+        var tip = item.label + "；" + component.startLabel + " " +
+          formatValue(start, component.format) + "；" + component.endLabel +
+          " " + formatValue(end, component.format) + "；变化 " +
+          signedLabel(delta, component.format);
+        return (
+          '<button type="button" class="vda-range-mobile-row" data-tip="' +
+          esc(tip) + '" aria-label="' + esc(tip) + '">' +
+          '<span class="vda-range-mobile-label">' +
+          esc(item.displayLabel || item.label) + "</span>" +
+          '<span class="vda-range-mobile-values"><span><small>' +
+          esc(component.startLabel) + "</small><strong>" +
+          esc(formatValue(start, component.format)) +
+          '</strong></span><b aria-hidden="true">→</b><span><small>' +
+          esc(component.endLabel) + "</small><strong>" +
+          esc(formatValue(end, component.format)) +
+          '</strong></span><em>' +
+          esc(signedLabel(delta, component.format)) +
+          "</em></span></button>"
+        );
+      }).join("") + "</div>";
+    var body =
+      '<div class="vda-range-head"><span></span><div><strong>' +
+      esc(component.startLabel) + "</strong><strong>" +
+      esc(component.endLabel) + "</strong></div></div>" +
+      '<div class="vda-range-layout" style="--range-row-height:' +
+      rowHeight + 'px">' + labelRail + plot.outerHTML + "</div>" +
+      mobileRows;
+    return componentFrame(component, body);
+  }
+
+  function waterfallStates(component) {
+    var running = 0;
+    return (Array.isArray(component.steps) ? component.steps : [])
+      .map(function (step) {
+        var value = finite(step.value, 0);
+        var before = running;
+        var after = running;
+        if (step.kind === "start") {
+          before = 0;
+          after = value;
+          running = after;
+        } else if (step.kind === "delta") {
+          before = running;
+          after = running + value;
+          running = after;
+        } else {
+          before = 0;
+          after = value;
+          running = value;
+        }
+        return Object.assign({}, step, {
+          before: before,
+          after: after,
+          running: running
+        });
+      });
+  }
+
+  function compactLabel(value, limit) {
+    var text = String(value == null ? "" : value);
+    return Array.from(text).length > limit
+      ? Array.from(text).slice(0, Math.max(1, limit - 1)).join("") + "…"
+      : text;
+  }
+
+  function renderWaterfall(component) {
+    var states = waterfallStates(component);
+    var values = [0];
+    states.forEach(function (step) {
+      values.push(step.before, step.after);
+    });
+    var min = Math.min.apply(null, values);
+    var max = Math.max.apply(null, values);
+    if (min === max) max = min + 1;
+    var padding = (max - min) * 0.12;
+    min -= padding;
+    max += padding;
+    var width = Math.max(620, states.length * 116 + 76);
+    var height = 312;
+    var margin = { top: 32, right: 28, bottom: 70, left: 54 };
+    var innerW = width - margin.left - margin.right;
+    var innerH = height - margin.top - margin.bottom;
+    var stepW = innerW / Math.max(1, states.length);
+    var barW = Math.min(54, stepW * 0.54);
+    var yAt = function (value) {
+      return margin.top + ((max - value) / (max - min || 1)) * innerH;
+    };
+    var zeroY = yAt(0);
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": component.ariaLabel || component.title || "贡献桥接图",
+      "data-waterfall-svg": "true",
+      "data-reconciled": "true"
+    });
+    svg.style.minWidth = width + "px";
+    svg.appendChild(svgEl("line", {
+      x1: margin.left,
+      x2: width - margin.right,
+      y1: zeroY,
+      y2: zeroY,
+      class: "vda-zero-line"
+    }));
+    states.forEach(function (step, index) {
+      var centerX = margin.left + stepW * index + stepW / 2;
+      var start = step.kind === "delta" ? step.before : 0;
+      var end = step.after;
+      var topY = Math.min(yAt(start), yAt(end));
+      var bottomY = Math.max(yAt(start), yAt(end));
+      var tip = step.label + "；" +
+        (step.kind === "delta"
+          ? "本步变化 " + signedLabel(step.value, component.format) +
+            "；变化后累计 " + formatValue(step.after, component.format)
+          : "值 " + formatValue(step.value, component.format));
+      var rect = svgEl("rect", {
+        x: centerX - barW / 2,
+        y: topY,
+        width: barW,
+        height: Math.max(1, bottomY - topY),
+        rx: 3,
+        class: "vda-waterfall-bar",
+        "data-kind": step.kind,
+        "data-sign": step.kind === "delta"
+          ? step.value < 0 ? "negative" : step.value > 0 ? "positive" : "zero"
+          : "total",
+        "data-waterfall-step": index,
+        tabindex: "0",
+        "data-tip": tip
+      });
+      rect.setAttribute("aria-label", tip);
+      svg.appendChild(rect);
+      if (index < states.length - 1) {
+        var nextCenter = margin.left + stepW * (index + 1) + stepW / 2;
+        svg.appendChild(svgEl("line", {
+          x1: centerX + barW / 2,
+          x2: nextCenter - barW / 2,
+          y1: yAt(step.after),
+          y2: yAt(step.after),
+          class: "vda-waterfall-connector"
+        }));
+      }
+      svg.appendChild(svgEl("text", {
+        x: centerX,
+        y: Math.max(margin.top + 11, topY - 8),
+        "text-anchor": "middle",
+        class: "vda-waterfall-value"
+      }, step.kind === "delta"
+        ? signedLabel(step.value, component.format)
+        : formatValue(step.value, component.format)));
+      svg.appendChild(svgEl("text", {
+        x: centerX,
+        y: height - 38,
+        "text-anchor": "middle",
+        class: "vda-axis-label",
+        "data-waterfall-label": index
+      }, compactLabel(step.label, 9)));
+      if (step.kind === "delta") {
+        svg.appendChild(svgEl("text", {
+          x: centerX,
+          y: height - 19,
+          "text-anchor": "middle",
+          class: "vda-waterfall-running"
+        }, "累计 " + formatValue(step.after, component.format)));
+      }
+    });
+    var chart = document.createElement("div");
+    chart.className = "vda-waterfall-chart";
+    chart.setAttribute("data-waterfall-scroll", "true");
+    chart.setAttribute("tabindex", "0");
+    chart.setAttribute("aria-label", "贡献桥接图，可横向滚动查看完整步骤");
+    chart.appendChild(svg);
+    return componentFrame(
+      component,
+      '<div class="vda-waterfall-frame">' + chart.outerHTML + "</div>" +
+      '<p class="vda-scroll-cue vda-waterfall-cue">步骤较多时可左右滑动查看 →</p>'
+    );
+  }
+
+  function renderSparkline(component) {
+    var points = sparklineNumericPoints(component);
+    var first = null;
+    var last = null;
+    points.forEach(function (point) {
+      if (point.value == null) return;
+      if (!first) first = point;
+      last = point;
+    });
+    var change = first && last ? last.value - first.value : null;
+    var current = last ? formatValue(last.value, component.format) : "—";
+    var summary =
+      '<div class="vda-sparkline-summary">' +
+      '<span><small>当前</small><strong>' + esc(current) + "</strong></span>" +
+      '<span><small>较首期</small><strong>' +
+      esc(change == null ? "—" : signedLabel(change, component.format)) +
+      "</strong></span>" +
+      '<span><small>尺度</small><strong>' +
+      (component.domainMode === "independent" ? "独立尺度" : "共享尺度") +
+      "</strong></span></div>";
+    var incomplete = points.some(function (point) {
+      return point.status === "incomplete";
+    });
+    var status = incomplete
+      ? '<p class="vda-sparkline-status">末期或部分周期尚未完整，使用虚线／淡化表达。</p>'
+      : "";
+    return componentFrame(
+      component,
+      summary +
+      renderSparklineGraphic(component, {
+        width: 760,
+        height: 178,
+        compact: false,
+        ariaLabel: component.ariaLabel || component.title || "迷你趋势"
+      }) +
+      status
+    );
+  }
+
+  function getExtent(series) {
+    var values = [];
+    (series || []).forEach(function (entry) {
+      (entry.values || []).forEach(function (value) {
+        if (Number.isFinite(Number(value))) values.push(Number(value));
+      });
+    });
+    if (!values.length) return [0, 1];
+    var min = Math.min.apply(null, values);
+    var max = Math.max.apply(null, values);
+    if (min === max) {
+      var padding = Math.abs(min || 1) * 0.1;
+      return [min - padding, max + padding];
+    }
+    var range = max - min;
+    return [Math.min(0, min - range * 0.08), max + range * 0.12];
+  }
+
+  function compactChartLayout() {
+    return window.innerWidth <= 520;
+  }
+
+  function compactChartWidth() {
+    return Math.max(300, window.innerWidth - 54);
+  }
+
+  function estimateTextWidth(value, fontSize) {
+    var size = finite(fontSize, 11);
+    var units = Array.from(String(value == null ? "" : value)).reduce(function (sum, char) {
+      if (/[\u2E80-\u9FFF\uAC00-\uD7AF]/.test(char)) return sum + 1;
+      if (/[MW@%￥¥]/.test(char)) return sum + 0.82;
+      if (/\s/.test(char)) return sum + 0.36;
+      if (/[.,:;|!'"`()[\]{}+\-]/.test(char)) return sum + 0.44;
+      return sum + 0.62;
+    }, 0);
+    return Math.ceil(units * size);
+  }
+
+  function resolveBarLayout(component, categories, values) {
+    var max = Math.max.apply(null, values.concat([0]));
+    var min = Math.min.apply(null, values.concat([0]));
+    var hasPositive = max > 0;
+    var hasNegative = min < 0;
+    var requested = component.layout || "auto";
+    var diverging = requested === "diverging" ||
+      (requested !== "standard" && hasPositive && hasNegative);
+    if (!diverging) {
+      var compact = compactChartLayout();
+      return {
+        diverging: false,
+        width: compact ? compactChartWidth() : 760,
+        margin: compact
+          ? { top: 6, right: 46, bottom: 18, left: 92 }
+          : { top: 6, right: 86, bottom: 18, left: 138 },
+        categoryX: null
+      };
+    }
+
+    var categoryWidth = categories.reduce(function (largest, category) {
+      return Math.max(largest, estimateTextWidth(category, 11));
+    }, 0);
+    var valueWidth = values.reduce(function (largest, value) {
+      return Math.max(
+        largest,
+        estimateTextWidth(formatValue(value, component.format), 11)
+      );
+    }, 0);
+    var labelWidth = clamp(categoryWidth + 16, 104, 196);
+    var valueGutter = clamp(valueWidth + 14, 36, 96);
+    var negativeMagnitude = Math.abs(Math.min(0, min));
+    var positiveMagnitude = Math.max(0, max);
+    var totalMagnitude = negativeMagnitude + positiveMagnitude || 1;
+    var negativeShare = negativeMagnitude / totalMagnitude;
+    var positiveShare = positiveMagnitude / totalMagnitude;
+    var minimumSide = 72;
+    var plotWidth = Math.max(
+      520,
+      negativeShare > 0 ? minimumSide / negativeShare : 0,
+      positiveShare > 0 ? minimumSide / positiveShare : 0
+    );
+    plotWidth = clamp(Math.ceil(plotWidth), 520, 640);
+    var plotLeft = valueGutter + 20;
+    var right = valueGutter + 20;
+    var minorSidePixels = plotWidth * Math.min(negativeShare, positiveShare);
+    var extremeRatio = Math.max(negativeMagnitude, positiveMagnitude) /
+      Math.max(1e-9, Math.min(negativeMagnitude, positiveMagnitude));
+    return {
+      diverging: true,
+      width: Math.ceil(plotLeft + plotWidth + right),
+      margin: { top: 6, right: right, bottom: 18, left: plotLeft },
+      categoryX: null,
+      labelWidth: labelWidth,
+      valueGutter: valueGutter,
+      plotWidth: plotWidth,
+      negativeMagnitude: negativeMagnitude,
+      positiveMagnitude: positiveMagnitude,
+      minorSidePixels: minorSidePixels,
+      extremeRatio: extremeRatio,
+      extreme: hasPositive && hasNegative && minorSidePixels < 24,
+      minorityDirection: negativeMagnitude <= positiveMagnitude
+        ? "negative"
+        : "positive"
+    };
+  }
+
+  function renderDivergingBarDetail(component, categories, values, layout) {
+    if (!layout.extreme) return "";
+    var direction = layout.minorityDirection;
+    var items = categories.map(function (category, index) {
+      return {
+        category: category,
+        value: Number.isFinite(values[index]) ? values[index] : 0,
+        index: index
+      };
+    }).filter(function (item) {
+      return direction === "negative" ? item.value < 0 : item.value > 0;
+    });
+    var maxMagnitude = items.reduce(function (largest, item) {
+      return Math.max(largest, Math.abs(item.value));
+    }, 0) || 1;
+    var title = direction === "negative" ? "小量级负向局部放大" : "小量级正向局部放大";
+    return (
+      '<aside class="vda-bar-detail" data-bar-detail="true" data-minority-direction="' +
+      direction + '" aria-label="' + title + '">' +
+      '<div class="vda-bar-detail-head">' +
+      '<strong>' + title + '</strong>' +
+      '<span>独立比例，仅用于辨认小量级项目，不与主图条长比较</span>' +
+      '</div>' +
+      '<div class="vda-bar-detail-list">' +
+      items.map(function (item) {
+        var ratio = Math.abs(item.value) / maxMagnitude;
+        return (
+          '<div class="vda-bar-detail-row" data-bar-detail-row="' + item.index + '">' +
+          '<span class="vda-bar-detail-label" title="' + esc(item.category) + '">' +
+          esc(item.category) + '</span>' +
+          '<span class="vda-bar-detail-track" aria-hidden="true">' +
+          '<span class="vda-bar-detail-fill" data-direction="' + direction +
+          '" style="width:' + Math.max(4, ratio * 100) + '%"></span></span>' +
+          '<strong class="vda-bar-detail-value">' +
+          esc(formatValue(item.value, component.format)) + '</strong>' +
+          '</div>'
+        );
+      }).join("") +
+      '</div></aside>'
+    );
+  }
+
+  function renderDivergingBarNavigation() {
+    return (
+      '<div class="vda-bar-navigation" role="group" aria-label="双向条形图快速定位">' +
+      '<button type="button" data-bar-jump="negative">负向极值</button>' +
+      '<button type="button" data-bar-jump="zero">零轴</button>' +
+      '<button type="button" data-bar-jump="positive">正向极值</button>' +
+      '</div>'
+    );
+  }
+
+  function renderLineChart(component) {
+    var labels = Array.isArray(component.labels) ? component.labels : [];
+    var series = Array.isArray(component.series) ? component.series : [];
+    var annotations = Array.isArray(component.annotations)
+      ? component.annotations.map(function (annotation) {
+          var index = Number.isInteger(annotation.index)
+            ? annotation.index
+            : labels.indexOf(annotation.date);
+          return Object.assign({}, annotation, {
+            _index: clamp(index, 0, Math.max(0, labels.length - 1))
+          });
+        })
+      : component.annotation && Number.isInteger(component.annotation.index)
+        ? [Object.assign({
+            id: "legacy-annotation",
+            kind: "fact"
+          }, component.annotation, {
+            _index: clamp(
+              component.annotation.index,
+              0,
+              Math.max(0, labels.length - 1)
+            )
+          })]
+        : [];
+    var compact = compactChartLayout();
+    var width = compact ? compactChartWidth() : 760;
+    var height = compact ? Math.max(250, finite(component.height, 300) * 0.86) : finite(component.height, 300);
+    var margin = compact
+      ? { top: annotations.length ? 48 : 18, right: 18, bottom: 38, left: 44 }
+      : { top: annotations.length ? 44 : 16, right: 26, bottom: 42, left: 58 };
+    var innerW = width - margin.left - margin.right;
+    var innerH = height - margin.top - margin.bottom;
+    var extent = component.domain || getExtent(series);
+    var minY = finite(extent[0], 0);
+    var maxY = finite(extent[1], 1);
+    var yRange = maxY - minY || 1;
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": component.ariaLabel || component.title || "趋势图"
+    });
+
+    for (var tick = 0; tick <= 4; tick += 1) {
+      var y = margin.top + (innerH * tick) / 4;
+      var value = maxY - (yRange * tick) / 4;
+      svg.appendChild(svgEl("line", {
+        x1: margin.left, x2: width - margin.right, y1: y, y2: y,
+        class: tick === 4 && minY === 0 ? "vda-zero-line" : "vda-grid-line"
+      }));
+      svg.appendChild(svgEl("text", {
+        x: margin.left - 10, y: y + 4, "text-anchor": "end", class: "vda-axis-label"
+      }, formatValue(value, component.format)));
+    }
+
+    var xStep = labels.length > 1 ? innerW / (labels.length - 1) : innerW;
+    var labelEvery = Math.max(1, Math.ceil(labels.length / (compact ? 4 : 6)));
+    labels.forEach(function (label, index) {
+      if (index % labelEvery !== 0 && index !== labels.length - 1) return;
+      var x = margin.left + xStep * index;
+      svg.appendChild(svgEl("text", {
+        x: x, y: height - 14, "text-anchor": index === 0 ? "start" : index === labels.length - 1 ? "end" : "middle",
+        class: "vda-axis-label"
+      }, label));
+    });
+
+    series.forEach(function (entry, seriesIndex) {
+      var color = entry.color || palette[seriesIndex % palette.length];
+      var values = Array.isArray(entry.values) ? entry.values : [];
+      var points = [];
+      values.forEach(function (raw, index) {
+        var value = Number(raw);
+        if (!Number.isFinite(value)) return;
+        var x = margin.left + xStep * index;
+        var y = margin.top + ((maxY - value) / yRange) * innerH;
+        points.push([x, y, value, index]);
+      });
+      if (!points.length) return;
+
+      var d = points.map(function (point, index) {
+        return (index === 0 ? "M" : "L") + point[0].toFixed(2) + "," + point[1].toFixed(2);
+      }).join(" ");
+      var seriesMarks = svgEl("g", {
+        "data-series-mark": "true",
+        "data-series-index": seriesIndex
+      });
+      seriesMarks.appendChild(svgEl("path", {
+        d: d,
+        fill: "none",
+        stroke: color,
+        "stroke-width": entry.emphasis === "secondary" ? 2 : 3,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        opacity: entry.emphasis === "secondary" ? 0.55 : 1
+      }));
+
+      var last = points[points.length - 1];
+      if (component.endLabels !== false) {
+        seriesMarks.appendChild(svgEl("text", {
+          x: last[0] - 2,
+          y: last[1] - 10,
+          "text-anchor": "end",
+          class: "vda-value-label",
+          fill: color
+        }, formatValue(last[2], component.format)));
+      }
+      svg.appendChild(seriesMarks);
+    });
+
+    annotations.forEach(function (annotation, annotationIndex) {
+      var ax = margin.left + xStep * annotation._index;
+      var displayLabel = compact
+        ? String(annotationIndex + 1)
+        : annotationIndex < 3
+          ? annotation.label
+          : String(annotationIndex + 1);
+      svg.appendChild(svgEl("line", {
+        x1: ax, x2: ax, y1: margin.top, y2: height - margin.bottom,
+        class: "vda-line-annotation-line",
+        "data-kind": annotation.kind || "fact",
+        "data-annotation-index": annotationIndex
+      }));
+      svg.appendChild(svgEl("text", {
+        x: clamp(ax, margin.left + 10, width - margin.right - 10),
+        y: 16 + (annotationIndex % 2) * 15,
+        "text-anchor": "middle",
+        class: "vda-line-annotation-label",
+        "data-kind": annotation.kind || "fact"
+      }, displayLabel || ""));
+    });
+
+    var focusLayer = svgEl("g", {
+      class: "vda-line-focus-layer",
+      "data-open": "false",
+      "aria-hidden": "true"
+    });
+    focusLayer.appendChild(svgEl("line", {
+      x1: margin.left,
+      x2: margin.left,
+      y1: margin.top,
+      y2: height - margin.bottom,
+      class: "vda-crosshair-line"
+    }));
+    series.forEach(function (entry, seriesIndex) {
+      focusLayer.appendChild(svgEl("circle", {
+        cx: margin.left,
+        cy: margin.top,
+        r: 4.5,
+        class: "vda-crosshair-point",
+        fill: "#FFFFFF",
+        stroke: entry.color || palette[seriesIndex % palette.length],
+        "stroke-width": 2.5,
+        "data-series-index": seriesIndex
+      }));
+    });
+    svg.appendChild(focusLayer);
+
+    svg.appendChild(svgEl("rect", {
+      x: margin.left,
+      y: margin.top,
+      width: innerW,
+      height: innerH,
+      class: "vda-line-hitbox",
+      fill: "transparent",
+      tabindex: "0",
+      role: "slider",
+      "aria-label": (component.title || "趋势图") + "，使用左右方向键查看各时间点数值",
+      "aria-valuemin": 0,
+      "aria-valuemax": Math.max(0, labels.length - 1),
+      "aria-valuenow": 0,
+      "data-line-hitbox": "true",
+      "data-plot-left": margin.left,
+      "data-plot-right": width - margin.right,
+      "data-plot-top": margin.top,
+      "data-plot-bottom": height - margin.bottom,
+      "data-min-y": minY,
+      "data-max-y": maxY
+    }));
+
+    var container = document.createElement("div");
+    container.className = "vda-chart";
+    container.style.setProperty("--chart-height", height + "px");
+    container.appendChild(svg);
+
+    var legend = "";
+    if (series.length > 1) {
+      legend =
+        '<div class="vda-legend" role="group" aria-label="图例，点击显示或隐藏数据系列" data-line-legend="true">' +
+        series.map(function (entry, index) {
+          var name = entry.name || "系列 " + (index + 1);
+          return (
+            '<button class="vda-legend-item" type="button" ' +
+            'data-series-toggle="true" data-series-index="' + index + '" ' +
+            'data-state="visible" aria-pressed="true" ' +
+            'aria-label="' + esc(name) + '，当前显示，点击隐藏">' +
+            '<span class="vda-legend-swatch" style="--series-color:' +
+            esc(entry.color || palette[index % palette.length]) + '"></span>' +
+            '<span class="vda-legend-label">' + esc(name) + "</span>" +
+            "</button>"
+          );
+        }).join("") +
+        '<span class="vda-sr-only" aria-live="polite" data-line-legend-status></span>' +
+        "</div>";
+    }
+    var annotationList = annotations.length
+      ? '<div class="vda-line-events" aria-label="趋势事件清单">' +
+        annotations.map(function (annotation, index) {
+          var period = labels[annotation._index] || annotation.date || "";
+          var description = annotation.description || "";
+          var tip = period + "；" + annotation.label +
+            (description ? "；" + description : "") +
+            (annotation.kind === "interpretation"
+              ? "；分析判断，不代表因果已证实"
+              : "；事实事件");
+          return (
+            '<button type="button" class="vda-line-event" data-kind="' +
+            esc(annotation.kind || "fact") + '" data-tip="' + esc(tip) +
+            '" aria-label="' + esc(tip) + '">' +
+            '<span class="vda-line-event-index">' + (index + 1) + "</span>" +
+            '<span><strong>' + esc(annotation.label || "") +
+            "</strong><small>" + esc(period) +
+            (description ? " · " + esc(description) : "") +
+            "</small></span></button>"
+          );
+        }).join("") + "</div>"
+      : "";
+    return componentFrame(
+      component,
+      container.outerHTML + legend + annotationList
+    );
+  }
+
+  function renderBarChart(component) {
+    var categories = Array.isArray(component.categories) ? component.categories : [];
+    var displayCategories =
+      Array.isArray(component.displayCategories) &&
+      component.displayCategories.length === categories.length
+        ? component.displayCategories.map(String)
+        : categories.map(String);
+    var values = Array.isArray(component.values) ? component.values.map(Number) : [];
+    var layout = resolveBarLayout(component, displayCategories, values);
+    var width = layout.width;
+    var rowHeight = clamp(
+      finite(component.rowHeight, layout.diverging ? 44 : 38),
+      layout.diverging ? 40 : 28,
+      60
+    );
+    var height = Math.max(180, categories.length * rowHeight + 32);
+    var margin = layout.margin;
+    var innerW = width - margin.left - margin.right;
+    var max = Math.max.apply(null, values.concat([0]));
+    var min = Math.min.apply(null, values.concat([0]));
+    var range = max - Math.min(0, min) || 1;
+    var zeroX = margin.left + ((0 - Math.min(0, min)) / range) * innerW;
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": component.ariaLabel || component.title || "条形图",
+      "data-bar-svg": "true",
+      "data-bar-layout": layout.diverging ? "diverging" : "standard",
+      "data-domain-min": Math.min(0, min),
+      "data-domain-max": Math.max(0, max)
+    });
+    if (layout.diverging) svg.style.minWidth = width + "px";
+
+    svg.appendChild(svgEl("line", {
+      x1: zeroX, x2: zeroX, y1: margin.top, y2: height - margin.bottom,
+      class: "vda-zero-line",
+      "data-bar-zero": "true"
+    }));
+
+    categories.forEach(function (category, index) {
+      var displayCategory = displayCategories[index];
+      var value = Number.isFinite(values[index]) ? values[index] : 0;
+      var y = margin.top + index * rowHeight + rowHeight * 0.18;
+      var barH = rowHeight * 0.56;
+      var valueX = margin.left + ((value - Math.min(0, min)) / range) * innerW;
+      var x = Math.min(zeroX, valueX);
+      var barW = value === 0 ? 0 : Math.abs(valueX - zeroX);
+      var color = (component.colors && component.colors[index]) ||
+        (component.highlightIndex === index ? "#315CF5" : index === 0 ? "#315CF5" : "#A8B0BF");
+
+      if (!layout.diverging) {
+        svg.appendChild(svgEl("text", {
+          x: margin.left - 12,
+          y: y + barH / 2 + 4,
+          "text-anchor": "end",
+          class: "vda-axis-label",
+          "data-bar-category-label": "true"
+        }, displayCategory));
+      }
+
+      var bar = svgEl("rect", {
+        x: x, y: y, width: barW, height: barH, rx: 3,
+        fill: color,
+        opacity: component.highlightIndex == null || component.highlightIndex === index ? 1 : 0.48,
+        tabindex: "0",
+        "data-bar-mark": "true",
+        "data-bar-index": index,
+        "data-bar-value": value,
+        "data-bar-direction": value < 0 ? "negative" : value > 0 ? "positive" : "zero",
+        "data-tip": esc(category) + ": " + esc(formatValue(value, component.format))
+      });
+      bar.setAttribute("aria-label", bar.getAttribute("data-tip"));
+      svg.appendChild(bar);
+      svg.appendChild(svgEl("text", {
+        x: value >= 0 ? valueX + 8 : valueX - 8,
+        y: y + barH / 2 + 4,
+        "text-anchor": value >= 0 ? "start" : "end",
+        class: "vda-value-label",
+        "data-bar-value-label": "true",
+        "data-bar-index": index,
+        "data-bar-direction": value < 0 ? "negative" : value > 0 ? "positive" : "zero"
+      }, formatValue(value, component.format)));
+    });
+
+    var container = document.createElement("div");
+    container.className = "vda-chart" +
+      (layout.diverging ? " vda-bar-chart" : "");
+    container.style.setProperty("--chart-height", height + "px");
+    container.appendChild(svg);
+    if (layout.diverging) {
+      container.setAttribute("data-bar-layout", "diverging");
+      container.setAttribute("data-bar-zero-ratio", zeroX / width);
+      container.setAttribute("data-bar-chart-width", width);
+      container.setAttribute("data-bar-extreme", layout.extreme ? "true" : "false");
+      container.setAttribute("data-bar-extreme-ratio", layout.extremeRatio);
+      container.setAttribute("data-bar-minor-side-pixels", layout.minorSidePixels);
+      container.setAttribute("role", "group");
+      container.setAttribute("tabindex", "0");
+      container.setAttribute(
+        "aria-label",
+        (component.ariaLabel || component.title || "双向条形图") +
+          "，可左右滚动查看正负两侧"
+      );
+      var frame = document.createElement("div");
+      frame.className = "vda-bar-scroll-frame";
+      frame.setAttribute("data-bar-scroll-frame", "true");
+      frame.appendChild(container);
+      var labelRail =
+        '<div class="vda-bar-label-rail" aria-label="类别标签；可聚焦或点击查看完整名称">' +
+        categories.map(function (category, index) {
+          var displayCategory = displayCategories[index];
+          var accessibleLabel = displayCategory === category
+            ? category
+            : displayCategory + "；完整名称：" + category;
+          return (
+            '<button type="button" class="vda-bar-category-label" ' +
+            'data-bar-category-index="' + index + '" ' +
+            'data-bar-category-full="' + esc(category) + '" ' +
+            'data-bar-category-display="' + esc(displayCategory) + '" ' +
+            'data-tip="' + esc(category) + '" ' +
+            'aria-label="' + esc(accessibleLabel) + '">' +
+            '<span class="vda-bar-category-label-text">' +
+            esc(displayCategory) + "</span></button>"
+          );
+        }).join("") +
+        "</div>";
+      return componentFrame(
+        component,
+        '<div class="vda-diverging-bar-layout" style="--bar-label-width:' +
+          layout.labelWidth + "px;--bar-row-height:" + rowHeight + 'px">' +
+          labelRail + frame.outerHTML + "</div>" +
+          renderDivergingBarNavigation() +
+          '<p class="vda-scroll-cue vda-bar-scroll-cue">' +
+          "可左右滑动，或用上方按钮快速查看两端 →</p>" +
+          '<p class="vda-scroll-cue vda-bar-label-cue">' +
+          "长标签可悬停、聚焦或点击查看完整名称</p>" +
+          renderDivergingBarDetail(component, categories, values, layout)
+      );
+    }
+    return componentFrame(component, container.outerHTML);
+  }
+
+  function renderDonut(component) {
+    var segments = Array.isArray(component.segments) ? component.segments : [];
+    var values = segments.map(function (item) { return Math.max(0, finite(item.value, 0)); });
+    var total = values.reduce(function (sum, value) { return sum + value; }, 0) || 1;
+    var width = 680;
+    var height = 300;
+    var cx = 180;
+    var cy = 146;
+    var radius = 96;
+    var stroke = 28;
+    var compact = compactChartLayout();
+    if (compact) {
+      width = compactChartWidth();
+      height = 360;
+      cx = width / 2;
+      cy = 118;
+      radius = 76;
+      stroke = 24;
+    }
+    var circumference = 2 * Math.PI * radius;
+    var offset = 0;
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": component.ariaLabel || component.title || "占比图"
+    });
+
+    svg.appendChild(svgEl("circle", {
+      cx: cx, cy: cy, r: radius, fill: "none", stroke: "#EEF0F3", "stroke-width": stroke
+    }));
+
+    segments.forEach(function (segment, index) {
+      var length = (values[index] / total) * circumference;
+      var color = segment.color || palette[index % palette.length];
+      var circle = svgEl("circle", {
+        cx: cx, cy: cy, r: radius,
+        fill: "none",
+        stroke: color,
+        "stroke-width": stroke,
+        "stroke-dasharray": length + " " + (circumference - length),
+        "stroke-dashoffset": -offset,
+        "stroke-linecap": "butt",
+        transform: "rotate(-90 " + cx + " " + cy + ")",
+        tabindex: "0",
+        "data-tip": esc(segment.label) + ": " + esc(formatValue(segment.value, component.format))
+      });
+      circle.setAttribute("aria-label", circle.getAttribute("data-tip"));
+      svg.appendChild(circle);
+      offset += length;
+    });
+
+    svg.appendChild(svgEl("text", {
+      x: cx, y: cy - 2, "text-anchor": "middle",
+      fill: "#181C23", "font-size": "30", "font-weight": "680",
+      "letter-spacing": "-0.04em"
+    }, component.centerValue || formatValue(total, component.totalFormat || component.format)));
+    svg.appendChild(svgEl("text", {
+      x: cx, y: cy + 22, "text-anchor": "middle",
+      class: "vda-axis-label"
+    }, component.centerLabel || "总计"));
+
+    segments.forEach(function (segment, index) {
+      var y = compact ? 238 + index * 28 : 58 + index * 32;
+      svg.appendChild(svgEl("rect", {
+        x: compact ? 26 : 360, y: y - 9, width: 9, height: 9, rx: 2,
+        fill: segment.color || palette[index % palette.length]
+      }));
+      svg.appendChild(svgEl("text", {
+        x: compact ? 44 : 378, y: y, class: "vda-axis-label"
+      }, segment.label));
+      svg.appendChild(svgEl("text", {
+        x: compact ? width - 26 : 640, y: y, "text-anchor": "end", class: "vda-value-label"
+      }, formatValue(segment.value, component.format)));
+    });
+
+    var container = document.createElement("div");
+    container.className = "vda-chart";
+    container.appendChild(svg);
+    return componentFrame(component, container.outerHTML);
+  }
+
+  function mixColor(start, end, amount) {
+    function parse(hex) {
+      var value = hex.replace("#", "");
+      return [
+        parseInt(value.slice(0, 2), 16),
+        parseInt(value.slice(2, 4), 16),
+        parseInt(value.slice(4, 6), 16)
+      ];
+    }
+    var a = parse(start);
+    var b = parse(end);
+    return "#" + a.map(function (value, index) {
+      return Math.round(value + (b[index] - value) * amount).toString(16).padStart(2, "0");
+    }).join("");
+  }
+
+  function parseHourLabel(label) {
+    var normalized = String(label == null ? "" : label)
+      .trim()
+      .replace(/\s+/g, "")
+      .replace(/时$/, "")
+      .replace(/:00$/, "");
+    if (!/^\d{1,2}$/.test(normalized)) return null;
+    var hour = Number(normalized);
+    return hour >= 0 && hour <= 23 ? hour : null;
+  }
+
+  function isCanonicalHourlyColumns(columns) {
+    if (columns.length !== 24) return false;
+    return columns.every(function (label, index) {
+      return parseHourLabel(label) === index;
+    });
+  }
+
+  function resolveHeatmapGroups(component, columns) {
+    if (component.layout === "single") return [];
+    var supplied = Array.isArray(component.columnGroups)
+      ? component.columnGroups
+      : [];
+    if (supplied.length) {
+      return supplied.map(function (group, index) {
+        return {
+          label: group.label || "分组 " + (index + 1),
+          start: clamp(finite(group.start, 0), 0, Math.max(0, columns.length - 1)),
+          end: clamp(finite(group.end, columns.length - 1), 0, Math.max(0, columns.length - 1))
+        };
+      });
+    }
+    if (isCanonicalHourlyColumns(columns)) {
+      return [
+        { label: "0–11 时", start: 0, end: 11 },
+        { label: "12–23 时", start: 12, end: 23 }
+      ];
+    }
+    return [];
+  }
+
+  function buildHeatmapChart(component, rows, columns, matrix, group, min, max, compact) {
+    var start = group ? group.start : 0;
+    var end = group ? group.end : columns.length - 1;
+    var indices = [];
+    for (var index = start; index <= end; index += 1) indices.push(index);
+    var grouped = Boolean(group);
+    var range = max - min || 1;
+    var cellW = grouped ? (compact ? 48 : 54) : (compact ? 60 : 86);
+    var cellH = grouped ? 36 : 40;
+    var rowLabelWidth = rows.reduce(function (largest, row) {
+      return Math.max(largest, estimateTextWidth(row, 11));
+    }, 0);
+    var formattedValueWidth = matrix.reduce(function (largest, row) {
+      return Math.max(
+        largest,
+        (row || []).reduce(function (rowLargest, value) {
+          return Math.max(
+            rowLargest,
+            estimateTextWidth(formatValue(value, component.format), 10.5)
+          );
+        }, 0)
+      );
+    }, 0);
+    var left = grouped
+      ? clamp(rowLabelWidth + 14, 62, 94)
+      : clamp(rowLabelWidth + 18, 76, 112);
+    var minimumCellWidth = grouped
+      ? clamp(formattedValueWidth + 8, 28, 38)
+      : clamp(formattedValueWidth + 12, 36, 60);
+    var top = 42;
+    var width = left + indices.length * cellW + 18;
+    var height = top + rows.length * cellH + 20;
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": (component.ariaLabel || component.title || "热力图") +
+        (group ? "，" + group.label : ""),
+      "data-heatmap-svg": "true",
+      "data-domain-min": min,
+      "data-domain-max": max,
+      "data-column-count": indices.length,
+      "data-row-label-width": left,
+      "data-min-cell-width": minimumCellWidth,
+      "data-preferred-cell-width": cellW
+    });
+    svg.style.minWidth = width + "px";
+
+    indices.forEach(function (columnIndex, localIndex) {
+      svg.appendChild(svgEl("text", {
+        x: left + localIndex * cellW + cellW / 2,
+        y: 25,
+        "text-anchor": "middle",
+        class: "vda-axis-label",
+        "data-heatmap-column-label": "true",
+        "data-local-column-index": localIndex
+      }, columns[columnIndex]));
+    });
+
+    rows.forEach(function (row, rowIndex) {
+      svg.appendChild(svgEl("text", {
+        x: left - 10,
+        y: top + rowIndex * cellH + cellH / 2 + 4,
+        "text-anchor": "end",
+        class: "vda-axis-label",
+        "data-heatmap-row-label": "true"
+      }, row));
+      indices.forEach(function (columnIndex, localIndex) {
+        var value = matrix[rowIndex] ? Number(matrix[rowIndex][columnIndex]) : NaN;
+        var ratio = Number.isFinite(value) ? clamp((value - min) / range, 0, 1) : 0;
+        var fill = Number.isFinite(value) ? mixColor("#EEF2FF", "#315CF5", ratio) : "#F1F3F6";
+        var textColor = ratio > 0.58 ? "#FFFFFF" : "#263044";
+        var rawValue = Number.isFinite(value) ? String(matrix[rowIndex][columnIndex]) : "";
+        var rect = svgEl("rect", {
+          x: left + localIndex * cellW + 2,
+          y: top + rowIndex * cellH + 2,
+          width: cellW - 4,
+          height: cellH - 4,
+          rx: 5,
+          fill: fill,
+          tabindex: "0",
+          "data-heatmap-cell": "true",
+          "data-row-index": rowIndex,
+          "data-column-index": columnIndex,
+          "data-local-column-index": localIndex,
+          "data-raw-value": rawValue,
+          "data-tip": esc(row) + " · " + esc(columns[columnIndex]) + ": " +
+            esc(Number.isFinite(value) ? formatValue(value, component.format) : "无数据")
+        });
+        rect.setAttribute("aria-label", rect.getAttribute("data-tip"));
+        svg.appendChild(rect);
+        if (component.showValues !== false && Number.isFinite(value)) {
+          svg.appendChild(svgEl("text", {
+            x: left + localIndex * cellW + cellW / 2,
+            y: top + rowIndex * cellH + cellH / 2 + 4,
+            "text-anchor": "middle",
+            fill: textColor,
+            "font-size": grouped ? "10.5" : "11",
+            "font-weight": "650",
+            "pointer-events": "none",
+            "data-heatmap-value-label": "true",
+            "data-local-column-index": localIndex
+          }, formatValue(value, component.format)));
+        }
+      });
+    });
+
+    var chart = document.createElement("div");
+    chart.className = "vda-chart vda-heatmap-chart";
+    chart.style.setProperty("--chart-height", height + "px");
+    chart.setAttribute("data-heatmap-min-width", left + indices.length * minimumCellWidth + 18);
+    chart.appendChild(svg);
+    return chart;
+  }
+
+  function renderHeatmap(component) {
+    var rows = Array.isArray(component.rows) ? component.rows : [];
+    var columns = Array.isArray(component.columns) ? component.columns : [];
+    var matrix = Array.isArray(component.values) ? component.values : [];
+    var flat = [];
+    matrix.forEach(function (row) {
+      (row || []).forEach(function (value) {
+        if (Number.isFinite(Number(value))) flat.push(Number(value));
+      });
+    });
+    var min = component.domain ? finite(component.domain[0], 0) : Math.min.apply(null, flat.concat([0]));
+    var max = component.domain ? finite(component.domain[1], 1) : Math.max.apply(null, flat.concat([1]));
+    var compact = compactChartLayout();
+    var groups = resolveHeatmapGroups(component, columns);
+    var container = document.createElement("div");
+    container.className = groups.length ? "vda-heatmap-stack" : "vda-heatmap-single";
+    container.setAttribute("data-heatmap-layout", groups.length ? "stacked-groups" : "single");
+    container.setAttribute("data-domain-min", min);
+    container.setAttribute("data-domain-max", max);
+
+    if (groups.length) {
+      groups.forEach(function (group, groupIndex) {
+        var module = document.createElement("section");
+        module.className = "vda-heatmap-group";
+        module.setAttribute("data-heatmap-group", "true");
+        module.setAttribute("data-group-index", groupIndex);
+        module.setAttribute("data-start-index", group.start);
+        module.setAttribute("data-end-index", group.end);
+        module.setAttribute("data-column-count", group.end - group.start + 1);
+        module.setAttribute("data-domain-min", min);
+        module.setAttribute("data-domain-max", max);
+        var heading = document.createElement("h3");
+        heading.className = "vda-heatmap-group-title";
+        heading.textContent = group.label;
+        module.appendChild(heading);
+        module.appendChild(buildHeatmapChart(
+          component, rows, columns, matrix, group, min, max, compact
+        ));
+        container.appendChild(module);
+      });
+    } else {
+      container.appendChild(buildHeatmapChart(
+        component, rows, columns, matrix, null, min, max, compact
+      ));
+    }
+
+    var legend = document.createElement("div");
+    legend.className = "vda-heatmap-legend";
+    legend.setAttribute("data-heatmap-shared-legend", "true");
+    legend.innerHTML =
+      '<span class="vda-heatmap-legend-value">' + esc(formatValue(min, component.format)) + '</span>' +
+      '<span class="vda-heatmap-legend-ramp" aria-hidden="true"></span>' +
+      '<span class="vda-heatmap-legend-value">' + esc(formatValue(max, component.format)) + '</span>';
+    container.appendChild(legend);
+    if (groups.length) {
+      var cue = document.createElement("p");
+      cue.className = "vda-scroll-cue vda-heatmap-scroll-cue";
+      cue.textContent = "每个时段组可左右滑动查看完整 12 小时 →";
+      container.appendChild(cue);
+    }
+    return componentFrame(component, container.outerHTML);
+  }
+
+  function renderInsight(component) {
+    var frameComponent = Object.assign({}, component, {
+      title: "",
+      subtitle: "",
+      badge: "",
+      ariaLabel: component.ariaLabel || component.title || "关键发现"
+    });
+    var body =
+      '<article class="vda-insight" data-tone="' + esc(component.tone || "info") + '">' +
+      "<div>" +
+      '<p class="vda-insight-kicker">' + esc(component.kicker || "关键发现") + "</p>" +
+      '<h2 class="vda-insight-title">' + esc(component.title || "") + "</h2>" +
+      '<p class="vda-insight-body">' + esc(component.body || "") + "</p>" +
+      "</div></article>";
+    return componentFrame(frameComponent, body, { panel: false });
+  }
+
+  function renderTable(component) {
+    var columns = Array.isArray(component.columns) ? component.columns : [];
+    var rows = Array.isArray(component.rows) ? component.rows : [];
+    var header = columns.map(function (column) {
+      return '<th scope="col" data-align="' + esc(column.align || (column.type === "number" ? "right" : "left")) + '">' +
+        esc(column.label || column.key) + "</th>";
+    }).join("");
+    var body = rows.map(function (row) {
+      return "<tr>" + columns.map(function (column) {
+        var raw = row[column.key];
+        var text = column.type === "number" ? formatValue(raw, column.format) : raw;
+        var tone = row.tones && row.tones[column.key] ? row.tones[column.key] : "";
+        return '<td data-align="' + esc(column.align || (column.type === "number" ? "right" : "left")) +
+          '"' + (tone ? ' data-tone="' + esc(tone) + '"' : "") + ">" + esc(text) + "</td>";
+      }).join("") + "</tr>";
+    }).join("");
+    var html = '<div class="vda-table-wrap" tabindex="0" aria-label="' +
+      esc(component.ariaLabel || component.title || "数据表格") + '"><table class="vda-table"><thead><tr>' +
+      header + "</tr></thead><tbody>" + body + "</tbody></table></div>";
+    return componentFrame(component, html);
+  }
+
+  function renderDivider(component) {
+    return (
+      '<section class="vda-divider" style="--span:12" aria-label="' + esc(component.title || "分节") + '">' +
+      "<h2>" + esc(component.title || "") + "</h2>" +
+      (component.subtitle ? "<p>" + esc(component.subtitle) + "</p>" : "") +
+      "</section>"
+    );
+  }
+
+  function renderUnknown(component) {
+    return componentFrame(component, '<div class="vda-error">不支持的组件类型：' + esc(component.type) + "</div>");
+  }
+
+  function renderComponent(component) {
+    switch (component.type) {
+      case "metrics": return renderMetrics(component);
+      case "line": return renderLineChart(component);
+      case "bar": return renderBarChart(component);
+      case "donut": return renderDonut(component);
+      case "heatmap": return renderHeatmap(component);
+      case "decision": return renderDecision(component);
+      case "target": return renderTarget(component);
+      case "range": return renderRange(component);
+      case "waterfall": return renderWaterfall(component);
+      case "sparkline": return renderSparkline(component);
+      case "insight": return renderInsight(component);
+      case "table": return renderTable(component);
+      case "divider": return renderDivider(component);
+      default: return renderUnknown(component);
+    }
+  }
+
+  function renderHeader() {
+    var meta = spec.meta || {};
+    var metaItems = [];
+    if (meta.period) {
+      metaItems.push(
+        '<span class="vda-meta-item"><strong>周期</strong><span>' +
+        esc(meta.period) + "</span></span>"
+      );
+    }
+    if (meta.scope) {
+      metaItems.push(
+        '<span class="vda-meta-item"><strong>范围</strong><span>' +
+        esc(meta.scope) + "</span></span>"
+      );
+    }
+    if (meta.source) {
+      metaItems.push(
+        '<span class="vda-meta-item"><strong>来源</strong><span>' +
+        esc(meta.source) + "</span></span>"
+      );
+    }
+    return (
+      '<header class="vda-header">' +
+      "<div>" +
+      (spec.eyebrow ? '<p class="vda-eyebrow">' + esc(spec.eyebrow) + "</p>" : "") +
+      '<h1 class="vda-title">' + esc(spec.title || "数据分析") + "</h1>" +
+      (spec.subtitle ? '<p class="vda-subtitle">' + esc(spec.subtitle) + "</p>" : "") +
+      "</div>" +
+      (metaItems.length
+        ? '<div class="vda-meta" aria-label="数据范围">' +
+          metaItems.join("") + "</div>"
+        : "") +
+      "</header>"
+    );
+  }
+
+  function renderFooter() {
+    var footer = spec.footer || {};
+    if (!footer.source && !footer.note) return "";
+    return (
+      '<footer class="vda-footer">' +
+      "<span>" + esc(footer.source || "") + "</span>" +
+      "<span>" + esc(footer.note || "") + "</span>" +
+      "</footer>"
+    );
+  }
+
+  function setupTooltips() {
+    var tooltip = document.createElement("div");
+    tooltip.className = "vda-tooltip";
+    tooltip.setAttribute("role", "tooltip");
+    document.body.appendChild(tooltip);
+
+    function position(x, y) {
+      var rect = tooltip.getBoundingClientRect();
+      var left = clamp(x, 12, Math.max(12, window.innerWidth - rect.width - 12));
+      var top = clamp(y, 12, Math.max(12, window.innerHeight - rect.height - 12));
+      tooltip.style.left = left + "px";
+      tooltip.style.top = top + "px";
+    }
+
+    function showText(target, event) {
+      var text = target.getAttribute("data-tip");
+      if (!text) return;
+      tooltip.removeAttribute("data-shared");
+      tooltip.textContent = text.replace(/&amp;/g, "&");
+      tooltip.dataset.open = "true";
+      var x = event && event.clientX ? event.clientX + 12 : target.getBoundingClientRect().left + 12;
+      var y = event && event.clientY ? event.clientY + 12 : target.getBoundingClientRect().top + 12;
+      position(x, y);
+    }
+
+    function showShared(label, rows, x, y) {
+      tooltip.replaceChildren();
+      tooltip.dataset.shared = "true";
+      var title = document.createElement("div");
+      title.className = "vda-tooltip-title";
+      title.textContent = label;
+      tooltip.appendChild(title);
+      rows.forEach(function (row, index) {
+        var item = document.createElement("div");
+        item.className = "vda-tooltip-row";
+        item.dataset.seriesIndex = String(
+          row.seriesIndex == null ? index : row.seriesIndex
+        );
+        item.dataset.rawValue = row.raw == null ? "" : String(row.raw);
+        var swatch = document.createElement("span");
+        swatch.className = "vda-tooltip-swatch";
+        swatch.style.background = row.color;
+        var name = document.createElement("span");
+        name.className = "vda-tooltip-name";
+        name.textContent = row.name;
+        var value = document.createElement("strong");
+        value.className = "vda-tooltip-value";
+        value.textContent = row.display;
+        item.appendChild(swatch);
+        item.appendChild(name);
+        item.appendChild(value);
+        tooltip.appendChild(item);
+      });
+      tooltip.dataset.open = "true";
+      position(x, y);
+    }
+
+    function hide() {
+      tooltip.dataset.open = "false";
+    }
+
+    var pinnedTarget = null;
+
+    document.addEventListener("pointerover", function (event) {
+      var target = event.target.closest("[data-tip]");
+      if (target) showText(target, event);
+    });
+    document.addEventListener("pointermove", function (event) {
+      var target = event.target.closest("[data-tip]");
+      if (target && tooltip.dataset.open === "true") showText(target, event);
+    });
+    document.addEventListener("pointerout", function (event) {
+      var target = event.target.closest("[data-tip]");
+      if (target && target !== pinnedTarget) hide();
+    });
+    document.addEventListener("pointerdown", function (event) {
+      var target = event.target.closest("[data-tip]");
+      if (
+        target &&
+        (event.pointerType === "touch" || event.pointerType === "pen")
+      ) {
+        pinnedTarget = target;
+        showText(target, event);
+        return;
+      }
+      if (pinnedTarget && (!target || target !== pinnedTarget)) {
+        pinnedTarget = null;
+        hide();
+      }
+    });
+    document.addEventListener("focusin", function (event) {
+      var target = event.target.closest("[data-tip]");
+      if (target) showText(target);
+    });
+    document.addEventListener("focusout", function (event) {
+      if (event.target !== pinnedTarget) hide();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key !== "Escape") return;
+      pinnedTarget = null;
+      hide();
+    });
+
+    return {
+      element: tooltip,
+      hide: hide,
+      showShared: showShared
+    };
+  }
+
+  function setupLineChartInteractions(tooltipApi) {
+    var components = Array.isArray(spec.components) ? spec.components : [];
+    document.querySelectorAll("[data-line-hitbox]").forEach(function (hitbox) {
+      var section = hitbox.closest("[data-component-id]");
+      var componentId = section ? section.getAttribute("data-component-id") : "";
+      var component = components.find(function (item) {
+        return item && item.id === componentId && item.type === "line";
+      });
+      if (!component) return;
+
+      var labels = Array.isArray(component.labels) ? component.labels : [];
+      var series = Array.isArray(component.series) ? component.series : [];
+      if (!labels.length || !series.length) return;
+
+      var svg = hitbox.ownerSVGElement;
+      var focusLayer = svg.querySelector(".vda-line-focus-layer");
+      var crosshair = focusLayer.querySelector(".vda-crosshair-line");
+      var points = Array.from(focusLayer.querySelectorAll(".vda-crosshair-point"));
+      var marks = Array.from(svg.querySelectorAll("[data-series-mark]"));
+      var toggles = Array.from(
+        section.querySelectorAll("[data-series-toggle]")
+      );
+      var legendStatus = section.querySelector("[data-line-legend-status]");
+      var plotLeft = finite(hitbox.dataset.plotLeft, 0);
+      var plotRight = finite(hitbox.dataset.plotRight, 1);
+      var plotTop = finite(hitbox.dataset.plotTop, 0);
+      var plotBottom = finite(hitbox.dataset.plotBottom, 1);
+      var minY = finite(hitbox.dataset.minY, 0);
+      var maxY = finite(hitbox.dataset.maxY, 1);
+      var yRange = maxY - minY || 1;
+      var currentIndex = null;
+      var pinned = false;
+      var visibleSeries = series.map(function () { return true; });
+
+      function chartX(index) {
+        return labels.length > 1
+          ? plotLeft + ((plotRight - plotLeft) * index) / (labels.length - 1)
+          : (plotLeft + plotRight) / 2;
+      }
+
+      function chartY(value) {
+        return plotTop + ((maxY - value) / yRange) * (plotBottom - plotTop);
+      }
+
+      function clientPoint(index) {
+        var rect = svg.getBoundingClientRect();
+        var viewBox = svg.viewBox.baseVal;
+        var x = chartX(index);
+        return {
+          x: rect.left + ((x - viewBox.x) / viewBox.width) * rect.width,
+          y: rect.top + ((plotTop - viewBox.y) / viewBox.height) * rect.height
+        };
+      }
+
+      function accessibleText(index, rows) {
+        return [labels[index]].concat(rows.map(function (row) {
+          return row.name + " " + row.display;
+        })).join("，");
+      }
+
+      function selectIndex(index, clientX, clientY) {
+        index = clamp(index, 0, labels.length - 1);
+        currentIndex = index;
+        var x = chartX(index);
+        crosshair.setAttribute("x1", x);
+        crosshair.setAttribute("x2", x);
+        var rows = [];
+        series.forEach(function (entry, seriesIndex) {
+          var raw = Array.isArray(entry.values) ? entry.values[index] : null;
+          var numeric = Number(raw);
+          var valid = raw != null && raw !== "" && Number.isFinite(numeric);
+          var point = points[seriesIndex];
+          point.setAttribute("cx", x);
+          if (visibleSeries[seriesIndex] && valid) {
+            point.setAttribute("cy", chartY(numeric));
+            point.style.display = "";
+          } else {
+            point.style.display = "none";
+          }
+          if (!visibleSeries[seriesIndex]) return;
+          rows.push({
+            seriesIndex: seriesIndex,
+            name: entry.name || "系列 " + (seriesIndex + 1),
+            raw: valid ? raw : null,
+            display: valid ? formatValue(raw, entry.format || component.format) : "—",
+            color: entry.color || palette[seriesIndex % palette.length]
+          });
+        });
+        focusLayer.dataset.open = "true";
+        hitbox.setAttribute("aria-valuenow", index);
+        hitbox.setAttribute("aria-valuetext", accessibleText(index, rows));
+        var anchor = clientPoint(index);
+        tooltipApi.showShared(
+          labels[index],
+          rows,
+          clientX == null ? anchor.x + 12 : clientX + 12,
+          clientY == null ? anchor.y + 12 : clientY + 12
+        );
+      }
+
+      function visibleCount() {
+        return visibleSeries.filter(Boolean).length;
+      }
+
+      function updateLegendState(message) {
+        var count = visibleCount();
+        toggles.forEach(function (toggle, seriesIndex) {
+          var visible = visibleSeries[seriesIndex];
+          var name = series[seriesIndex].name || "系列 " + (seriesIndex + 1);
+          var lastVisible = visible && count === 1;
+          toggle.setAttribute("aria-pressed", visible ? "true" : "false");
+          toggle.setAttribute("aria-disabled", lastVisible ? "true" : "false");
+          toggle.dataset.state = visible ? "visible" : "hidden";
+          toggle.setAttribute(
+            "aria-label",
+            visible
+              ? name + (lastVisible
+                ? "，当前显示，至少保留一个系列"
+                : "，当前显示，点击隐藏")
+              : name + "，当前隐藏，点击显示"
+          );
+        });
+        if (legendStatus) legendStatus.textContent = message || "";
+        hitbox.setAttribute(
+          "aria-label",
+          (component.title || "趋势图") + "，当前显示 " + count +
+          " 个系列，使用左右方向键查看各时间点数值"
+        );
+      }
+
+      function setSeriesVisibility(seriesIndex, visible) {
+        visibleSeries[seriesIndex] = visible;
+        var mark = marks.find(function (candidate) {
+          return Number(candidate.dataset.seriesIndex) === seriesIndex;
+        });
+        if (mark) {
+          mark.dataset.visible = visible ? "true" : "false";
+          mark.style.display = visible ? "" : "none";
+        }
+        var point = points[seriesIndex];
+        if (point && !visible) point.style.display = "none";
+      }
+
+      function hide() {
+        if (pinned) return;
+        focusLayer.dataset.open = "false";
+        tooltipApi.hide();
+      }
+
+      function indexFromPointer(event) {
+        var rect = svg.getBoundingClientRect();
+        var viewBox = svg.viewBox.baseVal;
+        var svgX = viewBox.x + ((event.clientX - rect.left) / rect.width) * viewBox.width;
+        var ratio = clamp((svgX - plotLeft) / (plotRight - plotLeft || 1), 0, 1);
+        return Math.round(ratio * Math.max(0, labels.length - 1));
+      }
+
+      hitbox.addEventListener("pointerenter", function (event) {
+        if (event.pointerType === "touch") return;
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("pointermove", function (event) {
+        if (event.pointerType === "touch" || pinned) return;
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("pointerleave", hide);
+      hitbox.addEventListener("pointerdown", function (event) {
+        pinned = event.pointerType === "touch" || event.pointerType === "pen";
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("focus", function () {
+        selectIndex(currentIndex == null ? 0 : currentIndex);
+      });
+      hitbox.addEventListener("blur", function () {
+        if (!pinned) hide();
+      });
+      hitbox.addEventListener("keydown", function (event) {
+        var index = currentIndex == null ? 0 : currentIndex;
+        if (event.key === "ArrowRight") index += 1;
+        else if (event.key === "ArrowLeft") index -= 1;
+        else if (event.key === "Home") index = 0;
+        else if (event.key === "End") index = labels.length - 1;
+        else if (event.key === "Escape") {
+          pinned = false;
+          hide();
+          return;
+        } else {
+          return;
+        }
+        event.preventDefault();
+        pinned = true;
+        selectIndex(index);
+      });
+      toggles.forEach(function (toggle, seriesIndex) {
+        toggle.addEventListener("click", function () {
+          var name = series[seriesIndex].name || "系列 " + (seriesIndex + 1);
+          if (visibleSeries[seriesIndex] && visibleCount() === 1) {
+            updateLegendState("至少保留一个可见系列");
+            return;
+          }
+          var nextVisible = !visibleSeries[seriesIndex];
+          setSeriesVisibility(seriesIndex, nextVisible);
+          updateLegendState(
+            name + (nextVisible ? "已显示" : "已隐藏")
+          );
+          if (currentIndex != null && focusLayer.dataset.open === "true") {
+            selectIndex(currentIndex);
+          }
+        });
+      });
+      updateLegendState("");
+      document.addEventListener("pointerdown", function (event) {
+        if (event.target.closest("[data-line-hitbox], [data-sparkline-hitbox]")) {
+          return;
+        }
+        if (event.target === hitbox || section.contains(event.target)) return;
+        if (event.target.closest("[data-tip]")) {
+          pinned = false;
+          focusLayer.dataset.open = "false";
+          return;
+        }
+        pinned = false;
+        hide();
+      });
+    });
+  }
+
+  function setupSparklineInteractions(tooltipApi) {
+    var components = Array.isArray(spec.components) ? spec.components : [];
+    document.querySelectorAll("[data-sparkline-hitbox]").forEach(function (hitbox) {
+      var section = hitbox.closest("[data-component-id]");
+      var componentId = section ? section.dataset.componentId : "";
+      var component = components.find(function (item) {
+        return item && item.id === componentId;
+      });
+      if (!component) return;
+      var metricIndex = Number(hitbox.dataset.metricIndex);
+      var definition = component.type === "sparkline"
+        ? component
+        : component.type === "metrics" &&
+          Number.isInteger(metricIndex) &&
+          component.items &&
+          component.items[metricIndex]
+          ? component.items[metricIndex].sparkline
+          : null;
+      if (!definition) return;
+      var points = sparklineNumericPoints(definition);
+      if (!points.length) return;
+      var svg = hitbox.ownerSVGElement;
+      var focus = svg.querySelector(".vda-sparkline-focus");
+      var focusLine = focus.querySelector(".vda-sparkline-focus-line");
+      var focusPoint = focus.querySelector(".vda-sparkline-focus-point");
+      var plotLeft = finite(hitbox.dataset.plotLeft, 0);
+      var plotRight = finite(hitbox.dataset.plotRight, 1);
+      var plotTop = finite(hitbox.dataset.plotTop, 0);
+      var plotBottom = finite(hitbox.dataset.plotBottom, 1);
+      var minY = finite(hitbox.dataset.minY, 0);
+      var maxY = finite(hitbox.dataset.maxY, 1);
+      var yRange = maxY - minY || 1;
+      var currentIndex = 0;
+      var pinned = false;
+      var name = component.type === "metrics"
+        ? component.items[metricIndex].label
+        : component.title || "迷你趋势";
+
+      function chartX(index) {
+        return points.length > 1
+          ? plotLeft + ((plotRight - plotLeft) * index) / (points.length - 1)
+          : (plotLeft + plotRight) / 2;
+      }
+
+      function chartY(value) {
+        return plotTop + ((maxY - value) / yRange) * (plotBottom - plotTop);
+      }
+
+      function clientPoint(index) {
+        var rect = svg.getBoundingClientRect();
+        var viewBox = svg.viewBox.baseVal;
+        var x = chartX(index);
+        return {
+          x: rect.left + ((x - viewBox.x) / viewBox.width) * rect.width,
+          y: rect.top + ((plotTop - viewBox.y) / viewBox.height) * rect.height
+        };
+      }
+
+      function selectIndex(index, clientX, clientY) {
+        document.querySelectorAll(".vda-sparkline-focus").forEach(function (layer) {
+          if (layer !== focus) layer.dataset.open = "false";
+        });
+        currentIndex = clamp(index, 0, points.length - 1);
+        var point = points[currentIndex];
+        var x = chartX(currentIndex);
+        focusLine.setAttribute("x1", x);
+        focusLine.setAttribute("x2", x);
+        if (point.value == null) {
+          focusPoint.style.display = "none";
+        } else {
+          focusPoint.style.display = "";
+          focusPoint.setAttribute("cx", x);
+          focusPoint.setAttribute("cy", chartY(point.value));
+        }
+        focus.dataset.open = "true";
+        var display = point.value == null
+          ? "—"
+          : formatValue(point.value, definition.format || component.format);
+        var status = point.status === "incomplete"
+          ? "，周期未完整"
+          : point.status === "missing" ? "，数据缺失" : "";
+        hitbox.setAttribute("aria-valuenow", currentIndex);
+        hitbox.setAttribute(
+          "aria-valuetext",
+          String(point.x) + "，" + name + " " + display + status
+        );
+        var anchor = clientPoint(currentIndex);
+        tooltipApi.showShared(
+          String(point.x) + status,
+          [{
+            name: name,
+            display: display,
+            raw: point.value,
+            color: "#315CF5"
+          }],
+          clientX == null ? anchor.x + 10 : clientX + 10,
+          clientY == null ? anchor.y + 10 : clientY + 10
+        );
+      }
+
+      function indexFromPointer(event) {
+        var rect = svg.getBoundingClientRect();
+        var viewBox = svg.viewBox.baseVal;
+        var svgX = viewBox.x +
+          ((event.clientX - rect.left) / rect.width) * viewBox.width;
+        var ratio = clamp(
+          (svgX - plotLeft) / (plotRight - plotLeft || 1),
+          0,
+          1
+        );
+        return Math.round(ratio * Math.max(0, points.length - 1));
+      }
+
+      function hide() {
+        if (pinned) return;
+        focus.dataset.open = "false";
+        tooltipApi.hide();
+      }
+
+      hitbox.addEventListener("pointerenter", function (event) {
+        if (event.pointerType === "touch") return;
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("pointermove", function (event) {
+        if (event.pointerType === "touch" || pinned) return;
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("pointerleave", hide);
+      hitbox.addEventListener("pointerdown", function (event) {
+        pinned = event.pointerType === "touch" || event.pointerType === "pen";
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("focus", function () {
+        selectIndex(currentIndex);
+      });
+      hitbox.addEventListener("blur", function () {
+        if (!pinned) hide();
+      });
+      hitbox.addEventListener("keydown", function (event) {
+        var next = currentIndex;
+        if (event.key === "ArrowRight") next += 1;
+        else if (event.key === "ArrowLeft") next -= 1;
+        else if (event.key === "Home") next = 0;
+        else if (event.key === "End") next = points.length - 1;
+        else if (event.key === "Escape") {
+          pinned = false;
+          hide();
+          return;
+        } else {
+          return;
+        }
+        event.preventDefault();
+        pinned = true;
+        selectIndex(next);
+      });
+      document.addEventListener("pointerdown", function (event) {
+        if (event.target.closest("[data-line-hitbox], [data-sparkline-hitbox]")) {
+          return;
+        }
+        if (event.target === hitbox || section.contains(event.target)) return;
+        pinned = false;
+        hide();
+      });
+    });
+  }
+
+  function setupRangeKeyboard() {
+    document.querySelectorAll(".vda-range-labels").forEach(function (rail) {
+      var labels = Array.from(rail.querySelectorAll(".vda-range-label"));
+      labels.forEach(function (label, index) {
+        label.addEventListener("keydown", function (event) {
+          var next = index;
+          if (event.key === "ArrowDown") next += 1;
+          else if (event.key === "ArrowUp") next -= 1;
+          else if (event.key === "Home") next = 0;
+          else if (event.key === "End") next = labels.length - 1;
+          else return;
+          event.preventDefault();
+          labels[clamp(next, 0, labels.length - 1)].focus();
+        });
+      });
+    });
+  }
+
+  function setupWaterfallInteractions() {
+    document.querySelectorAll(".vda-waterfall-chart").forEach(function (chart) {
+      var steps = Array.from(chart.querySelectorAll("[data-waterfall-step]"));
+      var section = chart.closest("[data-component-id]");
+      var scrollable = chart.scrollWidth > chart.clientWidth + 1;
+      chart.dataset.scrollable = scrollable ? "true" : "false";
+      if (section) section.dataset.waterfallScrollable =
+        scrollable ? "true" : "false";
+      steps.forEach(function (step, index) {
+        step.addEventListener("keydown", function (event) {
+          var next = index;
+          if (event.key === "ArrowRight") next += 1;
+          else if (event.key === "ArrowLeft") next -= 1;
+          else if (event.key === "Home") next = 0;
+          else if (event.key === "End") next = steps.length - 1;
+          else return;
+          event.preventDefault();
+          var target = steps[clamp(next, 0, steps.length - 1)];
+          target.focus();
+          target.scrollIntoView({
+            block: "nearest",
+            inline: "center",
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+              ? "auto"
+              : "smooth"
+          });
+        });
+      });
+    });
+  }
+
+  function setupDivergingBarScrolling() {
+    document.querySelectorAll(
+      '.vda-bar-chart[data-bar-layout="diverging"]'
+    ).forEach(function (chart) {
+      var component = chart.closest("[data-component-id]");
+      var controls = component
+        ? Array.from(component.querySelectorAll("[data-bar-jump]"))
+        : [];
+      var requestedPosition = "zero";
+      var programmaticPosition = null;
+
+      function metrics() {
+        var maxScroll = Math.max(0, chart.scrollWidth - chart.clientWidth);
+        var zeroRatio = clamp(finite(chart.dataset.barZeroRatio, 0.5), 0, 1);
+        return {
+          maxScroll: maxScroll,
+          zeroPixel: zeroRatio * chart.scrollWidth
+        };
+      }
+
+      function targetFor(position) {
+        var state = metrics();
+        if (position === "negative") return 0;
+        if (position === "positive") return state.maxScroll;
+        return clamp(
+          state.zeroPixel - chart.clientWidth / 2,
+          0,
+          state.maxScroll
+        );
+      }
+
+      function setControlState(position) {
+        controls.forEach(function (control) {
+          var selected = control.dataset.barJump === position;
+          control.dataset.current = selected ? "true" : "false";
+          control.setAttribute("aria-pressed", selected ? "true" : "false");
+        });
+      }
+
+      function updateCurrentPosition(preferredPosition) {
+        var state = metrics();
+        var positions = {
+          negative: 0,
+          zero: targetFor("zero"),
+          positive: state.maxScroll
+        };
+        var current = preferredPosition || requestedPosition || "zero";
+        if (Math.abs(chart.scrollLeft - positions[current]) > 2) {
+          var nearest = Infinity;
+          Object.keys(positions).forEach(function (position) {
+            var distance = Math.abs(chart.scrollLeft - positions[position]);
+            if (distance < nearest - 0.5) {
+              nearest = distance;
+              current = position;
+            }
+          });
+        }
+        requestedPosition = current;
+        setControlState(current);
+      }
+
+      var target = targetFor("zero");
+      chart.scrollLeft = target;
+      var maxScroll = metrics().maxScroll;
+      chart.dataset.scrollable = maxScroll > 1 ? "true" : "false";
+      chart.dataset.initialScrollLeft = String(chart.scrollLeft);
+      var frame = chart.closest("[data-bar-scroll-frame]");
+      if (frame) frame.dataset.scrollable = chart.dataset.scrollable;
+      if (component) component.dataset.barScrollable = chart.dataset.scrollable;
+      controls.forEach(function (control) {
+        control.addEventListener("click", function () {
+          requestedPosition = control.dataset.barJump;
+          programmaticPosition = requestedPosition;
+          var requestedTarget = targetFor(requestedPosition);
+          setControlState(requestedPosition);
+          chart.scrollTo({
+            left: requestedTarget,
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+              ? "auto"
+              : "smooth"
+          });
+          window.setTimeout(function () {
+            updateCurrentPosition(programmaticPosition);
+            programmaticPosition = null;
+          }, 500);
+        });
+      });
+      chart.addEventListener("scroll", function () {
+        if (programmaticPosition) {
+          setControlState(programmaticPosition);
+          return;
+        }
+        updateCurrentPosition();
+      }, { passive: true });
+      updateCurrentPosition();
+    });
+  }
+
+  function setupDivergingBarLabels() {
+    document.querySelectorAll(
+      '.vda-bar-chart[data-bar-layout="diverging"]'
+    ).forEach(function (chart) {
+      var component = chart.closest("[data-component-id]");
+      if (!component) return;
+      var labels = Array.from(
+        component.querySelectorAll(".vda-bar-category-label")
+      );
+      var hasCondensedLabel = false;
+      labels.forEach(function (label) {
+        var text = label.querySelector(".vda-bar-category-label-text");
+        var full = label.dataset.barCategoryFull || "";
+        var display = label.dataset.barCategoryDisplay || "";
+        var visuallyTruncated = Boolean(text) && (
+          text.scrollHeight > text.clientHeight + 1 ||
+          text.scrollWidth > text.clientWidth + 1
+        );
+        var condensed = visuallyTruncated || full !== display;
+        label.dataset.truncated = visuallyTruncated ? "true" : "false";
+        label.dataset.condensed = condensed ? "true" : "false";
+        hasCondensedLabel = hasCondensedLabel || condensed;
+      });
+      component.dataset.barLongLabels = hasCondensedLabel ? "true" : "false";
+    });
+  }
+
+  function layoutHeatmapChart(chart) {
+    var svg = chart.querySelector("[data-heatmap-svg]");
+    if (!svg || chart.clientWidth <= 0) return;
+    var columnCount = Math.max(1, finite(svg.dataset.columnCount, 1));
+    var left = finite(svg.dataset.rowLabelWidth, 72);
+    var minimumCellWidth = finite(svg.dataset.minCellWidth, 28);
+    var preferredCellWidth = finite(svg.dataset.preferredCellWidth, 54);
+    var availableForCells = Math.max(
+      0,
+      chart.clientWidth - left - 18
+    );
+    var fittedCellWidth = availableForCells / columnCount;
+    var cellWidth = fittedCellWidth >= minimumCellWidth
+      ? Math.min(preferredCellWidth, fittedCellWidth)
+      : minimumCellWidth;
+    var width = Math.ceil(left + columnCount * cellWidth + 18);
+    var viewBox = String(svg.getAttribute("viewBox") || "").split(/\s+/);
+    var height = finite(viewBox[3], 240);
+    svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+    svg.style.width = width + "px";
+    svg.style.minWidth = width + "px";
+
+    svg.querySelectorAll("[data-heatmap-column-label]").forEach(function (label) {
+      var localIndex = finite(label.dataset.localColumnIndex, 0);
+      label.setAttribute("x", left + localIndex * cellWidth + cellWidth / 2);
+    });
+    svg.querySelectorAll("[data-heatmap-row-label]").forEach(function (label) {
+      label.setAttribute("x", left - 10);
+    });
+    svg.querySelectorAll("[data-heatmap-cell]").forEach(function (cell) {
+      var localIndex = finite(cell.dataset.localColumnIndex, 0);
+      cell.setAttribute("x", left + localIndex * cellWidth + 2);
+      cell.setAttribute("width", Math.max(1, cellWidth - 4));
+    });
+    svg.querySelectorAll("[data-heatmap-value-label]").forEach(function (label) {
+      var localIndex = finite(label.dataset.localColumnIndex, 0);
+      label.setAttribute("x", left + localIndex * cellWidth + cellWidth / 2);
+    });
+
+    var scrollable = chart.scrollWidth > chart.clientWidth + 1;
+    chart.dataset.scrollable = scrollable ? "true" : "false";
+    var group = chart.closest("[data-heatmap-group]");
+    if (group) group.dataset.scrollable = chart.dataset.scrollable;
+  }
+
+  function setupHeatmapSizing() {
+    var charts = Array.from(document.querySelectorAll(".vda-heatmap-chart"));
+    charts.forEach(layoutHeatmapChart);
+    document.querySelectorAll('[data-heatmap-layout="stacked-groups"]').forEach(function (stack) {
+      var component = stack.closest("[data-component-id]");
+      var scrollable = Array.from(
+        stack.querySelectorAll(".vda-heatmap-chart")
+      ).some(function (chart) {
+        return chart.dataset.scrollable === "true";
+      });
+      if (component) {
+        component.dataset.heatmapScrollable = scrollable ? "true" : "false";
+      }
+    });
+    if (typeof ResizeObserver === "function") {
+      charts.forEach(function (chart) {
+        var observer = new ResizeObserver(function () {
+          layoutHeatmapChart(chart);
+          var stack = chart.closest('[data-heatmap-layout="stacked-groups"]');
+          var component = chart.closest("[data-component-id]");
+          if (stack && component) {
+            component.dataset.heatmapScrollable = Array.from(
+              stack.querySelectorAll(".vda-heatmap-chart")
+            ).some(function (item) {
+              return item.scrollWidth > item.clientWidth + 1;
+            }) ? "true" : "false";
+          }
+        });
+        observer.observe(chart);
+      });
+    }
+  }
+
+  function init() {
+    try {
+      var mode = spec.mode === "dashboard" ? "dashboard" : "report-component";
+      root.dataset.mode = mode;
+      root.innerHTML =
+        '<div class="vda-shell">' +
+        renderHeader() +
+        '<div class="vda-grid">' +
+        (Array.isArray(spec.components) ? spec.components.map(renderComponent).join("") : "") +
+        "</div>" +
+        renderFooter() +
+        "</div>";
+      var tooltipApi = setupTooltips();
+      setupLineChartInteractions(tooltipApi);
+      setupSparklineInteractions(tooltipApi);
+      setupRangeKeyboard();
+      window.requestAnimationFrame(function () {
+        setupHeatmapSizing();
+        setupDivergingBarLabels();
+        setupDivergingBarScrolling();
+        setupWaterfallInteractions();
+        document.documentElement.dataset.vdaReady = "true";
+        window.dispatchEvent(new CustomEvent("vda:ready"));
+      });
+    } catch (error) {
+      root.innerHTML = '<div class="vda-error"><strong>组件渲染失败</strong><br>' + esc(error.message) + "</div>";
+      document.documentElement.dataset.vdaReady = "error";
+      console.error(error);
+    }
+  }
+
+  init();
+})();
+
+  </script>
+</body>
+</html>

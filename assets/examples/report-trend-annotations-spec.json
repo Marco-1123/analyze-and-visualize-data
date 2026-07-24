@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "report-component",
+  "title": "策略上线后 SLA 先降后恢复，时间重合不代表因果",
+  "eyebrow": "P1 · MULTI-EVENT ANNOTATIONS",
+  "subtitle": "事实事件与分析判断采用不同线型，超过三个标签时转入事件清单",
+  "meta": {
+    "period": "2026-05-04—2026-07-20",
+    "scope": "企业服务团队",
+    "source": "周度 SLA 与事件台账"
+  },
+  "components": [
+    {
+      "id": "line-sla-events",
+      "type": "line",
+      "title": "四个事件与 SLA 周度趋势",
+      "subtitle": "事件用于定位上下文，不作为因果证明",
+      "labels": [
+        "5/04", "5/11", "5/18", "5/25", "6/01", "6/08",
+        "6/15", "6/22", "6/29", "7/06", "7/13", "7/20"
+      ],
+      "series": [
+        {
+          "name": "24 小时 SLA",
+          "values": [92.1, 92.8, 93.0, 92.6, 92.4, 89.8, 88.9, 90.1, 91.2, 92.0, 92.6, 93.1],
+          "color": "#315CF5"
+        },
+        {
+          "name": "一次解决率",
+          "values": [77.2, 77.6, 78.1, 78.0, 78.4, 76.9, 76.4, 77.0, 77.8, 78.2, 78.5, 78.7],
+          "color": "#17A6A1",
+          "emphasis": "secondary"
+        }
+      ],
+      "annotations": [
+        {
+          "id": "routing-release",
+          "date": "6/01",
+          "label": "新路由策略上线",
+          "kind": "fact",
+          "description": "企业恢复队列开始按优先级重新分配。",
+          "evidenceIds": ["event.routing-release"]
+        },
+        {
+          "id": "holiday-volume",
+          "date": "6/08",
+          "label": "节后咨询量上升",
+          "kind": "fact",
+          "description": "新增咨询量较前一周增加 18%。",
+          "evidenceIds": ["fact.volume-jump"]
+        },
+        {
+          "id": "adaptation-hypothesis",
+          "date": "6/15",
+          "label": "可能存在适应期",
+          "kind": "interpretation",
+          "description": "时间重合不代表路由策略已被证明为下降原因。"
+        },
+        {
+          "id": "staffing-adjustment",
+          "date": "6/29",
+          "label": "夜间班次补充",
+          "kind": "fact",
+          "description": "20:00—23:00 增加一个值班小组。",
+          "evidenceIds": ["event.staffing-change"]
+        }
+      ],
+      "format": {
+        "type": "percent",
+        "input": "percent",
+        "decimals": 1
+      },
+      "evidenceIds": [
+        "series.sla-weekly",
+        "series.fcr-weekly"
+      ],
+      "note": {
+        "kind": "limitation",
+        "text": "事件与趋势的时间重合只提供分析上下文；因果判断仍需控制咨询量、人员和队列结构。",
+        "evidenceIds": ["limitation.causal-attribution"]
+      },
+      "ariaLabel": "包含四个事实或解释事件的 SLA 与一次解决率双系列趋势图"
+    }
+  ]
+}

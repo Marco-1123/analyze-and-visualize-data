@@ -17,10 +17,30 @@ SUPPORTED_TYPES = {
     "bar",
     "donut",
     "heatmap",
+    "decision",
+    "target",
+    "range",
+    "waterfall",
+    "sparkline",
     "insight",
     "table",
     "divider",
 }
+SUPPORTED_SCHEMA_VERSIONS = {"1.0"}
+DECISION_KINDS = {"finding", "interpretation", "risk", "action", "evidence"}
+TARGET_DIRECTIONS = {"higher-is-better", "lower-is-better", "neutral"}
+TARGET_RANGE_TONES = {"negative", "warning", "positive", "neutral"}
+RANGE_SORTS = {
+    "none",
+    "start-asc",
+    "start-desc",
+    "end-asc",
+    "end-desc",
+    "delta-asc",
+    "delta-desc",
+    "absolute-delta-desc",
+}
+LINE_ANNOTATION_KINDS = {"fact", "interpretation"}
 SEMVER_PATTERN = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
     r"(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$"
@@ -52,7 +72,136 @@ def fail(message: str) -> None:
     raise ValueError(message)
 
 
+def is_number(value: Any) -> bool:
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and value == value
+        and value not in {float("inf"), float("-inf")}
+    )
+
+
+def validate_non_empty_string(value: Any, path: str) -> None:
+    if not isinstance(value, str) or not value.strip():
+        fail(f"{path} must be a non-empty string")
+
+
+def validate_string_array(value: Any, path: str, *, allow_empty: bool = True) -> None:
+    if not isinstance(value, list) or (not allow_empty and not value):
+        suffix = "a non-empty array" if not allow_empty else "an array"
+        fail(f"{path} must be {suffix}")
+    if not all(isinstance(item, str) and item.strip() for item in value):
+        fail(f"{path} must contain non-empty strings")
+
+
+def validate_evidence_ids(value: Any, path: str, *, required: bool = False) -> None:
+    if value is None:
+        if required:
+            fail(f"{path} is required")
+        return
+    validate_string_array(value, path, allow_empty=not required)
+
+
+def validate_sparkline_contract(value: Any, path: str) -> None:
+    if not isinstance(value, dict):
+        fail(f"{path} must be an object")
+    points = value.get("points")
+    if not isinstance(points, list) or not points:
+        fail(f"{path}.points must be a non-empty array")
+    seen_x: set[str] = set()
+    numeric_count = 0
+    for point_index, point in enumerate(points):
+        point_path = f"{path}.points[{point_index}]"
+        if not isinstance(point, dict):
+            fail(f"{point_path} must be an object")
+        x = point.get("x")
+        if not isinstance(x, (str, int, float)) or isinstance(x, bool):
+            fail(f"{point_path}.x must be a string or number")
+        x_key = str(x)
+        if x_key in seen_x:
+            fail(f"{path}.points x values must be unique and ordered")
+        seen_x.add(x_key)
+        point_value = point.get("value")
+        status = point.get("status", "complete")
+        if status not in {"complete", "incomplete", "missing"}:
+            fail(
+                f"{point_path}.status must be 'complete', 'incomplete', or 'missing'"
+            )
+        if point_value is None:
+            if status != "missing":
+                fail(f"{point_path}.value may be null only when status is 'missing'")
+        elif not is_number(point_value):
+            fail(f"{point_path}.value must be a finite number or null")
+        else:
+            numeric_count += 1
+    if not numeric_count:
+        fail(f"{path}.points must contain at least one numeric value")
+    if value.get("variant", "line") not in {"line", "bar"}:
+        fail(f"{path}.variant must be 'line' or 'bar'")
+    if value.get("domainMode", "shared") not in {"shared", "independent"}:
+        fail(f"{path}.domainMode must be 'shared' or 'independent'")
+    domain = value.get("domain")
+    if domain is not None:
+        if (
+            not isinstance(domain, list)
+            or len(domain) != 2
+            or not all(is_number(item) for item in domain)
+            or domain[0] >= domain[1]
+        ):
+            fail(f"{path}.domain must be [min, max] with min < max")
+    for optional_number in ("baseline", "target"):
+        if value.get(optional_number) is not None and not is_number(
+            value[optional_number]
+        ):
+            fail(f"{path}.{optional_number} must be a finite number")
+
+
+def validate_target_item(item: Any, path: str, *, list_item: bool) -> None:
+    if not isinstance(item, dict):
+        fail(f"{path} must be an object")
+    if list_item:
+        validate_non_empty_string(item.get("id"), f"{path}.id")
+        validate_non_empty_string(item.get("label"), f"{path}.label")
+    if not is_number(item.get("actual")):
+        fail(f"{path}.actual must be a finite number")
+    if not is_number(item.get("target")):
+        fail(f"{path}.target must be a finite number")
+    if item.get("direction") not in TARGET_DIRECTIONS:
+        fail(f"{path}.direction must be one of {sorted(TARGET_DIRECTIONS)}")
+    if item.get("baseline") is not None and not is_number(item.get("baseline")):
+        fail(f"{path}.baseline must be a finite number")
+    ranges = item.get("ranges")
+    if ranges is not None:
+        if not isinstance(ranges, list) or not ranges:
+            fail(f"{path}.ranges must be a non-empty array")
+        previous_to: float | None = None
+        for range_index, band in enumerate(ranges):
+            band_path = f"{path}.ranges[{range_index}]"
+            if not isinstance(band, dict):
+                fail(f"{band_path} must be an object")
+            if not is_number(band.get("from")) or not is_number(band.get("to")):
+                fail(f"{band_path}.from and to must be finite numbers")
+            if band["from"] >= band["to"]:
+                fail(f"{band_path}.from must be less than to")
+            if previous_to is not None and band["from"] < previous_to:
+                fail(f"{path}.ranges must be ordered and non-overlapping")
+            previous_to = float(band["to"])
+            if band.get("tone", "neutral") not in TARGET_RANGE_TONES:
+                fail(
+                    f"{band_path}.tone must be one of "
+                    f"{sorted(TARGET_RANGE_TONES)}"
+                )
+            if band.get("label") is not None:
+                validate_non_empty_string(band["label"], f"{band_path}.label")
+
+
 def validate_spec(spec: dict[str, Any]) -> None:
+    schema_version = spec.get("schemaVersion")
+    if schema_version is not None and schema_version not in SUPPORTED_SCHEMA_VERSIONS:
+        fail(
+            "spec.schemaVersion is unsupported; supported versions are "
+            f"{sorted(SUPPORTED_SCHEMA_VERSIONS)}"
+        )
     mode = spec.get("mode")
     if mode not in {"report-component", "dashboard"}:
         fail("spec.mode must be 'report-component' or 'dashboard'")
@@ -76,6 +225,9 @@ def validate_spec(spec: dict[str, Any]) -> None:
         if component_id in seen_ids:
             fail(f"duplicate component id: {component_id}")
         seen_ids.add(component_id)
+        validate_evidence_ids(
+            component.get("evidenceIds"), f"{path}.evidenceIds"
+        )
 
         if component_type not in {"metrics", "insight", "divider"}:
             if not isinstance(component.get("title"), str) or not component["title"].strip():
@@ -131,11 +283,75 @@ def validate_spec(spec: dict[str, Any]) -> None:
             items = component.get("items")
             if not isinstance(items, list) or not items:
                 fail(f"{path}.items must be a non-empty array")
+            for item_index, item in enumerate(items):
+                item_path = f"{path}.items[{item_index}]"
+                if not isinstance(item, dict):
+                    fail(f"{item_path} must be an object")
+                if item.get("sparkline") is not None:
+                    validate_sparkline_contract(
+                        item["sparkline"], f"{item_path}.sparkline"
+                    )
         elif component_type == "line":
             if not isinstance(component.get("labels"), list):
                 fail(f"{path}.labels must be an array")
             if not isinstance(component.get("series"), list) or not component["series"]:
                 fail(f"{path}.series must be a non-empty array")
+            if component.get("annotation") is not None and component.get(
+                "annotations"
+            ) is not None:
+                fail(f"{path} cannot define both annotation and annotations")
+            annotations = component.get("annotations")
+            if annotations is not None:
+                if not isinstance(annotations, list):
+                    fail(f"{path}.annotations must be an array")
+                seen_annotation_ids: set[str] = set()
+                labels = component.get("labels", [])
+                for annotation_index, annotation in enumerate(annotations):
+                    annotation_path = (
+                        f"{path}.annotations[{annotation_index}]"
+                    )
+                    if not isinstance(annotation, dict):
+                        fail(f"{annotation_path} must be an object")
+                    validate_non_empty_string(
+                        annotation.get("id"), f"{annotation_path}.id"
+                    )
+                    if annotation["id"] in seen_annotation_ids:
+                        fail(f"{path}.annotations ids must be unique")
+                    seen_annotation_ids.add(annotation["id"])
+                    validate_non_empty_string(
+                        annotation.get("label"),
+                        f"{annotation_path}.label",
+                    )
+                    if annotation.get("kind") not in LINE_ANNOTATION_KINDS:
+                        fail(
+                            f"{annotation_path}.kind must be 'fact' or "
+                            "'interpretation'"
+                        )
+                    has_index = "index" in annotation
+                    has_date = "date" in annotation
+                    if has_index == has_date:
+                        fail(
+                            f"{annotation_path} must define exactly one of "
+                            "index or date"
+                        )
+                    if has_index and (
+                        not isinstance(annotation["index"], int)
+                        or isinstance(annotation["index"], bool)
+                        or annotation["index"] < 0
+                        or annotation["index"] >= len(labels)
+                    ):
+                        fail(f"{annotation_path}.index is outside labels")
+                    if has_date and annotation["date"] not in labels:
+                        fail(f"{annotation_path}.date must match a line label")
+                    if annotation.get("description") is not None:
+                        validate_non_empty_string(
+                            annotation["description"],
+                            f"{annotation_path}.description",
+                        )
+                    validate_evidence_ids(
+                        annotation.get("evidenceIds"),
+                        f"{annotation_path}.evidenceIds",
+                    )
         elif component_type == "bar":
             categories = component.get("categories")
             values = component.get("values")
@@ -245,6 +461,160 @@ def validate_spec(spec: dict[str, Any]) -> None:
                         f"{path}.layout 'stacked-groups' requires "
                         "columnGroups unless columns are canonical 0–23 hours"
                     )
+        elif component_type == "decision":
+            kind = component.get("kind")
+            if kind not in DECISION_KINDS:
+                fail(f"{path}.kind must be one of {sorted(DECISION_KINDS)}")
+            validate_non_empty_string(component.get("body"), f"{path}.body")
+            if component.get("confidence") is not None:
+                if component["confidence"] not in {"low", "medium", "high"}:
+                    fail(
+                        f"{path}.confidence must be 'low', 'medium', or 'high'"
+                    )
+            if kind == "finding":
+                validate_evidence_ids(
+                    component.get("evidenceIds"),
+                    f"{path}.evidenceIds",
+                    required=True,
+                )
+                if component.get("confidence") is None:
+                    fail(f"{path}.confidence is required for finding")
+            elif kind == "interpretation":
+                validate_non_empty_string(
+                    component.get("caveat"), f"{path}.caveat"
+                )
+                if component.get("confidence") is None:
+                    fail(f"{path}.confidence is required for interpretation")
+            elif kind == "risk":
+                for field in ("likelihood", "impact"):
+                    validate_non_empty_string(
+                        component.get(field), f"{path}.{field}"
+                    )
+            elif kind == "action":
+                validate_evidence_ids(
+                    component.get("evidenceIds"),
+                    f"{path}.evidenceIds",
+                    required=True,
+                )
+            for field in ("owner", "due", "status"):
+                if component.get(field) is not None:
+                    validate_non_empty_string(
+                        component[field], f"{path}.{field}"
+                    )
+            details = component.get("details")
+            if details is not None:
+                if not isinstance(details, list) or not details:
+                    fail(f"{path}.details must be a non-empty array")
+                if not all(
+                    isinstance(item, str) and item.strip()
+                    for item in details
+                ):
+                    fail(f"{path}.details must contain non-empty strings")
+        elif component_type == "target":
+            items = component.get("items")
+            if items is None:
+                validate_target_item(component, path, list_item=False)
+            else:
+                if any(key in component for key in ("actual", "target", "direction")):
+                    fail(
+                        f"{path} cannot mix top-level target fields with items"
+                    )
+                if not isinstance(items, list) or not items:
+                    fail(f"{path}.items must be a non-empty array")
+                seen_target_ids: set[str] = set()
+                for item_index, item in enumerate(items):
+                    item_path = f"{path}.items[{item_index}]"
+                    validate_target_item(item, item_path, list_item=True)
+                    if item["id"] in seen_target_ids:
+                        fail(f"{path}.items ids must be unique")
+                    seen_target_ids.add(item["id"])
+        elif component_type == "range":
+            validate_non_empty_string(
+                component.get("startLabel"), f"{path}.startLabel"
+            )
+            validate_non_empty_string(
+                component.get("endLabel"), f"{path}.endLabel"
+            )
+            if component.get("sort", "none") not in RANGE_SORTS:
+                fail(f"{path}.sort must be one of {sorted(RANGE_SORTS)}")
+            items = component.get("items")
+            if not isinstance(items, list) or not items:
+                fail(f"{path}.items must be a non-empty array")
+            seen_range_ids: set[str] = set()
+            for item_index, item in enumerate(items):
+                item_path = f"{path}.items[{item_index}]"
+                if not isinstance(item, dict):
+                    fail(f"{item_path} must be an object")
+                validate_non_empty_string(item.get("id"), f"{item_path}.id")
+                validate_non_empty_string(
+                    item.get("label"), f"{item_path}.label"
+                )
+                if item.get("displayLabel") is not None:
+                    validate_non_empty_string(
+                        item["displayLabel"], f"{item_path}.displayLabel"
+                    )
+                if item["id"] in seen_range_ids:
+                    fail(f"{path}.items ids must be unique")
+                seen_range_ids.add(item["id"])
+                for field in ("start", "end"):
+                    if not is_number(item.get(field)):
+                        fail(f"{item_path}.{field} must be a finite number")
+        elif component_type == "waterfall":
+            tolerance = component.get("reconciliationTolerance", 0.01)
+            if not is_number(tolerance) or tolerance < 0:
+                fail(
+                    f"{path}.reconciliationTolerance must be a non-negative "
+                    "finite number"
+                )
+            steps = component.get("steps")
+            if not isinstance(steps, list) or len(steps) < 3:
+                fail(f"{path}.steps must contain at least three steps")
+            seen_step_ids: set[str] = set()
+            if not isinstance(steps[0], dict) or not isinstance(steps[-1], dict):
+                fail(f"{path}.steps must contain objects")
+            if steps[0].get("kind") != "start":
+                fail(f"{path}.steps[0].kind must be 'start'")
+            if steps[-1].get("kind") != "end":
+                fail(f"{path}.steps[-1].kind must be 'end'")
+            running: float | None = None
+            for step_index, step in enumerate(steps):
+                step_path = f"{path}.steps[{step_index}]"
+                if not isinstance(step, dict):
+                    fail(f"{step_path} must be an object")
+                validate_non_empty_string(step.get("id"), f"{step_path}.id")
+                validate_non_empty_string(
+                    step.get("label"), f"{step_path}.label"
+                )
+                if step["id"] in seen_step_ids:
+                    fail(f"{path}.steps ids must be unique")
+                seen_step_ids.add(step["id"])
+                kind = step.get("kind")
+                if kind not in {"start", "delta", "subtotal", "end"}:
+                    fail(
+                        f"{step_path}.kind must be start, delta, subtotal, "
+                        "or end"
+                    )
+                if step_index and kind == "start":
+                    fail(f"{path}.steps may contain only one start step")
+                if not is_number(step.get("value")):
+                    fail(f"{step_path}.value must be a finite number")
+                value = float(step["value"])
+                if kind == "start":
+                    running = value
+                elif kind == "delta":
+                    if running is None:
+                        fail(f"{step_path} appears before a start step")
+                    running += value
+                else:
+                    if running is None:
+                        fail(f"{step_path} appears before a start step")
+                    if abs(value - running) > float(tolerance):
+                        fail(
+                            f"{step_path}.value does not reconcile with the "
+                            f"running total {running:g}"
+                        )
+        elif component_type == "sparkline":
+            validate_sparkline_contract(component, path)
         elif component_type == "table":
             if not isinstance(component.get("columns"), list):
                 fail(f"{path}.columns must be an array")

@@ -77,6 +77,12 @@ Both modes use fixed embedded data. Filters, tabs, sorting, tooltips, and local 
   `assets/examples/report-trend-spec.json`,
   `assets/examples/report-hourly-heatmap-spec.json`, or
   `assets/examples/report-diverging-bar-spec.json`, or
+  `assets/examples/report-decision-spec.json`,
+  `assets/examples/report-target-spec.json`,
+  `assets/examples/report-range-spec.json`,
+  `assets/examples/report-waterfall-spec.json`,
+  `assets/examples/report-sparkline-spec.json`,
+  `assets/examples/report-trend-annotations-spec.json`, or
   `assets/examples/dashboard-spec.json`.
 - Run:
 
@@ -117,6 +123,23 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
 - For extreme positive/negative ratios, keep the main plot on one linear scale,
   require the labeled independent-scale small-side detail, and verify all three
   quick-position controls.
+- Use `decision` when a finding, interpretation, risk, or action needs explicit
+  evidence, confidence, caveat, ownership, or impact semantics. Never present
+  an interpretation as a measured fact.
+- Use `target` for actual-versus-goal reading. Derive gap and attainment from
+  the source actual, target, and direction; show attainment as unavailable when
+  a zero target or cross-sign comparison makes the ratio misleading.
+- Use `range` only for paired start/end observations of the same entity. At
+  narrow widths switch to an exact paired-value list rather than shrinking a
+  dumbbell chart until labels become unreadable.
+- Require a `waterfall` to reconcile its ordered start, deltas, subtotals, and
+  end value before rendering. Keep many steps in a component-level native
+  horizontal scroll viewport.
+- Keep metric sparklines secondary to their KPI. Same-group sparklines share a
+  y-domain by default, and incomplete or missing periods must remain explicit.
+- For `line.annotations[]`, separate fact events from interpretations. At
+  narrow widths use numbered plot markers with a complete event list below;
+  time adjacency is context, not proof of causation.
 - Use structured component notes only for definitions, scope, methods,
   limitations, and sources. Put findings and recommendations in analytical
   content, not in subdued gray notes.
@@ -165,6 +188,8 @@ Do not declare completion until:
 - `scripts/profile_data.py`: profile CSV, JSON, and XLSX inputs.
 - `scripts/build_artifact.py`: compile a JSON artifact specification into self-contained HTML.
 - `scripts/validate_artifact.py`: enforce structural, portability, and accessibility checks.
+- `scripts/test_p1_runtime.mjs`: exercise P1 components, edge cases, native
+  scrolling, touch, keyboard, and responsive behavior in a headless browser.
 - `scripts/check_version.py`: verify semantic version metadata and release tags.
 - `assets/design-tokens.json`: machine-readable visual tokens.
 - `assets/theme.css`: shared light editorial visual language.

@@ -34,6 +34,11 @@ Place the conclusion before the chart when the audience is executive. Place the 
 
 - Keep a component focused on one primary analytical question.
 - Use one chart, one compact KPI strip, one table, or a tightly related comparison pair.
+- Use a decision block when the chapter must preserve the distinction between a
+  finding, an interpretation, a risk, and a next action.
+- Use a target block for goal status, a paired range for two-period movement, a
+  waterfall for a reconciled additive bridge, and sparklines only for compact
+  secondary trends.
 - Include title, scope, unit, source, and a short evidence note.
 - Avoid duplicating long prose from the native document.
 - Make the component understandable if viewed alone.

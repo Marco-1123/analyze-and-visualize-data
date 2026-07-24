@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "report-component",
+  "title": "关键指标的短趋势支持快速扫描，但保留尺度与完整期说明",
+  "eyebrow": "P1 · SPARKLINE",
+  "subtitle": "同组迷你趋势默认共享 y 域；不完整周期使用虚线和淡化",
+  "meta": {
+    "period": "最近 8 周",
+    "scope": "企业服务运营",
+    "source": "周度运营快照"
+  },
+  "components": [
+    {
+      "id": "metrics-with-sparklines",
+      "type": "metrics",
+      "columns": 4,
+      "items": [
+        {
+          "label": "24 小时 SLA",
+          "value": 91.8,
+          "format": {"type": "percent", "input": "percent", "decimals": 1},
+          "change": {"label": "较首周 +3.4pp", "tone": "positive"},
+          "sparkline": {
+            "points": [
+              {"x": "W1", "value": 88.4},
+              {"x": "W2", "value": 89.1},
+              {"x": "W3", "value": 89.7},
+              {"x": "W4", "value": 90.5},
+              {"x": "W5", "value": 90.2},
+              {"x": "W6", "value": 91.4},
+              {"x": "W7", "value": 92.1},
+              {"x": "W8", "value": 91.8, "status": "incomplete"}
+            ],
+            "target": 96,
+            "domainMode": "shared",
+            "format": {"type": "percent", "input": "percent", "decimals": 1}
+          }
+        },
+        {
+          "label": "一次解决率",
+          "value": 78.6,
+          "format": {"type": "percent", "input": "percent", "decimals": 1},
+          "change": {"label": "较首周 +1.8pp", "tone": "positive"},
+          "sparkline": {
+            "points": [
+              {"x": "W1", "value": 76.8},
+              {"x": "W2", "value": 77.4},
+              {"x": "W3", "value": 77.1},
+              {"x": "W4", "value": 78.2},
+              {"x": "W5", "value": 78.8},
+              {"x": "W6", "value": 79.1},
+              {"x": "W7", "value": 78.9},
+              {"x": "W8", "value": 78.6, "status": "incomplete"}
+            ],
+            "target": 80,
+            "domainMode": "shared",
+            "format": {"type": "percent", "input": "percent", "decimals": 1}
+          }
+        },
+        {
+          "label": "客户满意度",
+          "value": 93.2,
+          "format": {"type": "percent", "input": "percent", "decimals": 1},
+          "change": {"label": "较首周 −0.6pp", "tone": "warning"},
+          "sparkline": {
+            "points": [
+              {"x": "W1", "value": 93.8},
+              {"x": "W2", "value": 94.1},
+              {"x": "W3", "value": 93.5},
+              {"x": "W4", "value": null, "status": "missing"},
+              {"x": "W5", "value": 93.7},
+              {"x": "W6", "value": 93.4},
+              {"x": "W7", "value": 93.5},
+              {"x": "W8", "value": 93.2, "status": "incomplete"}
+            ],
+            "target": 94,
+            "domainMode": "shared",
+            "format": {"type": "percent", "input": "percent", "decimals": 1}
+          }
+        },
+        {
+          "label": "质检通过率",
+          "value": 96.4,
+          "format": {"type": "percent", "input": "percent", "decimals": 1},
+          "change": {"label": "较首周 +1.1pp", "tone": "positive"},
+          "sparkline": {
+            "points": [
+              {"x": "W1", "value": 95.3},
+              {"x": "W2", "value": 95.8},
+              {"x": "W3", "value": 95.6},
+              {"x": "W4", "value": 96.1},
+              {"x": "W5", "value": 96.0},
+              {"x": "W6", "value": 96.5},
+              {"x": "W7", "value": 96.7},
+              {"x": "W8", "value": 96.4, "status": "incomplete"}
+            ],
+            "target": 96,
+            "domainMode": "shared",
+            "format": {"type": "percent", "input": "percent", "decimals": 1}
+          }
+        }
+      ],
+      "evidenceIds": [
+        "series.sla-weekly",
+        "series.fcr-weekly",
+        "series.csat-weekly",
+        "series.qa-weekly"
+      ]
+    },
+    {
+      "id": "standalone-volume-sparkline",
+      "type": "sparkline",
+      "title": "新增咨询量仍在上升，最后一周尚未完整",
+      "subtitle": "独立组件保留当前值、首期变化、目标线和完整期状态",
+      "points": [
+        {"x": "W1", "value": 18420},
+        {"x": "W2", "value": 19130},
+        {"x": "W3", "value": 18880},
+        {"x": "W4", "value": 20410},
+        {"x": "W5", "value": 21260},
+        {"x": "W6", "value": 21980},
+        {"x": "W7", "value": 23150},
+        {"x": "W8", "value": 22540, "status": "incomplete"}
+      ],
+      "baseline": 19000,
+      "target": 21000,
+      "domainMode": "independent",
+      "format": {"decimals": 0},
+      "evidenceIds": ["series.inquiries-weekly"],
+      "ariaLabel": "最近八周新增咨询量迷你趋势，最后一周尚未完整"
+    }
+  ]
+}

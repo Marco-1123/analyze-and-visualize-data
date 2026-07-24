@@ -6,7 +6,7 @@
   <meta name="use-iframe" content="true">
   <meta name="html-box-height-mode" content="auto">
   <meta name="description" content="周一至周日的逐小时访问量热力图，24 小时上下分组展示，共用统一色阶并支持逐格精确数值提示。">
-  <meta name="generator" content="analyze-and-visualize-data 0.9.0">
+  <meta name="generator" content="analyze-and-visualize-data 0.10.0">
   <meta name="color-scheme" content="light">
   <title>访问高峰集中在 18–21 时</title>
   <style>
@@ -395,6 +395,791 @@ a:focus-visible,
 .vda-change[data-tone="neutral"] {
   color: var(--vda-text-2);
   background: var(--vda-surface-subtle);
+}
+
+.vda-decision {
+  --decision-color: var(--vda-accent);
+  --decision-soft: var(--vda-accent-soft);
+  display: grid;
+  grid-template-columns: 3px minmax(0, 1fr);
+  gap: 18px;
+  padding: 21px 22px;
+  background: linear-gradient(
+    90deg,
+    var(--decision-soft),
+    rgba(255, 255, 255, 0.96) 42%
+  );
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-lg);
+}
+
+.vda-decision[data-kind="interpretation"] {
+  --decision-color: var(--vda-target);
+  --decision-soft: #f2efff;
+}
+
+.vda-decision[data-kind="risk"] {
+  --decision-color: var(--vda-warning);
+  --decision-soft: var(--vda-warning-soft);
+}
+
+.vda-decision[data-kind="action"] {
+  --decision-color: var(--vda-positive);
+  --decision-soft: var(--vda-positive-soft);
+}
+
+.vda-decision[data-kind="evidence"] {
+  --decision-color: var(--vda-text-2);
+  --decision-soft: var(--vda-surface-subtle);
+}
+
+.vda-decision-rule {
+  width: 3px;
+  min-height: 78px;
+  background: var(--decision-color);
+  border-radius: 999px;
+}
+
+.vda-decision-kind {
+  margin: 0 0 5px;
+  color: var(--decision-color);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.vda-decision-title {
+  margin: 0;
+  color: var(--vda-text-1);
+  font-size: 17px;
+  font-weight: 660;
+  letter-spacing: -0.02em;
+  line-height: 1.42;
+}
+
+.vda-decision-body,
+.vda-decision-caveat {
+  margin: 7px 0 0;
+  color: var(--vda-text-2);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.vda-decision-caveat {
+  color: var(--vda-text-3);
+  font-size: 12px;
+}
+
+.vda-decision-caveat strong {
+  color: var(--vda-text-2);
+}
+
+.vda-decision-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 13px;
+}
+
+.vda-decision-meta span {
+  min-height: 24px;
+  padding: 3px 8px;
+  color: var(--vda-text-2);
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid var(--vda-border);
+  border-radius: 999px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.vda-decision-details {
+  margin-top: 13px;
+  color: var(--vda-text-2);
+  font-size: 12px;
+}
+
+.vda-decision-details summary {
+  width: fit-content;
+  min-height: 40px;
+  padding: 8px 0;
+  color: var(--decision-color);
+  cursor: pointer;
+  font-weight: 620;
+}
+
+.vda-decision-details ul {
+  margin: 3px 0 0;
+  padding-left: 20px;
+}
+
+.vda-target-list {
+  display: grid;
+  gap: 14px;
+}
+
+.vda-target-row {
+  padding: 16px;
+  background: var(--vda-surface-subtle);
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-md);
+}
+
+.vda-target-row-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vda-target-row-head strong {
+  color: var(--vda-text-1);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.vda-target-row-head span {
+  min-height: 24px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.vda-target-row-head span[data-tone="positive"] {
+  color: var(--vda-positive);
+  background: var(--vda-positive-soft);
+}
+
+.vda-target-row-head span[data-tone="warning"] {
+  color: var(--vda-warning);
+  background: var(--vda-warning-soft);
+}
+
+.vda-target-row-head span[data-tone="neutral"] {
+  color: var(--vda-text-2);
+  background: #eef0f3;
+}
+
+.vda-target-values {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.vda-target-values span {
+  min-width: 0;
+}
+
+.vda-target-values small,
+.vda-sparkline-summary small {
+  display: block;
+  color: var(--vda-text-3);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.vda-target-values strong {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--vda-text-1);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 660;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-target-track {
+  position: relative;
+  height: 28px;
+  margin-top: 14px;
+  overflow: hidden;
+  background: #edf0f4;
+  border: 1px solid var(--vda-border-strong);
+  border-radius: 6px;
+}
+
+.vda-target-band,
+.vda-target-actual,
+.vda-target-marker,
+.vda-target-baseline,
+.vda-target-zero {
+  position: absolute;
+}
+
+.vda-target-band {
+  top: 0;
+  bottom: 0;
+  opacity: 0.62;
+}
+
+.vda-target-band[data-tone="negative"] {
+  background: #f6dddf;
+}
+
+.vda-target-band[data-tone="warning"] {
+  background: #f8e9c5;
+}
+
+.vda-target-band[data-tone="positive"] {
+  background: #dcefe4;
+}
+
+.vda-target-band[data-tone="neutral"] {
+  background: #e5e8ed;
+}
+
+.vda-target-actual {
+  top: 8px;
+  z-index: 2;
+  height: 12px;
+  background: var(--vda-accent);
+  border-radius: 3px;
+}
+
+.vda-target-marker {
+  top: 2px;
+  bottom: 2px;
+  z-index: 4;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--vda-target);
+  border-radius: 2px;
+}
+
+.vda-target-baseline {
+  top: 5px;
+  bottom: 5px;
+  z-index: 3;
+  width: 1px;
+  background: var(--vda-text-2);
+  border-style: dashed;
+}
+
+.vda-target-zero {
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 1px;
+  background: rgba(84, 91, 104, 0.34);
+}
+
+.vda-target-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+  color: var(--vda-text-3);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.vda-target-key {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.vda-target-key i {
+  display: inline-block;
+  width: 9px;
+  height: 3px;
+  margin-left: 3px;
+  background: var(--vda-text-2);
+  border-radius: 2px;
+}
+
+.vda-target-key i[data-role="actual"] {
+  background: var(--vda-accent);
+}
+
+.vda-target-key i[data-role="target"] {
+  height: 9px;
+  width: 2px;
+  background: var(--vda-target);
+}
+
+.vda-target-key i[data-role="baseline"] {
+  height: 9px;
+  width: 2px;
+  background: var(--vda-text-1);
+}
+
+.vda-range-head {
+  display: grid;
+  grid-template-columns: minmax(104px, 24%) minmax(0, 1fr);
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.vda-range-head > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 62px;
+  color: var(--vda-text-3);
+  font-size: 10px;
+}
+
+.vda-range-head strong:first-child {
+  color: var(--vda-text-2);
+}
+
+.vda-range-head strong:last-child {
+  color: var(--vda-accent);
+}
+
+.vda-range-layout {
+  display: grid;
+  grid-template-columns: minmax(104px, 24%) minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.vda-range-labels {
+  display: grid;
+  grid-auto-rows: var(--range-row-height, 48px);
+}
+
+.vda-range-label {
+  display: block;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 4px 0;
+  color: var(--vda-text-2);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--vda-border);
+  cursor: help;
+  text-align: left;
+}
+
+.vda-range-label span {
+  display: -webkit-box;
+  max-height: 2.6em;
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.vda-range-label small {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--vda-text-3);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-range-plot {
+  min-width: 0;
+}
+
+.vda-range-plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.vda-range-connector {
+  stroke: var(--vda-border-strong);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.vda-range-start {
+  fill: var(--vda-surface);
+  stroke: var(--vda-neutral);
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-range-end {
+  fill: var(--vda-accent);
+  stroke: var(--vda-surface);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-range-end-label {
+  fill: var(--vda-accent);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.vda-range-mobile {
+  display: none;
+}
+
+.vda-range-mobile-row {
+  width: 100%;
+  padding: 12px 0;
+  color: var(--vda-text-2);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--vda-border);
+  cursor: help;
+  text-align: left;
+}
+
+.vda-range-mobile-row:last-child {
+  border-bottom: 0;
+}
+
+.vda-range-mobile-label {
+  display: block;
+  overflow: hidden;
+  color: var(--vda-text-1);
+  font-size: 12px;
+  font-weight: 620;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-range-mobile-values {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  margin-top: 7px;
+}
+
+.vda-range-mobile-values small,
+.vda-range-mobile-values strong {
+  display: block;
+}
+
+.vda-range-mobile-values small {
+  color: var(--vda-text-3);
+  font-size: 9px;
+}
+
+.vda-range-mobile-values strong {
+  margin-top: 1px;
+  color: var(--vda-text-2);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.vda-range-mobile-values > span:nth-of-type(2) strong {
+  color: var(--vda-accent);
+}
+
+.vda-range-mobile-values b {
+  padding-bottom: 1px;
+  color: var(--vda-text-3);
+  font-size: 12px;
+}
+
+.vda-range-mobile-values em {
+  padding: 3px 7px;
+  color: var(--vda-accent);
+  background: var(--vda-accent-soft);
+  border-radius: 999px;
+  font-size: 10px;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.vda-waterfall-frame {
+  position: relative;
+  min-width: 0;
+}
+
+.vda-waterfall-chart {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+  scroll-padding-inline: 20px;
+  touch-action: pan-x pan-y;
+}
+
+.vda-waterfall-chart svg {
+  display: block;
+  width: auto;
+  height: auto;
+}
+
+.vda-waterfall-bar {
+  fill: var(--vda-text-2);
+  cursor: default;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-waterfall-bar[data-kind="start"],
+.vda-waterfall-bar[data-kind="end"],
+.vda-waterfall-bar[data-kind="subtotal"] {
+  fill: #4f5867;
+}
+
+.vda-waterfall-bar[data-kind="delta"][data-sign="positive"] {
+  fill: var(--vda-accent);
+}
+
+.vda-waterfall-bar[data-kind="delta"][data-sign="negative"] {
+  fill: #c98924;
+}
+
+.vda-waterfall-bar[data-kind="delta"][data-sign="zero"] {
+  fill: var(--vda-neutral);
+}
+
+.vda-waterfall-bar:focus-visible {
+  stroke: var(--vda-focus);
+  stroke-width: 4;
+  outline: none;
+}
+
+.vda-waterfall-connector {
+  stroke: var(--vda-border-strong);
+  stroke-width: 1.25;
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-waterfall-value,
+.vda-waterfall-running {
+  fill: var(--vda-text-2);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.vda-waterfall-running {
+  fill: var(--vda-text-3);
+  font-size: 9px;
+  font-weight: 550;
+}
+
+.vda-waterfall-cue {
+  display: none;
+}
+
+.vda-component[data-waterfall-scrollable="true"] .vda-waterfall-cue {
+  display: block;
+}
+
+.vda-sparkline {
+  position: relative;
+  min-width: 0;
+}
+
+.vda-sparkline svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.vda-sparkline.is-compact {
+  width: min(100%, 156px);
+  margin-top: 10px;
+}
+
+.vda-sparkline-segment {
+  stroke: var(--vda-accent);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-segment.is-incomplete {
+  stroke-dasharray: 3 3;
+  opacity: 0.48;
+}
+
+.vda-sparkline-bar {
+  fill: var(--vda-accent);
+}
+
+.vda-sparkline-bar.is-incomplete {
+  opacity: 0.42;
+}
+
+.vda-sparkline-end {
+  fill: var(--vda-accent);
+  stroke: var(--vda-surface);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-end.is-incomplete {
+  fill: var(--vda-surface);
+  stroke: var(--vda-accent);
+}
+
+.vda-sparkline-target,
+.vda-sparkline-baseline {
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-target {
+  stroke: var(--vda-target);
+  stroke-dasharray: 3 3;
+}
+
+.vda-sparkline-baseline {
+  stroke: var(--vda-border-strong);
+}
+
+.vda-sparkline-focus {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.vda-sparkline-focus[data-open="true"] {
+  opacity: 1;
+}
+
+.vda-sparkline-focus-line {
+  stroke: var(--vda-text-3);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-focus-point {
+  fill: var(--vda-surface);
+  stroke: var(--vda-accent);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-hitbox {
+  cursor: crosshair;
+  pointer-events: all;
+  stroke: transparent;
+  stroke-width: 2;
+  touch-action: pan-y;
+}
+
+.vda-sparkline-hitbox:focus-visible {
+  stroke: rgba(49, 92, 245, 0.58);
+  stroke-dasharray: 4 4;
+  outline: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-sparkline-scale-note {
+  color: var(--vda-warning);
+}
+
+.vda-sparkline-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.vda-sparkline-summary strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--vda-text-1);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 660;
+}
+
+.vda-sparkline-status {
+  margin: 8px 0 0;
+  color: var(--vda-warning);
+  font-size: 11px;
+}
+
+.vda-line-annotation-line {
+  stroke: var(--vda-target);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-line-annotation-line[data-kind="interpretation"] {
+  stroke: var(--vda-warning);
+  stroke-dasharray: 2 4;
+}
+
+.vda-line-annotation-label {
+  fill: var(--vda-target);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.vda-line-annotation-label[data-kind="interpretation"] {
+  fill: var(--vda-warning);
+}
+
+.vda-line-events {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.vda-line-event {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  min-height: 44px;
+  padding: 8px 9px;
+  color: var(--vda-text-2);
+  background: var(--vda-surface-subtle);
+  border: 1px solid var(--vda-border);
+  border-radius: 8px;
+  cursor: help;
+  text-align: left;
+}
+
+.vda-line-event[data-kind="interpretation"] {
+  background: var(--vda-warning-soft);
+  border-color: rgba(165, 95, 0, 0.18);
+}
+
+.vda-line-event-index {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  color: var(--vda-target);
+  background: #f0edff;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.vda-line-event[data-kind="interpretation"] .vda-line-event-index {
+  color: var(--vda-warning);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.vda-line-event strong,
+.vda-line-event small {
+  display: block;
+}
+
+.vda-line-event strong {
+  color: var(--vda-text-1);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.vda-line-event small {
+  margin-top: 2px;
+  color: var(--vda-text-3);
+  font-size: 10px;
+  line-height: 1.4;
 }
 
 .vda-chart {
@@ -1114,6 +1899,44 @@ a:focus-visible,
     font-size: 24px;
   }
 
+  .vda-decision {
+    gap: 14px;
+    padding: 17px;
+  }
+
+  .vda-target-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vda-target-row {
+    padding: 14px;
+  }
+
+  .vda-target-row-head {
+    align-items: flex-start;
+  }
+
+  .vda-range-head,
+  .vda-range-layout {
+    display: none;
+  }
+
+  .vda-range-mobile {
+    display: block;
+  }
+
+  .vda-line-events {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vda-sparkline-summary {
+    gap: 8px;
+  }
+
+  .vda-sparkline-summary strong {
+    font-size: 14px;
+  }
+
   .vda-insight {
     padding: 17px;
   }
@@ -1194,6 +2017,8 @@ a:focus-visible,
 
   .vda-header,
   .vda-panel,
+  .vda-decision,
+  .vda-target-row,
   .vda-insight,
   .vda-metrics {
     break-inside: avoid;
@@ -1280,6 +2105,224 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
     return formatValue(item ? item.value : null, item ? item.format : null);
   }
 
+  function signedLabel(value, format) {
+    var number = finite(value, 0);
+    var rendered = formatValue(Math.abs(number), format);
+    if (number > 0) return "+" + rendered;
+    if (number < 0) return "−" + rendered;
+    return rendered;
+  }
+
+  function sparklineNumericPoints(definition) {
+    return (Array.isArray(definition && definition.points)
+      ? definition.points
+      : []).map(function (point, index) {
+        var numeric = point && point.value != null
+          ? Number(point.value)
+          : NaN;
+        return {
+          index: index,
+          x: point ? point.x : index,
+          value: Number.isFinite(numeric) ? numeric : null,
+          status: point && point.status ? point.status : "complete"
+        };
+      });
+  }
+
+  function sparklineDomain(definitions) {
+    var values = [];
+    (definitions || []).forEach(function (definition) {
+      sparklineNumericPoints(definition).forEach(function (point) {
+        if (point.value != null) values.push(point.value);
+      });
+      ["baseline", "target"].forEach(function (field) {
+        if (Number.isFinite(Number(definition && definition[field]))) {
+          values.push(Number(definition[field]));
+        }
+      });
+    });
+    if (!values.length) return [0, 1];
+    var min = Math.min.apply(null, values);
+    var max = Math.max.apply(null, values);
+    if (min === max) {
+      var samePadding = Math.max(1, Math.abs(min) * 0.08);
+      return [min - samePadding, max + samePadding];
+    }
+    var padding = (max - min) * 0.08;
+    return [min - padding, max + padding];
+  }
+
+  function resolveSparklineDomain(definition, sharedDomain) {
+    if (
+      Array.isArray(definition.domain) &&
+      definition.domain.length === 2
+    ) {
+      return [
+        finite(definition.domain[0], 0),
+        finite(definition.domain[1], 1)
+      ];
+    }
+    if (definition.domainMode !== "independent" && sharedDomain) {
+      return sharedDomain;
+    }
+    return sparklineDomain([definition]);
+  }
+
+  function renderSparklineGraphic(definition, options) {
+    var opts = options || {};
+    var points = sparklineNumericPoints(definition);
+    var width = finite(opts.width, 180);
+    var height = finite(opts.height, 68);
+    var margin = opts.compact
+      ? { top: 7, right: 5, bottom: 7, left: 5 }
+      : { top: 12, right: 10, bottom: 12, left: 10 };
+    var innerW = width - margin.left - margin.right;
+    var innerH = height - margin.top - margin.bottom;
+    var domain = resolveSparklineDomain(definition, opts.domain);
+    var minY = finite(domain[0], 0);
+    var maxY = finite(domain[1], 1);
+    var yRange = maxY - minY || 1;
+    var xStep = points.length > 1
+      ? innerW / (points.length - 1)
+      : innerW;
+    var xAt = function (index) {
+      return points.length > 1
+        ? margin.left + xStep * index
+        : margin.left + innerW / 2;
+    };
+    var yAt = function (value) {
+      return margin.top + ((maxY - value) / yRange) * innerH;
+    };
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": definition.ariaLabel || opts.ariaLabel || "迷你趋势"
+    });
+
+    ["baseline", "target"].forEach(function (field) {
+      var numeric = Number(definition[field]);
+      if (!Number.isFinite(numeric)) return;
+      var y = yAt(numeric);
+      svg.appendChild(svgEl("line", {
+        x1: margin.left,
+        x2: width - margin.right,
+        y1: y,
+        y2: y,
+        class: field === "target"
+          ? "vda-sparkline-target"
+          : "vda-sparkline-baseline",
+        "data-sparkline-reference": field
+      }));
+    });
+
+    if (definition.variant === "bar") {
+      var barWidth = Math.max(
+        2,
+        Math.min(12, innerW / Math.max(1, points.length) * 0.62)
+      );
+      var zeroY = yAt(clamp(0, minY, maxY));
+      points.forEach(function (point) {
+        if (point.value == null) return;
+        var x = xAt(point.index) - barWidth / 2;
+        var valueY = yAt(point.value);
+        svg.appendChild(svgEl("rect", {
+          x: x,
+          y: Math.min(valueY, zeroY),
+          width: barWidth,
+          height: Math.max(1, Math.abs(valueY - zeroY)),
+          rx: 1.5,
+          class: point.status === "incomplete"
+            ? "vda-sparkline-bar is-incomplete"
+            : "vda-sparkline-bar"
+        }));
+      });
+    } else {
+      for (var segmentIndex = 1; segmentIndex < points.length; segmentIndex += 1) {
+        var previous = points[segmentIndex - 1];
+        var current = points[segmentIndex];
+        if (previous.value == null || current.value == null) continue;
+        svg.appendChild(svgEl("line", {
+          x1: xAt(previous.index),
+          y1: yAt(previous.value),
+          x2: xAt(current.index),
+          y2: yAt(current.value),
+          class:
+            previous.status === "incomplete" ||
+            current.status === "incomplete"
+              ? "vda-sparkline-segment is-incomplete"
+              : "vda-sparkline-segment"
+        }));
+      }
+    }
+
+    var lastNumeric = null;
+    points.forEach(function (point) {
+      if (point.value != null) lastNumeric = point;
+    });
+    if (lastNumeric) {
+      svg.appendChild(svgEl("circle", {
+        cx: xAt(lastNumeric.index),
+        cy: yAt(lastNumeric.value),
+        r: opts.compact ? 2.7 : 3.5,
+        class: lastNumeric.status === "incomplete"
+          ? "vda-sparkline-end is-incomplete"
+          : "vda-sparkline-end"
+      }));
+    }
+
+    var focus = svgEl("g", {
+      class: "vda-sparkline-focus",
+      "data-open": "false",
+      "aria-hidden": "true"
+    });
+    focus.appendChild(svgEl("line", {
+      x1: margin.left,
+      x2: margin.left,
+      y1: margin.top,
+      y2: height - margin.bottom,
+      class: "vda-sparkline-focus-line"
+    }));
+    focus.appendChild(svgEl("circle", {
+      cx: margin.left,
+      cy: margin.top,
+      r: opts.compact ? 3.2 : 4,
+      class: "vda-sparkline-focus-point"
+    }));
+    svg.appendChild(focus);
+    svg.appendChild(svgEl("rect", {
+      x: margin.left,
+      y: margin.top,
+      width: innerW,
+      height: innerH,
+      fill: "transparent",
+      tabindex: "0",
+      role: "slider",
+      class: "vda-sparkline-hitbox",
+      "data-sparkline-hitbox": "true",
+      "data-metric-index": opts.metricIndex == null ? "" : opts.metricIndex,
+      "data-plot-left": margin.left,
+      "data-plot-right": width - margin.right,
+      "data-plot-top": margin.top,
+      "data-plot-bottom": height - margin.bottom,
+      "data-min-y": minY,
+      "data-max-y": maxY,
+      "aria-valuemin": 0,
+      "aria-valuemax": Math.max(0, points.length - 1),
+      "aria-valuenow": 0,
+      "aria-label": (definition.ariaLabel || opts.ariaLabel || "迷你趋势") +
+        "，使用左右方向键查看各期数值"
+    }));
+
+    var wrapper = document.createElement("div");
+    wrapper.className = opts.compact
+      ? "vda-sparkline is-compact"
+      : "vda-sparkline";
+    wrapper.dataset.domainMode =
+      definition.domainMode === "independent" ? "independent" : "shared";
+    wrapper.appendChild(svg);
+    return wrapper.outerHTML;
+  }
+
   function renderComponentNote(note) {
     if (!note) return "";
     if (typeof note === "string") {
@@ -1346,26 +2389,635 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
   function renderMetrics(component) {
     var items = Array.isArray(component.items) ? component.items : [];
     var columns = clamp(finite(component.columns, Math.min(items.length || 1, 4)), 1, 6);
+    var sharedDefinitions = items
+      .map(function (item) { return item.sparkline; })
+      .filter(function (definition) {
+        return definition && definition.domainMode !== "independent";
+      });
+    var sharedSparklineDomain = sharedDefinitions.length
+      ? sparklineDomain(sharedDefinitions)
+      : null;
     var html =
       '<div class="vda-metrics" data-count="' + items.length +
       '" data-requested-columns="' + columns +
       '" style="--columns:' + columns + '">';
-    items.forEach(function (item) {
+    items.forEach(function (item, itemIndex) {
       var change = item.change
         ? '<span class="vda-change" data-tone="' + esc(item.change.tone || "neutral") + '">' +
           esc(item.change.label || item.change.display || "") + "</span>"
         : "";
       var context = item.context ? "<span>" + esc(item.context) + "</span>" : "";
       var unit = item.unit ? '<span class="vda-metric-unit">' + esc(item.unit) + "</span>" : "";
+      var sparkline = item.sparkline
+        ? renderSparklineGraphic(item.sparkline, {
+            width: 156,
+            height: 58,
+            compact: true,
+            metricIndex: itemIndex,
+            domain: sharedSparklineDomain,
+            ariaLabel: item.label + "迷你趋势"
+          })
+        : "";
+      var scaleNote = item.sparkline &&
+        item.sparkline.domainMode === "independent"
+        ? '<span class="vda-sparkline-scale-note">独立尺度</span>'
+        : "";
       html +=
         '<article class="vda-metric">' +
         '<p class="vda-metric-label">' + esc(item.label) + "</p>" +
         '<p class="vda-metric-value">' + esc(displayValue(item)) + unit + "</p>" +
-        '<div class="vda-metric-context">' + change + context + "</div>" +
+        sparkline +
+        '<div class="vda-metric-context">' + change + context + scaleNote + "</div>" +
         "</article>";
     });
     html += "</div>";
     return componentFrame(component, html, { panel: false });
+  }
+
+  function renderDecision(component) {
+    var labels = {
+      finding: "事实发现",
+      interpretation: "分析判断",
+      risk: "风险",
+      action: "建议行动",
+      evidence: "证据"
+    };
+    var meta = [];
+    if (component.confidence) {
+      meta.push("置信度 " + component.confidence);
+    }
+    if (component.likelihood) {
+      meta.push("可能性 " + component.likelihood);
+    }
+    if (component.impact) {
+      meta.push("影响 " + component.impact);
+    }
+    if (component.owner) {
+      meta.push("负责人 " + component.owner);
+    }
+    if (component.due) {
+      meta.push("截止 " + component.due);
+    }
+    if (component.status) {
+      meta.push("状态 " + component.status);
+    }
+    if (Array.isArray(component.evidenceIds) && component.evidenceIds.length) {
+      meta.push("证据 " + component.evidenceIds.join(" · "));
+    }
+    var details = Array.isArray(component.details) && component.details.length
+      ? '<details class="vda-decision-details"><summary>查看补充证据</summary><ul>' +
+        component.details.map(function (item) {
+          return "<li>" + esc(item) + "</li>";
+        }).join("") + "</ul></details>"
+      : "";
+    var caveat = component.caveat
+      ? '<p class="vda-decision-caveat"><strong>边界：</strong>' +
+        esc(component.caveat) + "</p>"
+      : "";
+    var body =
+      '<article class="vda-decision" data-kind="' + esc(component.kind) + '">' +
+      '<div class="vda-decision-rule" aria-hidden="true"></div>' +
+      '<div class="vda-decision-content">' +
+      '<p class="vda-decision-kind">' +
+      esc(labels[component.kind] || component.kind) + "</p>" +
+      '<h2 class="vda-decision-title">' + esc(component.title || "") + "</h2>" +
+      '<p class="vda-decision-body">' + esc(component.body || "") + "</p>" +
+      caveat +
+      (meta.length
+        ? '<div class="vda-decision-meta">' +
+          meta.map(function (item) {
+            return "<span>" + esc(item) + "</span>";
+          }).join("") + "</div>"
+        : "") +
+      details +
+      "</div></article>";
+    var frameComponent = Object.assign({}, component, {
+      title: "",
+      subtitle: "",
+      badge: ""
+    });
+    return componentFrame(frameComponent, body, { panel: false });
+  }
+
+  function targetItems(component) {
+    if (Array.isArray(component.items) && component.items.length) {
+      return component.items;
+    }
+    return [component];
+  }
+
+  function targetDerived(item) {
+    var actual = finite(item.actual, 0);
+    var target = finite(item.target, 0);
+    var gap = actual - target;
+    var sameSign = actual === 0 || target === 0 || actual * target >= 0;
+    var attainment = null;
+    if (target !== 0 && sameSign) {
+      if (item.direction === "lower-is-better") {
+        if (actual !== 0) attainment = target / actual;
+      } else {
+        attainment = actual / target;
+      }
+    }
+    var achieved = item.direction === "lower-is-better"
+      ? actual <= target
+      : item.direction === "higher-is-better"
+        ? actual >= target
+        : Math.abs(gap) <= Math.max(1e-9, Math.abs(target) * 0.001);
+    return {
+      actual: actual,
+      target: target,
+      gap: gap,
+      attainment: attainment,
+      achieved: achieved
+    };
+  }
+
+  function targetDomain(item, derived) {
+    var values = [0, derived.actual, derived.target];
+    if (Number.isFinite(Number(item.baseline))) {
+      values.push(Number(item.baseline));
+    }
+    (Array.isArray(item.ranges) ? item.ranges : []).forEach(function (band) {
+      values.push(finite(band.from, 0), finite(band.to, 0));
+    });
+    var min = Math.min.apply(null, values);
+    var max = Math.max.apply(null, values);
+    if (min === max) return [min - 1, max + 1];
+    var padding = (max - min) * 0.05;
+    return [min - padding, max + padding];
+  }
+
+  function renderTarget(component) {
+    var rows = targetItems(component).map(function (item, itemIndex) {
+      var derived = targetDerived(item);
+      var format = item.format || component.format;
+      var domain = targetDomain(item, derived);
+      var span = domain[1] - domain[0] || 1;
+      var position = function (value) {
+        return clamp(((value - domain[0]) / span) * 100, 0, 100);
+      };
+      var zeroPosition = position(0);
+      var actualPosition = position(derived.actual);
+      var targetPosition = position(derived.target);
+      var actualLeft = Math.min(zeroPosition, actualPosition);
+      var actualWidth = Math.max(1.2, Math.abs(actualPosition - zeroPosition));
+      var baseline = Number.isFinite(Number(item.baseline))
+        ? '<span class="vda-target-baseline" style="left:' +
+          position(Number(item.baseline)) + '%" aria-hidden="true"></span>'
+        : "";
+      var ranges = (Array.isArray(item.ranges) ? item.ranges : [])
+        .map(function (band) {
+          var left = position(finite(band.from, 0));
+          var right = position(finite(band.to, 0));
+          return '<span class="vda-target-band" data-tone="' +
+            esc(band.tone || "neutral") + '" style="left:' +
+            Math.min(left, right) + "%;width:" + Math.abs(right - left) +
+            '%" title="' + esc(
+              (band.label ? band.label + "：" : "") +
+              formatValue(band.from, format) + "–" +
+              formatValue(band.to, format)
+            ) + '"></span>';
+        }).join("");
+      var attainment = derived.attainment == null
+        ? "不可用"
+        : formatValue(derived.attainment, {
+            type: "percent",
+            input: "ratio",
+            decimals: 1
+          });
+      var label = item.label || component.title || "目标";
+      var directionLabel = item.direction === "higher-is-better"
+        ? "越高越好"
+        : item.direction === "lower-is-better"
+          ? "越低越好"
+          : "中性目标";
+      var status = item.direction === "neutral"
+        ? "对照目标"
+        : derived.achieved ? "已达标" : "未达标";
+      var tip = label + "；实际 " + formatValue(derived.actual, format) +
+        "；目标 " + formatValue(derived.target, format) +
+        "；差距 " + signedLabel(derived.gap, format) +
+        "；达成率 " + attainment + "；" + directionLabel;
+      return (
+        '<article class="vda-target-row" tabindex="0" data-target-row="' +
+        itemIndex + '" data-achieved="' +
+        (derived.achieved ? "true" : "false") + '" data-tip="' +
+        esc(tip) + '" aria-label="' + esc(tip) + '">' +
+        '<div class="vda-target-row-head">' +
+        '<strong>' + esc(label) + '</strong>' +
+        '<span data-tone="' +
+        (item.direction === "neutral"
+          ? "neutral"
+          : derived.achieved ? "positive" : "warning") + '">' +
+        status + "</span></div>" +
+        '<div class="vda-target-values">' +
+        '<span><small>实际</small><strong>' +
+        esc(formatValue(derived.actual, format)) + "</strong></span>" +
+        '<span><small>目标</small><strong>' +
+        esc(formatValue(derived.target, format)) + "</strong></span>" +
+        '<span><small>差距</small><strong>' +
+        esc(signedLabel(derived.gap, format)) + "</strong></span>" +
+        '<span><small>达成率</small><strong>' +
+        esc(attainment) + "</strong></span></div>" +
+        '<div class="vda-target-track" role="img" aria-label="' +
+        esc(tip) + '">' + ranges +
+        '<span class="vda-target-zero" style="left:' +
+        zeroPosition + '%" aria-hidden="true"></span>' +
+        '<span class="vda-target-actual" style="left:' +
+        actualLeft + "%;width:" + actualWidth + '%" aria-hidden="true"></span>' +
+        baseline +
+        '<span class="vda-target-marker" style="left:' +
+        targetPosition + '%" aria-hidden="true"></span>' +
+        "</div>" +
+        '<div class="vda-target-legend"><span>范围 ' +
+        esc(formatValue(domain[0], format)) + "–" +
+        esc(formatValue(domain[1], format)) +
+        '</span><span class="vda-target-key">' +
+        '<i data-role="actual"></i>实际 <i data-role="target"></i>目标' +
+        (Number.isFinite(Number(item.baseline))
+          ? ' <i data-role="baseline"></i>基线'
+          : "") +
+        "</span><span>" + directionLabel + "</span></div>" +
+        "</article>"
+      );
+    }).join("");
+    return componentFrame(
+      component,
+      '<div class="vda-target-list" data-count="' +
+      targetItems(component).length + '">' + rows + "</div>"
+    );
+  }
+
+  function sortedRangeItems(component) {
+    var items = (Array.isArray(component.items)
+      ? component.items
+      : []).map(function (item, index) {
+        return Object.assign({ _sourceIndex: index }, item, {
+          _delta: finite(item.end, 0) - finite(item.start, 0)
+        });
+      });
+    var mode = component.sort || "none";
+    var comparators = {
+      "start-asc": function (a, b) { return a.start - b.start; },
+      "start-desc": function (a, b) { return b.start - a.start; },
+      "end-asc": function (a, b) { return a.end - b.end; },
+      "end-desc": function (a, b) { return b.end - a.end; },
+      "delta-asc": function (a, b) { return a._delta - b._delta; },
+      "delta-desc": function (a, b) { return b._delta - a._delta; },
+      "absolute-delta-desc": function (a, b) {
+        return Math.abs(b._delta) - Math.abs(a._delta);
+      }
+    };
+    if (comparators[mode]) items.sort(comparators[mode]);
+    return items;
+  }
+
+  function renderRange(component) {
+    var items = sortedRangeItems(component);
+    var values = [];
+    items.forEach(function (item) {
+      values.push(finite(item.start, 0), finite(item.end, 0));
+    });
+    var min = Math.min.apply(null, values);
+    var max = Math.max.apply(null, values);
+    if (min === max) {
+      min -= Math.max(1, Math.abs(min) * 0.08);
+      max += Math.max(1, Math.abs(max) * 0.08);
+    } else {
+      var padding = (max - min) * 0.09;
+      min -= padding;
+      max += padding;
+    }
+    var width = 680;
+    var rowHeight = 48;
+    var margin = { top: 20, right: 64, bottom: 18, left: 64 };
+    var height = Math.max(160, margin.top + items.length * rowHeight + margin.bottom);
+    var innerW = width - margin.left - margin.right;
+    var span = max - min || 1;
+    var xAt = function (value) {
+      return margin.left + ((value - min) / span) * innerW;
+    };
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": component.ariaLabel || component.title || "两期变化比较",
+      "data-range-svg": "true",
+      "data-domain-min": min,
+      "data-domain-max": max
+    });
+    items.forEach(function (item, index) {
+      var start = finite(item.start, 0);
+      var end = finite(item.end, 0);
+      var delta = end - start;
+      var relative = start === 0
+        ? "不可用"
+        : formatValue(delta / Math.abs(start), {
+            type: "percent",
+            input: "ratio",
+            decimals: 1
+          });
+      var y = margin.top + index * rowHeight + rowHeight / 2;
+      var startX = xAt(start);
+      var endX = xAt(end);
+      var close = Math.abs(startX - endX) < 82;
+      var tip = item.label + "；" + component.startLabel + " " +
+        formatValue(start, component.format) + "；" + component.endLabel +
+        " " + formatValue(end, component.format) + "；变化 " +
+        signedLabel(delta, component.format) + "；相对变化 " + relative;
+      svg.appendChild(svgEl("line", {
+        x1: Math.min(startX, endX),
+        x2: Math.max(startX, endX),
+        y1: y,
+        y2: y,
+        class: "vda-range-connector"
+      }));
+      svg.appendChild(svgEl("circle", {
+        cx: startX,
+        cy: y,
+        r: 5,
+        class: "vda-range-start"
+      }));
+      svg.appendChild(svgEl("circle", {
+        cx: endX,
+        cy: y,
+        r: 6,
+        class: "vda-range-end"
+      }));
+      svg.appendChild(svgEl("text", {
+        x: startX,
+        y: y + (close ? -10 : 18),
+        "text-anchor": "middle",
+        class: "vda-value-label"
+      }, formatValue(start, component.format)));
+      svg.appendChild(svgEl("text", {
+        x: endX,
+        y: y + (close ? 20 : -10),
+        "text-anchor": "middle",
+        class: "vda-range-end-label"
+      }, formatValue(end, component.format)));
+      var hitbox = svgEl("rect", {
+        x: 0,
+        y: y - rowHeight / 2,
+        width: width,
+        height: rowHeight,
+        fill: "transparent",
+        "data-range-hitbox": "true",
+        "data-range-index": index,
+        "data-tip": tip
+      });
+      hitbox.setAttribute("aria-hidden", "true");
+      svg.appendChild(hitbox);
+    });
+    var labelRail =
+      '<div class="vda-range-labels" aria-label="比较对象">' +
+      items.map(function (item, index) {
+        var start = finite(item.start, 0);
+        var end = finite(item.end, 0);
+        var delta = end - start;
+        var relative = start === 0
+          ? "不可用"
+          : formatValue(delta / Math.abs(start), {
+              type: "percent",
+              input: "ratio",
+              decimals: 1
+            });
+        var tip = item.label + "；" + component.startLabel + " " +
+          formatValue(start, component.format) + "；" + component.endLabel +
+          " " + formatValue(end, component.format) + "；变化 " +
+          signedLabel(delta, component.format) + "；相对变化 " + relative;
+        return '<button type="button" class="vda-range-label" ' +
+          'data-range-label="' + index + '" data-tip="' + esc(tip) +
+          '" aria-label="' + esc(tip) + '"><span>' +
+          esc(item.displayLabel || item.label) + "</span><small>" +
+          esc(formatValue(start, component.format)) + " → " +
+          esc(formatValue(end, component.format)) + " · " +
+          esc(signedLabel(delta, component.format)) + "</small></button>";
+      }).join("") + "</div>";
+    var plot = document.createElement("div");
+    plot.className = "vda-range-plot";
+    plot.appendChild(svg);
+    var mobileRows =
+      '<div class="vda-range-mobile" aria-label="窄屏两期变化列表">' +
+      items.map(function (item) {
+        var start = finite(item.start, 0);
+        var end = finite(item.end, 0);
+        var delta = end - start;
+        var tip = item.label + "；" + component.startLabel + " " +
+          formatValue(start, component.format) + "；" + component.endLabel +
+          " " + formatValue(end, component.format) + "；变化 " +
+          signedLabel(delta, component.format);
+        return (
+          '<button type="button" class="vda-range-mobile-row" data-tip="' +
+          esc(tip) + '" aria-label="' + esc(tip) + '">' +
+          '<span class="vda-range-mobile-label">' +
+          esc(item.displayLabel || item.label) + "</span>" +
+          '<span class="vda-range-mobile-values"><span><small>' +
+          esc(component.startLabel) + "</small><strong>" +
+          esc(formatValue(start, component.format)) +
+          '</strong></span><b aria-hidden="true">→</b><span><small>' +
+          esc(component.endLabel) + "</small><strong>" +
+          esc(formatValue(end, component.format)) +
+          '</strong></span><em>' +
+          esc(signedLabel(delta, component.format)) +
+          "</em></span></button>"
+        );
+      }).join("") + "</div>";
+    var body =
+      '<div class="vda-range-head"><span></span><div><strong>' +
+      esc(component.startLabel) + "</strong><strong>" +
+      esc(component.endLabel) + "</strong></div></div>" +
+      '<div class="vda-range-layout" style="--range-row-height:' +
+      rowHeight + 'px">' + labelRail + plot.outerHTML + "</div>" +
+      mobileRows;
+    return componentFrame(component, body);
+  }
+
+  function waterfallStates(component) {
+    var running = 0;
+    return (Array.isArray(component.steps) ? component.steps : [])
+      .map(function (step) {
+        var value = finite(step.value, 0);
+        var before = running;
+        var after = running;
+        if (step.kind === "start") {
+          before = 0;
+          after = value;
+          running = after;
+        } else if (step.kind === "delta") {
+          before = running;
+          after = running + value;
+          running = after;
+        } else {
+          before = 0;
+          after = value;
+          running = value;
+        }
+        return Object.assign({}, step, {
+          before: before,
+          after: after,
+          running: running
+        });
+      });
+  }
+
+  function compactLabel(value, limit) {
+    var text = String(value == null ? "" : value);
+    return Array.from(text).length > limit
+      ? Array.from(text).slice(0, Math.max(1, limit - 1)).join("") + "…"
+      : text;
+  }
+
+  function renderWaterfall(component) {
+    var states = waterfallStates(component);
+    var values = [0];
+    states.forEach(function (step) {
+      values.push(step.before, step.after);
+    });
+    var min = Math.min.apply(null, values);
+    var max = Math.max.apply(null, values);
+    if (min === max) max = min + 1;
+    var padding = (max - min) * 0.12;
+    min -= padding;
+    max += padding;
+    var width = Math.max(620, states.length * 116 + 76);
+    var height = 312;
+    var margin = { top: 32, right: 28, bottom: 70, left: 54 };
+    var innerW = width - margin.left - margin.right;
+    var innerH = height - margin.top - margin.bottom;
+    var stepW = innerW / Math.max(1, states.length);
+    var barW = Math.min(54, stepW * 0.54);
+    var yAt = function (value) {
+      return margin.top + ((max - value) / (max - min || 1)) * innerH;
+    };
+    var zeroY = yAt(0);
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": component.ariaLabel || component.title || "贡献桥接图",
+      "data-waterfall-svg": "true",
+      "data-reconciled": "true"
+    });
+    svg.style.minWidth = width + "px";
+    svg.appendChild(svgEl("line", {
+      x1: margin.left,
+      x2: width - margin.right,
+      y1: zeroY,
+      y2: zeroY,
+      class: "vda-zero-line"
+    }));
+    states.forEach(function (step, index) {
+      var centerX = margin.left + stepW * index + stepW / 2;
+      var start = step.kind === "delta" ? step.before : 0;
+      var end = step.after;
+      var topY = Math.min(yAt(start), yAt(end));
+      var bottomY = Math.max(yAt(start), yAt(end));
+      var tip = step.label + "；" +
+        (step.kind === "delta"
+          ? "本步变化 " + signedLabel(step.value, component.format) +
+            "；变化后累计 " + formatValue(step.after, component.format)
+          : "值 " + formatValue(step.value, component.format));
+      var rect = svgEl("rect", {
+        x: centerX - barW / 2,
+        y: topY,
+        width: barW,
+        height: Math.max(1, bottomY - topY),
+        rx: 3,
+        class: "vda-waterfall-bar",
+        "data-kind": step.kind,
+        "data-sign": step.kind === "delta"
+          ? step.value < 0 ? "negative" : step.value > 0 ? "positive" : "zero"
+          : "total",
+        "data-waterfall-step": index,
+        tabindex: "0",
+        "data-tip": tip
+      });
+      rect.setAttribute("aria-label", tip);
+      svg.appendChild(rect);
+      if (index < states.length - 1) {
+        var nextCenter = margin.left + stepW * (index + 1) + stepW / 2;
+        svg.appendChild(svgEl("line", {
+          x1: centerX + barW / 2,
+          x2: nextCenter - barW / 2,
+          y1: yAt(step.after),
+          y2: yAt(step.after),
+          class: "vda-waterfall-connector"
+        }));
+      }
+      svg.appendChild(svgEl("text", {
+        x: centerX,
+        y: Math.max(margin.top + 11, topY - 8),
+        "text-anchor": "middle",
+        class: "vda-waterfall-value"
+      }, step.kind === "delta"
+        ? signedLabel(step.value, component.format)
+        : formatValue(step.value, component.format)));
+      svg.appendChild(svgEl("text", {
+        x: centerX,
+        y: height - 38,
+        "text-anchor": "middle",
+        class: "vda-axis-label",
+        "data-waterfall-label": index
+      }, compactLabel(step.label, 9)));
+      if (step.kind === "delta") {
+        svg.appendChild(svgEl("text", {
+          x: centerX,
+          y: height - 19,
+          "text-anchor": "middle",
+          class: "vda-waterfall-running"
+        }, "累计 " + formatValue(step.after, component.format)));
+      }
+    });
+    var chart = document.createElement("div");
+    chart.className = "vda-waterfall-chart";
+    chart.setAttribute("data-waterfall-scroll", "true");
+    chart.setAttribute("tabindex", "0");
+    chart.setAttribute("aria-label", "贡献桥接图，可横向滚动查看完整步骤");
+    chart.appendChild(svg);
+    return componentFrame(
+      component,
+      '<div class="vda-waterfall-frame">' + chart.outerHTML + "</div>" +
+      '<p class="vda-scroll-cue vda-waterfall-cue">步骤较多时可左右滑动查看 →</p>'
+    );
+  }
+
+  function renderSparkline(component) {
+    var points = sparklineNumericPoints(component);
+    var first = null;
+    var last = null;
+    points.forEach(function (point) {
+      if (point.value == null) return;
+      if (!first) first = point;
+      last = point;
+    });
+    var change = first && last ? last.value - first.value : null;
+    var current = last ? formatValue(last.value, component.format) : "—";
+    var summary =
+      '<div class="vda-sparkline-summary">' +
+      '<span><small>当前</small><strong>' + esc(current) + "</strong></span>" +
+      '<span><small>较首期</small><strong>' +
+      esc(change == null ? "—" : signedLabel(change, component.format)) +
+      "</strong></span>" +
+      '<span><small>尺度</small><strong>' +
+      (component.domainMode === "independent" ? "独立尺度" : "共享尺度") +
+      "</strong></span></div>";
+    var incomplete = points.some(function (point) {
+      return point.status === "incomplete";
+    });
+    var status = incomplete
+      ? '<p class="vda-sparkline-status">末期或部分周期尚未完整，使用虚线／淡化表达。</p>'
+      : "";
+    return componentFrame(
+      component,
+      summary +
+      renderSparklineGraphic(component, {
+        width: 760,
+        height: 178,
+        compact: false,
+        ariaLabel: component.ariaLabel || component.title || "迷你趋势"
+      }) +
+      status
+    );
   }
 
   function getExtent(series) {
@@ -1528,12 +3180,33 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
   function renderLineChart(component) {
     var labels = Array.isArray(component.labels) ? component.labels : [];
     var series = Array.isArray(component.series) ? component.series : [];
+    var annotations = Array.isArray(component.annotations)
+      ? component.annotations.map(function (annotation) {
+          var index = Number.isInteger(annotation.index)
+            ? annotation.index
+            : labels.indexOf(annotation.date);
+          return Object.assign({}, annotation, {
+            _index: clamp(index, 0, Math.max(0, labels.length - 1))
+          });
+        })
+      : component.annotation && Number.isInteger(component.annotation.index)
+        ? [Object.assign({
+            id: "legacy-annotation",
+            kind: "fact"
+          }, component.annotation, {
+            _index: clamp(
+              component.annotation.index,
+              0,
+              Math.max(0, labels.length - 1)
+            )
+          })]
+        : [];
     var compact = compactChartLayout();
     var width = compact ? compactChartWidth() : 760;
     var height = compact ? Math.max(250, finite(component.height, 300) * 0.86) : finite(component.height, 300);
     var margin = compact
-      ? { top: 18, right: 18, bottom: 38, left: 44 }
-      : { top: 16, right: 26, bottom: 42, left: 58 };
+      ? { top: annotations.length ? 48 : 18, right: 18, bottom: 38, left: 44 }
+      : { top: annotations.length ? 44 : 16, right: 26, bottom: 42, left: 58 };
     var innerW = width - margin.left - margin.right;
     var innerH = height - margin.top - margin.bottom;
     var extent = component.domain || getExtent(series);
@@ -1612,20 +3285,27 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       svg.appendChild(seriesMarks);
     });
 
-    if (component.annotation && Number.isInteger(component.annotation.index)) {
-      var ai = clamp(component.annotation.index, 0, Math.max(0, labels.length - 1));
-      var ax = margin.left + xStep * ai;
+    annotations.forEach(function (annotation, annotationIndex) {
+      var ax = margin.left + xStep * annotation._index;
+      var displayLabel = compact
+        ? String(annotationIndex + 1)
+        : annotationIndex < 3
+          ? annotation.label
+          : String(annotationIndex + 1);
       svg.appendChild(svgEl("line", {
         x1: ax, x2: ax, y1: margin.top, y2: height - margin.bottom,
-        stroke: "#7357D6", "stroke-width": 1.5, "stroke-dasharray": "4 5"
+        class: "vda-line-annotation-line",
+        "data-kind": annotation.kind || "fact",
+        "data-annotation-index": annotationIndex
       }));
       svg.appendChild(svgEl("text", {
-        x: clamp(ax + 8, margin.left + 8, width - margin.right - 8),
-        y: margin.top + 12,
-        class: "vda-value-label",
-        fill: "#7357D6"
-      }, component.annotation.label || ""));
-    }
+        x: clamp(ax, margin.left + 10, width - margin.right - 10),
+        y: 16 + (annotationIndex % 2) * 15,
+        "text-anchor": "middle",
+        class: "vda-line-annotation-label",
+        "data-kind": annotation.kind || "fact"
+      }, displayLabel || ""));
+    });
 
     var focusLayer = svgEl("g", {
       class: "vda-line-focus-layer",
@@ -1700,7 +3380,32 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
         '<span class="vda-sr-only" aria-live="polite" data-line-legend-status></span>' +
         "</div>";
     }
-    return componentFrame(component, container.outerHTML + legend);
+    var annotationList = annotations.length
+      ? '<div class="vda-line-events" aria-label="趋势事件清单">' +
+        annotations.map(function (annotation, index) {
+          var period = labels[annotation._index] || annotation.date || "";
+          var description = annotation.description || "";
+          var tip = period + "；" + annotation.label +
+            (description ? "；" + description : "") +
+            (annotation.kind === "interpretation"
+              ? "；分析判断，不代表因果已证实"
+              : "；事实事件");
+          return (
+            '<button type="button" class="vda-line-event" data-kind="' +
+            esc(annotation.kind || "fact") + '" data-tip="' + esc(tip) +
+            '" aria-label="' + esc(tip) + '">' +
+            '<span class="vda-line-event-index">' + (index + 1) + "</span>" +
+            '<span><strong>' + esc(annotation.label || "") +
+            "</strong><small>" + esc(period) +
+            (description ? " · " + esc(description) : "") +
+            "</small></span></button>"
+          );
+        }).join("") + "</div>"
+      : "";
+    return componentFrame(
+      component,
+      container.outerHTML + legend + annotationList
+    );
   }
 
   function renderBarChart(component) {
@@ -2219,6 +3924,11 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       case "bar": return renderBarChart(component);
       case "donut": return renderDonut(component);
       case "heatmap": return renderHeatmap(component);
+      case "decision": return renderDecision(component);
+      case "target": return renderTarget(component);
+      case "range": return renderRange(component);
+      case "waterfall": return renderWaterfall(component);
+      case "sparkline": return renderSparkline(component);
       case "insight": return renderInsight(component);
       case "table": return renderTable(component);
       case "divider": return renderDivider(component);
@@ -2595,6 +4305,9 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       });
       updateLegendState("");
       document.addEventListener("pointerdown", function (event) {
+        if (event.target.closest("[data-line-hitbox], [data-sparkline-hitbox]")) {
+          return;
+        }
         if (event.target === hitbox || section.contains(event.target)) return;
         if (event.target.closest("[data-tip]")) {
           pinned = false;
@@ -2603,6 +4316,221 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
         }
         pinned = false;
         hide();
+      });
+    });
+  }
+
+  function setupSparklineInteractions(tooltipApi) {
+    var components = Array.isArray(spec.components) ? spec.components : [];
+    document.querySelectorAll("[data-sparkline-hitbox]").forEach(function (hitbox) {
+      var section = hitbox.closest("[data-component-id]");
+      var componentId = section ? section.dataset.componentId : "";
+      var component = components.find(function (item) {
+        return item && item.id === componentId;
+      });
+      if (!component) return;
+      var metricIndex = Number(hitbox.dataset.metricIndex);
+      var definition = component.type === "sparkline"
+        ? component
+        : component.type === "metrics" &&
+          Number.isInteger(metricIndex) &&
+          component.items &&
+          component.items[metricIndex]
+          ? component.items[metricIndex].sparkline
+          : null;
+      if (!definition) return;
+      var points = sparklineNumericPoints(definition);
+      if (!points.length) return;
+      var svg = hitbox.ownerSVGElement;
+      var focus = svg.querySelector(".vda-sparkline-focus");
+      var focusLine = focus.querySelector(".vda-sparkline-focus-line");
+      var focusPoint = focus.querySelector(".vda-sparkline-focus-point");
+      var plotLeft = finite(hitbox.dataset.plotLeft, 0);
+      var plotRight = finite(hitbox.dataset.plotRight, 1);
+      var plotTop = finite(hitbox.dataset.plotTop, 0);
+      var plotBottom = finite(hitbox.dataset.plotBottom, 1);
+      var minY = finite(hitbox.dataset.minY, 0);
+      var maxY = finite(hitbox.dataset.maxY, 1);
+      var yRange = maxY - minY || 1;
+      var currentIndex = 0;
+      var pinned = false;
+      var name = component.type === "metrics"
+        ? component.items[metricIndex].label
+        : component.title || "迷你趋势";
+
+      function chartX(index) {
+        return points.length > 1
+          ? plotLeft + ((plotRight - plotLeft) * index) / (points.length - 1)
+          : (plotLeft + plotRight) / 2;
+      }
+
+      function chartY(value) {
+        return plotTop + ((maxY - value) / yRange) * (plotBottom - plotTop);
+      }
+
+      function clientPoint(index) {
+        var rect = svg.getBoundingClientRect();
+        var viewBox = svg.viewBox.baseVal;
+        var x = chartX(index);
+        return {
+          x: rect.left + ((x - viewBox.x) / viewBox.width) * rect.width,
+          y: rect.top + ((plotTop - viewBox.y) / viewBox.height) * rect.height
+        };
+      }
+
+      function selectIndex(index, clientX, clientY) {
+        document.querySelectorAll(".vda-sparkline-focus").forEach(function (layer) {
+          if (layer !== focus) layer.dataset.open = "false";
+        });
+        currentIndex = clamp(index, 0, points.length - 1);
+        var point = points[currentIndex];
+        var x = chartX(currentIndex);
+        focusLine.setAttribute("x1", x);
+        focusLine.setAttribute("x2", x);
+        if (point.value == null) {
+          focusPoint.style.display = "none";
+        } else {
+          focusPoint.style.display = "";
+          focusPoint.setAttribute("cx", x);
+          focusPoint.setAttribute("cy", chartY(point.value));
+        }
+        focus.dataset.open = "true";
+        var display = point.value == null
+          ? "—"
+          : formatValue(point.value, definition.format || component.format);
+        var status = point.status === "incomplete"
+          ? "，周期未完整"
+          : point.status === "missing" ? "，数据缺失" : "";
+        hitbox.setAttribute("aria-valuenow", currentIndex);
+        hitbox.setAttribute(
+          "aria-valuetext",
+          String(point.x) + "，" + name + " " + display + status
+        );
+        var anchor = clientPoint(currentIndex);
+        tooltipApi.showShared(
+          String(point.x) + status,
+          [{
+            name: name,
+            display: display,
+            raw: point.value,
+            color: "#315CF5"
+          }],
+          clientX == null ? anchor.x + 10 : clientX + 10,
+          clientY == null ? anchor.y + 10 : clientY + 10
+        );
+      }
+
+      function indexFromPointer(event) {
+        var rect = svg.getBoundingClientRect();
+        var viewBox = svg.viewBox.baseVal;
+        var svgX = viewBox.x +
+          ((event.clientX - rect.left) / rect.width) * viewBox.width;
+        var ratio = clamp(
+          (svgX - plotLeft) / (plotRight - plotLeft || 1),
+          0,
+          1
+        );
+        return Math.round(ratio * Math.max(0, points.length - 1));
+      }
+
+      function hide() {
+        if (pinned) return;
+        focus.dataset.open = "false";
+        tooltipApi.hide();
+      }
+
+      hitbox.addEventListener("pointerenter", function (event) {
+        if (event.pointerType === "touch") return;
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("pointermove", function (event) {
+        if (event.pointerType === "touch" || pinned) return;
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("pointerleave", hide);
+      hitbox.addEventListener("pointerdown", function (event) {
+        pinned = event.pointerType === "touch" || event.pointerType === "pen";
+        selectIndex(indexFromPointer(event), event.clientX, event.clientY);
+      });
+      hitbox.addEventListener("focus", function () {
+        selectIndex(currentIndex);
+      });
+      hitbox.addEventListener("blur", function () {
+        if (!pinned) hide();
+      });
+      hitbox.addEventListener("keydown", function (event) {
+        var next = currentIndex;
+        if (event.key === "ArrowRight") next += 1;
+        else if (event.key === "ArrowLeft") next -= 1;
+        else if (event.key === "Home") next = 0;
+        else if (event.key === "End") next = points.length - 1;
+        else if (event.key === "Escape") {
+          pinned = false;
+          hide();
+          return;
+        } else {
+          return;
+        }
+        event.preventDefault();
+        pinned = true;
+        selectIndex(next);
+      });
+      document.addEventListener("pointerdown", function (event) {
+        if (event.target.closest("[data-line-hitbox], [data-sparkline-hitbox]")) {
+          return;
+        }
+        if (event.target === hitbox || section.contains(event.target)) return;
+        pinned = false;
+        hide();
+      });
+    });
+  }
+
+  function setupRangeKeyboard() {
+    document.querySelectorAll(".vda-range-labels").forEach(function (rail) {
+      var labels = Array.from(rail.querySelectorAll(".vda-range-label"));
+      labels.forEach(function (label, index) {
+        label.addEventListener("keydown", function (event) {
+          var next = index;
+          if (event.key === "ArrowDown") next += 1;
+          else if (event.key === "ArrowUp") next -= 1;
+          else if (event.key === "Home") next = 0;
+          else if (event.key === "End") next = labels.length - 1;
+          else return;
+          event.preventDefault();
+          labels[clamp(next, 0, labels.length - 1)].focus();
+        });
+      });
+    });
+  }
+
+  function setupWaterfallInteractions() {
+    document.querySelectorAll(".vda-waterfall-chart").forEach(function (chart) {
+      var steps = Array.from(chart.querySelectorAll("[data-waterfall-step]"));
+      var section = chart.closest("[data-component-id]");
+      var scrollable = chart.scrollWidth > chart.clientWidth + 1;
+      chart.dataset.scrollable = scrollable ? "true" : "false";
+      if (section) section.dataset.waterfallScrollable =
+        scrollable ? "true" : "false";
+      steps.forEach(function (step, index) {
+        step.addEventListener("keydown", function (event) {
+          var next = index;
+          if (event.key === "ArrowRight") next += 1;
+          else if (event.key === "ArrowLeft") next -= 1;
+          else if (event.key === "Home") next = 0;
+          else if (event.key === "End") next = steps.length - 1;
+          else return;
+          event.preventDefault();
+          var target = steps[clamp(next, 0, steps.length - 1)];
+          target.focus();
+          target.scrollIntoView({
+            block: "nearest",
+            inline: "center",
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+              ? "auto"
+              : "smooth"
+          });
+        });
       });
     });
   }
@@ -2824,10 +4752,13 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
         "</div>";
       var tooltipApi = setupTooltips();
       setupLineChartInteractions(tooltipApi);
+      setupSparklineInteractions(tooltipApi);
+      setupRangeKeyboard();
       window.requestAnimationFrame(function () {
         setupHeatmapSizing();
         setupDivergingBarLabels();
         setupDivergingBarScrolling();
+        setupWaterfallInteractions();
         document.documentElement.dataset.vdaReady = "true";
         window.dispatchEvent(new CustomEvent("vda:ready"));
       });

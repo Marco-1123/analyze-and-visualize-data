@@ -83,9 +83,19 @@ Supported baseline component types:
 - `bar`
 - `donut`
 - `heatmap`
+- `decision`
+- `target`
+- `range`
+- `waterfall`
+- `sparkline`
 - `insight`
 - `table`
 - `divider`
+
+New specifications should set `"schemaVersion": "1.0"`. Existing
+specifications without this field remain valid for backward compatibility.
+Every component may carry `evidenceIds`, an array of stable fact, finding,
+series, event, method, or limitation IDs.
 
 For a heatmap with many ordered columns, use a layout contract instead of
 pre-splitting or duplicating the data:
@@ -210,6 +220,166 @@ For a signed bar comparison, use:
   lengths must not be compared with the main plot.
 - Scrollable bars expose `负向极值`, `零轴`, and `正向极值` quick-position
   controls. These controls supplement, rather than replace, native scrolling.
+
+### Decision
+
+```json
+{
+  "type": "decision",
+  "kind": "risk",
+  "title": "夜间 SLA 可能继续低于 90%",
+  "body": "连续三个完整周期高于容量基线。",
+  "likelihood": "high",
+  "impact": "medium",
+  "confidence": "high",
+  "evidenceIds": ["fact.sla-night", "fact.capacity-gap"]
+}
+```
+
+- `kind` is `finding`, `interpretation`, `risk`, `action`, or `evidence`.
+- A `finding` requires `confidence` and `evidenceIds`.
+- An `interpretation` requires `confidence` and an explicit `caveat`.
+- A `risk` requires `likelihood` and `impact`.
+- An `action` requires `evidenceIds`; `owner`, `due`, and `status` are optional.
+- `details` may add a short list of evidence or boundaries. Core meaning must
+  remain visible without hover.
+
+### Target
+
+```json
+{
+  "type": "target",
+  "items": [{
+    "id": "sla",
+    "label": "24 小时 SLA",
+    "actual": 91.8,
+    "target": 96,
+    "baseline": 89.4,
+    "direction": "higher-is-better",
+    "ranges": [
+      {"from": 80, "to": 90, "tone": "negative", "label": "风险"},
+      {"from": 90, "to": 96, "tone": "warning", "label": "关注"},
+      {"from": 96, "to": 102, "tone": "positive", "label": "达标"}
+    ]
+  }]
+}
+```
+
+- A component may contain one top-level target or `items[]`.
+- `actual`, `target`, and `direction` are required. `direction` is
+  `higher-is-better`, `lower-is-better`, or `neutral`.
+- `gap` and `attainment` are derived at runtime and must not be supplied as
+  competing source values.
+- Ranges must be ordered, finite, and non-overlapping.
+- Higher-is-better attainment is `actual / target`; lower-is-better attainment
+  is `target / actual`. A zero target, zero divisor, or actual/target values
+  across zero produce unavailable attainment rather than a deceptive ratio.
+
+### Paired range
+
+```json
+{
+  "type": "range",
+  "startLabel": "2025 Q2",
+  "endLabel": "2026 Q2",
+  "sort": "absolute-delta-desc",
+  "items": [{
+    "id": "queue_01",
+    "label": "queue_enterprise_recovery_priority_tier_01",
+    "displayLabel": "企业恢复优先队列",
+    "start": 61.2,
+    "end": 78.9
+  }]
+}
+```
+
+- `start` and `end` are paired observations of the same item, not a continuous
+  time series.
+- `label` preserves the source identifier; `displayLabel` is optional display
+  text and never replaces the raw value in accessible names or tooltips.
+- Supported sorting includes source order, start, end, delta, and absolute
+  delta directions. Relative change is unavailable when the start is zero.
+- Desktop uses a dumbbell view. At 520 px and below the runtime uses an exact
+  paired-value list to keep long labels and both endpoints readable.
+
+### Waterfall
+
+```json
+{
+  "type": "waterfall",
+  "steps": [
+    {"id": "start", "label": "基期", "kind": "start", "value": 100},
+    {"id": "volume", "label": "销量", "kind": "delta", "value": 20},
+    {"id": "end", "label": "本期", "kind": "end", "value": 120}
+  ],
+  "reconciliationTolerance": 0.01
+}
+```
+
+- The first step is `start`, the last is `end`, IDs are unique, and order is
+  meaningful.
+- `delta` values update the running total; `subtotal` values must equal the
+  running total within tolerance; the final `end` must reconcile likewise.
+- The runtime does not reorder or silently repair the bridge.
+- Many steps use native component-level horizontal scrolling, never
+  page-level overflow or custom grab gestures.
+
+### Sparkline
+
+```json
+{
+  "type": "sparkline",
+  "points": [
+    {"x": "W1", "value": 91.2},
+    {"x": "W2", "value": 92.1, "status": "incomplete"}
+  ],
+  "variant": "line",
+  "domainMode": "shared",
+  "target": 96
+}
+```
+
+- `x` values are unique; values may be numeric or `null`.
+- `status` is `complete`, `incomplete`, or `missing`.
+- `variant` is `line` or `bar`; `domainMode` is `shared` or `independent`.
+- A metric item may embed the same `sparkline` object. Sparklines in one metric
+  group share a domain by default so apparent slopes remain comparable.
+- Incomplete segments use a dashed/faded treatment. Missing periods remain
+  gaps, not zeros.
+
+### Multiple line annotations
+
+```json
+{
+  "type": "line",
+  "labels": ["6/01", "6/08"],
+  "series": [{"name": "SLA", "values": [92.4, 89.8]}],
+  "annotations": [
+    {
+      "id": "routing-release",
+      "date": "6/01",
+      "label": "策略上线",
+      "kind": "fact",
+      "evidenceIds": ["event.routing-release"]
+    },
+    {
+      "id": "adaptation",
+      "index": 1,
+      "label": "可能存在适应期",
+      "kind": "interpretation"
+    }
+  ]
+}
+```
+
+- Annotation IDs are unique. Set exactly one of `index` or `date`; `date` must
+  match a line label.
+- `kind` is `fact` or `interpretation`, with distinct line styles.
+- The legacy single `annotation` object remains supported, but must not be
+  mixed with `annotations`.
+- Up to three full labels may appear in the desktop plot; later events use
+  numbers. Narrow plots use numbers for all events and retain complete text in
+  the event list below.
 
 ## 3. Numeric rules
 

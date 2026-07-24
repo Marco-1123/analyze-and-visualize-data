@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "report-component",
+  "title": "收入增长 1,140 万元，主要由销量贡献并被客户流失抵消",
+  "eyebrow": "P1 · WATERFALL",
+  "subtitle": "所有贡献按业务顺序桥接，起点、累计值与终点完成对账",
+  "meta": {
+    "period": "2025 Q2—2026 Q2",
+    "scope": "企业服务产品线",
+    "source": "收入归因模型"
+  },
+  "components": [
+    {
+      "id": "waterfall-revenue-bridge",
+      "type": "waterfall",
+      "title": "从基期收入到本期收入的贡献桥接",
+      "subtitle": "单位：万元；蓝色与琥珀色只表示增减，不自动等同于经营好坏",
+      "steps": [
+        {"id": "start", "label": "基期收入", "kind": "start", "value": 12480},
+        {"id": "volume", "label": "销量增长", "kind": "delta", "value": 1560},
+        {"id": "price", "label": "价格调整", "kind": "delta", "value": 420},
+        {"id": "gross-subtotal", "label": "增长小计", "kind": "subtotal", "value": 14460},
+        {"id": "discount", "label": "折扣加深", "kind": "delta", "value": -310},
+        {"id": "churn", "label": "客户流失", "kind": "delta", "value": -720},
+        {"id": "mix", "label": "产品组合", "kind": "delta", "value": 190},
+        {"id": "end", "label": "本期收入", "kind": "end", "value": 13620}
+      ],
+      "reconciliationTolerance": 0.01,
+      "format": {
+        "decimals": 0
+      },
+      "evidenceIds": ["series.revenue-bridge"],
+      "note": {
+        "kind": "method",
+        "text": "贡献顺序来自收入归因模型，运行时不重新排序；终点必须与累计值在容差内一致。",
+        "evidenceIds": ["method.revenue-attribution"]
+      },
+      "ariaLabel": "收入从 12480 万元经过销量、价格、折扣、流失和产品组合贡献后到达 13620 万元"
+    }
+  ]
+}

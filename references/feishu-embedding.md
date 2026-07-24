@@ -106,6 +106,18 @@ Confirmed:
   row. Selecting the concise `APAC North` display label opened a tooltip with
   the exact source queue ID, and every label accessible name retained its
   corresponding raw category.
+- seven Skill v0.10.0 P1 blocks were appended in one update: decision, target,
+  paired range, waterfall, sparkline, multi-event line annotations, and one
+  combined adversarial regression artifact. Revision 29 returned fourteen HTML
+  blocks in total and references `html5_8` through `html5_14`. Every new
+  reference file was byte-identical to its local artifact (144,169–148,059
+  bytes) and carried generator version `0.10.0`.
+- this run could not repeat the authenticated Chrome iframe interaction check
+  because the browser-control channel's enterprise network policy rejected
+  access to the tenant domain. Local browser QA still covered 390, 520, 880,
+  and 1440 px; mobile touch and native waterfall scrolling were exercised in
+  the bundled runtime harness. Treat the revision-29 result as verified mount
+  and readback, not as a new tenant-UI interaction confirmation.
 
 Not yet confirmed:
 

@@ -83,6 +83,7 @@ Both modes use fixed embedded data. Filters, tabs, sorting, tooltips, and local 
   `assets/examples/report-waterfall-spec.json`,
   `assets/examples/report-sparkline-spec.json`,
   `assets/examples/report-trend-annotations-spec.json`, or
+  `assets/examples/report-line-value-labels-spec.json`, or
   `assets/examples/dashboard-spec.json`.
 - Run:
 
@@ -105,6 +106,12 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
   navigation. Render the legend as keyboard-accessible series toggles; hidden
   series must also disappear from crosshair points and the shared tooltip.
   Per-point hover targets or static legends alone are not acceptable.
+- For line value labels, default to `valueLabels.mode: "auto"`. Use `key` when
+  the business needs explicit event, end, extrema, or threshold values; use
+  `all` only on explicit request. Never overlap static labels or make the line
+  plot scroll to fit them. If an all-point request is too dense, keep
+  prioritized labels in the plot and provide the complete expandable value
+  table. Missing values remain gaps and are never labeled as zero.
 - For a canonical 24-hour heatmap, default to one HTML component with 0–11 and
   12–23 rendered as vertically stacked groups. Both groups must share one color
   domain and one legend; never squeeze all 24 hours into one horizontal row.
@@ -190,6 +197,9 @@ Do not declare completion until:
 - `scripts/validate_artifact.py`: enforce structural, portability, and accessibility checks.
 - `scripts/test_p1_runtime.mjs`: exercise P1 components, edge cases, native
   scrolling, touch, keyboard, and responsive behavior in a headless browser.
+- `scripts/test_line_value_labels.mjs`: verify intelligent line-label density,
+  collision avoidance, exact-value fallback, legend synchronization, missing
+  values, and responsive containment.
 - `scripts/check_version.py`: verify semantic version metadata and release tags.
 - `assets/design-tokens.json`: machine-readable visual tokens.
 - `assets/theme.css`: shared light editorial visual language.

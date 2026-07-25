@@ -6,7 +6,7 @@
   <meta name="use-iframe" content="true">
   <meta name="html-box-height-mode" content="auto">
   <meta name="description" content="五个区域与渠道组合的收入增量双向条形图，用极端正负比例验证共同尺度、快速定位与小量级局部读数。">
-  <meta name="generator" content="analyze-and-visualize-data 0.10.0">
+  <meta name="generator" content="analyze-and-visualize-data 0.11.0">
   <meta name="color-scheme" content="light">
   <title>极端量级差异下仍需辨认双向变化</title>
   <style>
@@ -1476,6 +1476,100 @@ a:focus-visible,
   font-weight: 600;
 }
 
+.vda-line-value-label {
+  pointer-events: none;
+}
+
+.vda-line-value-label .vda-value-label {
+  font-size: 10px;
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.96);
+  stroke-linejoin: round;
+  stroke-width: 3px;
+}
+
+.vda-line-value-dot {
+  stroke: var(--vda-surface);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-line-value-leader {
+  stroke: var(--vda-border-strong);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-line-value-table {
+  margin-top: 12px;
+  color: var(--vda-text-2);
+  border: 1px solid var(--vda-border);
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.vda-line-value-table summary {
+  padding: 10px 12px;
+  color: var(--vda-text-2);
+  background: var(--vda-surface-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.vda-line-value-table[open] summary {
+  border-bottom: 1px solid var(--vda-border);
+  border-radius: 8px 8px 0 0;
+}
+
+.vda-line-value-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vda-line-value-table table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.vda-line-value-table th,
+.vda-line-value-table td {
+  padding: 7px 9px;
+  border-right: 1px solid var(--vda-border);
+  border-bottom: 1px solid var(--vda-border);
+  text-align: right;
+}
+
+.vda-line-value-table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  color: var(--vda-text-1);
+  background: var(--vda-surface);
+  text-align: left;
+}
+
+.vda-line-value-table thead th {
+  color: var(--vda-text-3);
+  background: var(--vda-surface-subtle);
+  font-weight: 600;
+}
+
+.vda-line-value-table tr:last-child th,
+.vda-line-value-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.vda-line-value-table th:last-child,
+.vda-line-value-table td:last-child {
+  border-right: 0;
+}
+
 .vda-grid-line {
   stroke: var(--vda-border);
   stroke-width: 1;
@@ -1927,6 +2021,16 @@ a:focus-visible,
 
   .vda-line-events {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vda-line-value-label .vda-value-label {
+    font-size: 9px;
+    stroke-width: 2.6px;
+  }
+
+  .vda-line-value-table summary {
+    padding: 9px 10px;
+    font-size: 10px;
   }
 
   .vda-sparkline-summary {
@@ -3024,7 +3128,13 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"极端量级差异下�
     var values = [];
     (series || []).forEach(function (entry) {
       (entry.values || []).forEach(function (value) {
-        if (Number.isFinite(Number(value))) values.push(Number(value));
+        if (
+          value != null &&
+          value !== "" &&
+          Number.isFinite(Number(value))
+        ) {
+          values.push(Number(value));
+        }
       });
     });
     if (!values.length) return [0, 1];
@@ -3177,6 +3287,277 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"极端量级差异下�
     );
   }
 
+  function resolveLineValueLabelOptions(
+    component,
+    compact,
+    labels,
+    series,
+    xStep
+  ) {
+    var configured = component.valueLabels;
+    if (!configured && component.endLabels === false) {
+      return {
+        requestedMode: "none",
+        mode: "none",
+        include: [],
+        maxPerSeries: 0,
+        fallback: "reduce",
+        thresholds: []
+      };
+    }
+    var options = configured && typeof configured === "object"
+      ? configured
+      : {};
+    var requestedMode = options.mode || "auto";
+    var widest = 0;
+    series.forEach(function (entry) {
+      (Array.isArray(entry.values) ? entry.values : []).forEach(function (value) {
+        if (value == null || value === "" || !Number.isFinite(Number(value))) {
+          return;
+        }
+        widest = Math.max(
+          widest,
+          estimateTextWidth(
+            formatValue(value, entry.format || component.format),
+            compact ? 9 : 10
+          )
+        );
+      });
+    });
+    var allFits =
+      series.length === 1 &&
+      labels.length <= (compact ? 6 : 8) &&
+      xStep >= widest + (compact ? 12 : 16);
+    var mode = requestedMode === "auto"
+      ? allFits ? "all" : "key"
+      : requestedMode;
+    var include = Array.isArray(options.include)
+      ? options.include.slice()
+      : mode === "key"
+        ? series.length === 1
+          ? ["start", "end", "extrema", "annotations"]
+          : ["end", "annotations"]
+        : [];
+    return {
+      requestedMode: requestedMode,
+      mode: mode,
+      include: include,
+      maxPerSeries: Number.isInteger(options.maxPerSeries)
+        ? options.maxPerSeries
+        : mode === "all" ? Number.MAX_SAFE_INTEGER : 5,
+      fallback: options.fallback || "table",
+      thresholds: Array.isArray(options.thresholds)
+        ? options.thresholds.map(Number).filter(Number.isFinite)
+        : []
+    };
+  }
+
+  function buildLineValueLabelCandidates(
+    component,
+    layouts,
+    annotations,
+    options
+  ) {
+    if (options.mode === "none") return [];
+    var annotationIndexes = new Set(
+      annotations.map(function (annotation) { return annotation._index; })
+    );
+    var candidates = [];
+    layouts.forEach(function (layout) {
+      var byIndex = new Map();
+      function add(point, role, priority) {
+        if (!point) return;
+        var existing = byIndex.get(point.index);
+        if (existing) {
+          existing.roles.add(role);
+          existing.priority = Math.max(existing.priority, priority);
+          return;
+        }
+        byIndex.set(point.index, {
+          seriesIndex: layout.seriesIndex,
+          point: point,
+          display: formatValue(
+            point.value,
+            layout.entry.format || component.format
+          ),
+          color: layout.color,
+          roles: new Set([role]),
+          priority: priority
+        });
+      }
+      var points = layout.points;
+      if (!points.length) return;
+      if (options.mode === "all") {
+        points.forEach(function (point) { add(point, "all", 10); });
+      } else if (options.mode === "end") {
+        add(points[points.length - 1], "end", 90);
+      } else {
+        if (options.include.includes("start")) add(points[0], "start", 60);
+        if (options.include.includes("end")) {
+          add(points[points.length - 1], "end", 90);
+        }
+        if (options.include.includes("extrema")) {
+          var minimum = points.reduce(function (best, point) {
+            return point.value < best.value ? point : best;
+          }, points[0]);
+          var maximum = points.reduce(function (best, point) {
+            return point.value > best.value ? point : best;
+          }, points[0]);
+          add(minimum, "minimum", 80);
+          add(maximum, "maximum", 80);
+        }
+        if (
+          options.include.includes("annotations") &&
+          layout.seriesIndex === 0
+        ) {
+          points.forEach(function (point) {
+            if (annotationIndexes.has(point.index)) {
+              add(point, "annotation", 100);
+            }
+          });
+        }
+        if (
+          options.include.includes("threshold-crossings") &&
+          options.thresholds.length
+        ) {
+          options.thresholds.forEach(function (threshold) {
+            for (var pointIndex = 1; pointIndex < points.length; pointIndex += 1) {
+              var previous = points[pointIndex - 1];
+              var current = points[pointIndex];
+              if (current.index !== previous.index + 1) continue;
+              if (
+                (previous.value - threshold) * (current.value - threshold) <= 0 &&
+                previous.value !== current.value
+              ) {
+                add(current, "threshold-crossing", 70);
+              }
+            }
+          });
+        }
+      }
+      Array.from(byIndex.values())
+        .sort(function (a, b) {
+          return b.priority - a.priority || a.point.index - b.point.index;
+        })
+        .slice(0, options.maxPerSeries)
+        .forEach(function (candidate) { candidates.push(candidate); });
+    });
+    return candidates.sort(function (a, b) {
+      return b.priority - a.priority ||
+        a.point.index - b.point.index ||
+        a.seriesIndex - b.seriesIndex;
+    });
+  }
+
+  function placeLineValueLabels(candidates, bounds, compact) {
+    var occupied = [];
+    var placed = [];
+    var gap = compact ? 2 : 3;
+    function overlaps(box) {
+      return occupied.some(function (other) {
+        return !(
+          box.right + gap <= other.left ||
+          box.left >= other.right + gap ||
+          box.bottom + gap <= other.top ||
+          box.top >= other.bottom + gap
+        );
+      });
+    }
+    function makePlacement(candidate, placement) {
+      var textWidth = estimateTextWidth(
+        candidate.display,
+        compact ? 9 : 10
+      ) + 4;
+      var textHeight = compact ? 12 : 13;
+      var x = candidate.point.x + placement.dx;
+      var y = candidate.point.y + placement.dy;
+      var anchor = placement.anchor;
+      var left = anchor === "middle"
+        ? x - textWidth / 2
+        : anchor === "end" ? x - textWidth : x;
+      return {
+        candidate: candidate,
+        x: x,
+        y: y,
+        anchor: anchor,
+        box: {
+          left: left,
+          right: left + textWidth,
+          top: y - textHeight,
+          bottom: y + 2
+        }
+      };
+    }
+    var placements = [
+      { dx: 0, dy: -9, anchor: "middle" },
+      { dx: 0, dy: 18, anchor: "middle" },
+      { dx: -6, dy: -8, anchor: "end" },
+      { dx: 6, dy: -8, anchor: "start" },
+      { dx: -6, dy: 18, anchor: "end" },
+      { dx: 6, dy: 18, anchor: "start" }
+    ];
+    candidates.forEach(function (candidate) {
+      var accepted = null;
+      for (var index = 0; index < placements.length; index += 1) {
+        var proposal = makePlacement(candidate, placements[index]);
+        if (
+          proposal.box.left < bounds.left ||
+          proposal.box.right > bounds.right ||
+          proposal.box.top < bounds.top ||
+          proposal.box.bottom > bounds.bottom ||
+          overlaps(proposal.box)
+        ) {
+          continue;
+        }
+        accepted = proposal;
+        break;
+      }
+      if (!accepted) return;
+      occupied.push(accepted.box);
+      placed.push(accepted);
+    });
+    return {
+      placed: placed,
+      omitted: Math.max(0, candidates.length - placed.length)
+    };
+  }
+
+  function renderLineValueTable(component, labels, series, labelState) {
+    if (
+      labelState.options.requestedMode !== "all" ||
+      labelState.omitted === 0 ||
+      labelState.options.fallback !== "table"
+    ) {
+      return "";
+    }
+    return (
+      '<details class="vda-line-value-table" data-line-value-table="true">' +
+      '<summary>图内空间不足，已保留 ' + labelState.placed.length +
+      " 个清晰标注；查看全部 " + labels.length + " 个时间点数值</summary>" +
+      '<div class="vda-line-value-table-scroll"><table><thead><tr>' +
+      '<th scope="col">系列</th>' +
+      labels.map(function (label) {
+        return '<th scope="col">' + esc(label) + "</th>";
+      }).join("") +
+      "</tr></thead><tbody>" +
+      series.map(function (entry, seriesIndex) {
+        return '<tr data-line-value-table-series="' + seriesIndex + '">' +
+          '<th scope="row">' +
+          esc(entry.name || "系列 " + (seriesIndex + 1)) + "</th>" +
+          labels.map(function (_, index) {
+            var value = Array.isArray(entry.values)
+              ? entry.values[index]
+              : null;
+            return "<td>" +
+              esc(formatValue(value, entry.format || component.format)) +
+              "</td>";
+          }).join("") +
+          "</tr>";
+      }).join("") +
+      "</tbody></table></div></details>"
+    );
+  }
+
   function renderLineChart(component) {
     var labels = Array.isArray(component.labels) ? component.labels : [];
     var series = Array.isArray(component.series) ? component.series : [];
@@ -3204,15 +3585,45 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"极端量级差异下�
     var compact = compactChartLayout();
     var width = compact ? compactChartWidth() : 760;
     var height = compact ? Math.max(250, finite(component.height, 300) * 0.86) : finite(component.height, 300);
-    var margin = compact
-      ? { top: annotations.length ? 48 : 18, right: 18, bottom: 38, left: 44 }
-      : { top: annotations.length ? 44 : 16, right: 26, bottom: 42, left: 58 };
-    var innerW = width - margin.left - margin.right;
-    var innerH = height - margin.top - margin.bottom;
     var extent = component.domain || getExtent(series);
     var minY = finite(extent[0], 0);
     var maxY = finite(extent[1], 1);
     var yRange = maxY - minY || 1;
+    var yTickValues = Array.from({ length: 5 }, function (_, tick) {
+      return maxY - (yRange * tick) / 4;
+    });
+    var axisFormat = component.format || {};
+    var widestAxisLabel = Math.max.apply(null, yTickValues.map(function (value) {
+      return estimateTextWidth(formatValue(value, axisFormat), 11);
+    }));
+    if (
+      widestAxisLabel > (compact ? 62 : 74) &&
+      Math.max(Math.abs(minY), Math.abs(maxY)) >= 100000
+    ) {
+      axisFormat = Object.assign({}, axisFormat, {
+        compact: true,
+        decimals: 1
+      });
+      widestAxisLabel = Math.max.apply(null, yTickValues.map(function (value) {
+        return estimateTextWidth(formatValue(value, axisFormat), 11);
+      }));
+    }
+    var baseLeft = compact ? 44 : 58;
+    var margin = compact
+      ? {
+          top: annotations.length ? 48 : 18,
+          right: 18,
+          bottom: 38,
+          left: clamp(widestAxisLabel + 14, baseLeft, 86)
+        }
+      : {
+          top: annotations.length ? 44 : 16,
+          right: 26,
+          bottom: 42,
+          left: clamp(widestAxisLabel + 16, baseLeft, 104)
+        };
+    var innerW = width - margin.left - margin.right;
+    var innerH = height - margin.top - margin.bottom;
     var svg = svgEl("svg", {
       viewBox: "0 0 " + width + " " + height,
       role: "img",
@@ -3228,25 +3639,62 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"极端量级差异下�
       }));
       svg.appendChild(svgEl("text", {
         x: margin.left - 10, y: y + 4, "text-anchor": "end", class: "vda-axis-label"
-      }, formatValue(value, component.format)));
+      }, formatValue(value, axisFormat)));
     }
 
     var xStep = labels.length > 1 ? innerW / (labels.length - 1) : innerW;
     var labelEvery = Math.max(1, Math.ceil(labels.length / (compact ? 4 : 6)));
-    labels.forEach(function (label, index) {
-      if (index % labelEvery !== 0 && index !== labels.length - 1) return;
+    var axisCandidates = labels.map(function (_, index) {
+      return index;
+    }).filter(function (index) {
+      return (
+        index === 0 ||
+        index === labels.length - 1 ||
+        index % labelEvery === 0
+      );
+    });
+    var axisPriority = [];
+    if (labels.length) axisPriority.push(0);
+    if (labels.length > 1) axisPriority.push(labels.length - 1);
+    axisCandidates.forEach(function (index) {
+      if (!axisPriority.includes(index)) axisPriority.push(index);
+    });
+    var axisOccupied = [];
+    var acceptedAxisLabels = new Set();
+    axisPriority.forEach(function (index) {
+      var label = labels[index];
+      var x = margin.left + xStep * index;
+      var labelWidth = estimateTextWidth(label, 11);
+      var left = index === 0
+        ? x
+        : index === labels.length - 1
+          ? x - labelWidth
+          : x - labelWidth / 2;
+      var right = left + labelWidth;
+      var collides = axisOccupied.some(function (box) {
+        return !(right + 8 <= box.left || left >= box.right + 8);
+      });
+      if (collides) return;
+      axisOccupied.push({ left: left, right: right });
+      acceptedAxisLabels.add(index);
+    });
+    Array.from(acceptedAxisLabels).sort(function (a, b) {
+      return a - b;
+    }).forEach(function (index) {
       var x = margin.left + xStep * index;
       svg.appendChild(svgEl("text", {
         x: x, y: height - 14, "text-anchor": index === 0 ? "start" : index === labels.length - 1 ? "end" : "middle",
         class: "vda-axis-label"
-      }, label));
+      }, labels[index]));
     });
 
+    var lineLayouts = [];
     series.forEach(function (entry, seriesIndex) {
       var color = entry.color || palette[seriesIndex % palette.length];
       var values = Array.isArray(entry.values) ? entry.values : [];
       var points = [];
       values.forEach(function (raw, index) {
+        if (raw == null || raw === "") return;
         var value = Number(raw);
         if (!Number.isFinite(value)) return;
         var x = margin.left + xStep * index;
@@ -3256,11 +3704,14 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"极端量级差异下�
       if (!points.length) return;
 
       var d = points.map(function (point, index) {
-        return (index === 0 ? "M" : "L") + point[0].toFixed(2) + "," + point[1].toFixed(2);
+        var previous = points[index - 1];
+        var command = !previous || point[3] !== previous[3] + 1 ? "M" : "L";
+        return command + point[0].toFixed(2) + "," + point[1].toFixed(2);
       }).join(" ");
       var seriesMarks = svgEl("g", {
         "data-series-mark": "true",
-        "data-series-index": seriesIndex
+        "data-series-index": seriesIndex,
+        "data-visible": "true"
       });
       seriesMarks.appendChild(svgEl("path", {
         d: d,
@@ -3272,18 +3723,138 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"极端量级差异下�
         opacity: entry.emphasis === "secondary" ? 0.55 : 1
       }));
 
-      var last = points[points.length - 1];
-      if (component.endLabels !== false) {
-        seriesMarks.appendChild(svgEl("text", {
-          x: last[0] - 2,
-          y: last[1] - 10,
-          "text-anchor": "end",
-          class: "vda-value-label",
-          fill: color
-        }, formatValue(last[2], component.format)));
-      }
+      lineLayouts.push({
+        entry: entry,
+        seriesIndex: seriesIndex,
+        color: color,
+        marks: seriesMarks,
+        points: points.map(function (point) {
+          return {
+            x: point[0],
+            y: point[1],
+            value: point[2],
+            index: point[3]
+          };
+        })
+      });
       svg.appendChild(seriesMarks);
     });
+
+    var valueLabelOptions = resolveLineValueLabelOptions(
+      component,
+      compact,
+      labels,
+      series,
+      xStep
+    );
+    var requestedValueLabelCandidates = buildLineValueLabelCandidates(
+      component,
+      lineLayouts,
+      annotations,
+      valueLabelOptions
+    );
+    var valueLabelCandidates = requestedValueLabelCandidates;
+    var valueLabelResolvedMode = valueLabelOptions.mode;
+    if (valueLabelOptions.mode === "all") {
+      var labelBudget = Math.max(
+        compact ? 6 : 8,
+        Math.floor(innerW / (compact ? 58 : 62)) *
+          Math.min(2, Math.max(1, series.length))
+      );
+      if (requestedValueLabelCandidates.length > labelBudget) {
+        valueLabelResolvedMode = "key-fallback";
+        valueLabelCandidates = buildLineValueLabelCandidates(
+          component,
+          lineLayouts,
+          annotations,
+          {
+            mode: "key",
+            include: ["start", "end", "extrema", "annotations"],
+            maxPerSeries: 4,
+            thresholds: valueLabelOptions.thresholds
+          }
+        );
+      }
+    }
+    var valueLabelPlacement = placeLineValueLabels(
+      valueLabelCandidates,
+      {
+        left: margin.left + 2,
+        right: width - margin.right - 2,
+        top: margin.top + 2,
+        bottom: height - margin.bottom - 2
+      },
+      compact
+    );
+    valueLabelPlacement.placed.forEach(function (placement) {
+      var candidate = placement.candidate;
+      var layout = lineLayouts.find(function (entry) {
+        return entry.seriesIndex === candidate.seriesIndex;
+      });
+      if (!layout) return;
+      var group = svgEl("g", {
+        class: "vda-line-value-label",
+        "data-line-value-label": "true",
+        "data-series-index": candidate.seriesIndex,
+        "data-point-index": candidate.point.index,
+        "data-label-roles": Array.from(candidate.roles).join(","),
+        "aria-hidden": "true"
+      });
+      if (
+        Math.abs(placement.x - candidate.point.x) > 3 ||
+        Math.abs(placement.y - candidate.point.y) > 14
+      ) {
+        group.appendChild(svgEl("line", {
+          x1: candidate.point.x,
+          y1: candidate.point.y,
+          x2: placement.x,
+          y2: placement.y + (placement.y < candidate.point.y ? 3 : -11),
+          class: "vda-line-value-leader"
+        }));
+      }
+      group.appendChild(svgEl("circle", {
+        cx: candidate.point.x,
+        cy: candidate.point.y,
+        r: compact ? 2.4 : 2.8,
+        class: "vda-line-value-dot",
+        fill: candidate.color
+      }));
+      group.appendChild(svgEl("text", {
+        x: placement.x,
+        y: placement.y,
+        "text-anchor": placement.anchor,
+        class: "vda-value-label",
+        fill: candidate.color
+      }, candidate.display));
+      layout.marks.appendChild(group);
+    });
+    var valueLabelState = {
+      options: valueLabelOptions,
+      placed: valueLabelPlacement.placed,
+      omitted: Math.max(
+        0,
+        requestedValueLabelCandidates.length -
+          valueLabelPlacement.placed.length
+      ),
+      resolvedMode: valueLabelResolvedMode
+    };
+    svg.setAttribute(
+      "data-line-value-label-requested",
+      valueLabelOptions.requestedMode
+    );
+    svg.setAttribute("data-line-value-label-mode", valueLabelResolvedMode);
+    svg.setAttribute(
+      "data-line-value-label-candidates",
+      requestedValueLabelCandidates.length
+    );
+    svg.setAttribute(
+      "data-line-value-label-rendered",
+      valueLabelPlacement.placed.length
+    );
+    svg.setAttribute(
+      "data-line-value-label-omitted",
+      valueLabelState.omitted
+    );
 
     annotations.forEach(function (annotation, annotationIndex) {
       var ax = margin.left + xStep * annotation._index;
@@ -3404,7 +3975,13 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"极端量级差异下�
       : "";
     return componentFrame(
       component,
-      container.outerHTML + legend + annotationList
+      container.outerHTML + legend + annotationList +
+      renderLineValueTable(
+        component,
+        labels,
+        series,
+        valueLabelState
+      )
     );
   }
 
@@ -4232,6 +4809,11 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"极端量级差异下�
           mark.dataset.visible = visible ? "true" : "false";
           mark.style.display = visible ? "" : "none";
         }
+        section.querySelectorAll(
+          '[data-line-value-table-series="' + seriesIndex + '"]'
+        ).forEach(function (row) {
+          row.hidden = !visible;
+        });
         var point = points[seriesIndex];
         if (point && !visible) point.style.display = "none";
       }

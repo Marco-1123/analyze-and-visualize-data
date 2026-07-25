@@ -1464,6 +1464,100 @@ a:focus-visible,
   font-weight: 600;
 }
 
+.vda-line-value-label {
+  pointer-events: none;
+}
+
+.vda-line-value-label .vda-value-label {
+  font-size: 10px;
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.96);
+  stroke-linejoin: round;
+  stroke-width: 3px;
+}
+
+.vda-line-value-dot {
+  stroke: var(--vda-surface);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-line-value-leader {
+  stroke: var(--vda-border-strong);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-line-value-table {
+  margin-top: 12px;
+  color: var(--vda-text-2);
+  border: 1px solid var(--vda-border);
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.vda-line-value-table summary {
+  padding: 10px 12px;
+  color: var(--vda-text-2);
+  background: var(--vda-surface-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.vda-line-value-table[open] summary {
+  border-bottom: 1px solid var(--vda-border);
+  border-radius: 8px 8px 0 0;
+}
+
+.vda-line-value-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vda-line-value-table table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.vda-line-value-table th,
+.vda-line-value-table td {
+  padding: 7px 9px;
+  border-right: 1px solid var(--vda-border);
+  border-bottom: 1px solid var(--vda-border);
+  text-align: right;
+}
+
+.vda-line-value-table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  color: var(--vda-text-1);
+  background: var(--vda-surface);
+  text-align: left;
+}
+
+.vda-line-value-table thead th {
+  color: var(--vda-text-3);
+  background: var(--vda-surface-subtle);
+  font-weight: 600;
+}
+
+.vda-line-value-table tr:last-child th,
+.vda-line-value-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.vda-line-value-table th:last-child,
+.vda-line-value-table td:last-child {
+  border-right: 0;
+}
+
 .vda-grid-line {
   stroke: var(--vda-border);
   stroke-width: 1;
@@ -1915,6 +2009,16 @@ a:focus-visible,
 
   .vda-line-events {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vda-line-value-label .vda-value-label {
+    font-size: 9px;
+    stroke-width: 2.6px;
+  }
+
+  .vda-line-value-table summary {
+    padding: 9px 10px;
+    font-size: 10px;
   }
 
   .vda-sparkline-summary {

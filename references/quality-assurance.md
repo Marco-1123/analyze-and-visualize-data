@@ -57,12 +57,25 @@ Check:
 - shared tooltip label, series count, and numeric-value correctness;
 - synchronized crosshair and point highlighting;
 - legend buttons expose correct pressed state and keyboard activation;
-- hiding a legend series removes its line, end label, crosshair point, tooltip
-  row, and accessible value while keeping the y-domain stable;
+- hiding a legend series removes its line, static labels, crosshair point,
+  tooltip row, complete-table row, and accessible value while keeping the
+  y-domain stable;
 - restoring a series returns all linked marks and values;
 - attempting to hide the final visible series is prevented and announced;
 - Left/Right/Home/End keyboard navigation and accessible selected-value text;
 - persistent touch selection without blocking vertical page scrolling;
+- line value-label modes `auto`, `none`, `end`, `key`, and `all` pass schema
+  validation; invalid include keys, thresholds, and caps fail;
+- short single-series fixtures show all values only when their formatted boxes
+  fit; 390 px and 520 px fixtures degrade without overlap or clipping;
+- dense multi-series and 52-point fixtures retain prioritized plot labels,
+  expose complete exact-value tables, and create no page-level overflow;
+- label bounding boxes and x-axis labels do not overlap at 390, 520, 818, 880,
+  and 1440 px;
+- null and empty line values remain gaps and never receive a static label;
+- expandable value tables preserve every time column and series row, accept
+  native horizontal wheel/trackpad and touch scrolling, and keep the first
+  series column readable;
 - table scrolling;
 - diverging bars preserve one zero axis and render every positive mark to its
   right and every negative mark to its left;

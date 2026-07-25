@@ -169,6 +169,41 @@ runtime maintain local visibility state. Hiding a series must not mutate,
 discard, or recalculate its source values, and must not change the shared
 y-domain.
 
+Line components may opt into static point-value labels:
+
+```json
+{
+  "type": "line",
+  "labels": ["W1", "W2", "W3"],
+  "series": [{"name": "SLA", "values": [92.4, 89.8, 94.1]}],
+  "valueLabels": {
+    "mode": "auto",
+    "include": ["end", "extrema", "annotations", "threshold-crossings"],
+    "thresholds": [90],
+    "maxPerSeries": 5,
+    "fallback": "table"
+  }
+}
+```
+
+- `mode` is `auto`, `none`, `end`, `key`, or `all`; default is `auto`.
+- `auto` shows every value only for a short single series whose formatted
+  labels fit the actual plot width. Otherwise it uses the key-point policy.
+- `key` may include `start`, `end`, `extrema`, `annotations`, and
+  `threshold-crossings`. Selection priority is annotations, end, extrema,
+  threshold crossings, start, then ordinary points. `maxPerSeries` is an
+  integer from 1 to 100.
+- `all` is a request for complete exact-value access, not permission to overlap
+  text. When the plot cannot fit every label, the runtime retains prioritized
+  labels in the plot and, for `fallback: "table"`, adds a complete expandable
+  value table with native component-level horizontal scrolling.
+- Missing values remain gaps and receive neither a mark nor a static value
+  label. They appear as `—` in the tooltip and complete value table.
+- Legend visibility applies to the line, static labels, crosshair point,
+  tooltip row, accessible selected value, and complete-table row together.
+- The legacy `endLabels: false` remains accepted as `mode: "none"` when
+  `valueLabels` is absent. New specifications should use `valueLabels`.
+
 For metric components, `columns` is the preferred maximum column count, not a
 viewport breakpoint. The runtime preserves four columns when four cards have at
 least 160 px each, reduces four cards to a balanced 2 × 2 grid only below that

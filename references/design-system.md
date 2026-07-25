@@ -210,11 +210,22 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
 - Render each multi-series legend item as a toggle button. Use color plus
   pressed state, opacity, and label treatment to distinguish visible and hidden
   series; do not rely on color alone.
-- Keep at least one series visible. Hiding a series must update its line, end
-  label, crosshair point, shared tooltip row, and accessible selected-value
-  text together.
+- Keep at least one series visible. Hiding a series must update its line,
+  static value labels, crosshair point, shared tooltip row, complete-table row,
+  and accessible selected-value text together.
 - Keep the y-domain stable while toggling series so visibility changes do not
   visually exaggerate or compress the remaining data.
+- Static line values use series color, a restrained anchor dot, and a white
+  text halo so gridlines never reduce legibility. They must remain within the
+  plot and must not overlap another value label.
+- Resolve label density from actual plot width, formatted text width, series
+  count, and point count. Never solve density by reducing label type below the
+  chart's minimum readable size.
+- When a requested all-point view is too dense, retain annotations, endpoint,
+  extrema, threshold crossings, and start values in that order. Put the
+  complete matrix in a collapsed disclosure below the chart with a sticky
+  series column and native horizontal scrolling; contain overflow inside the
+  component.
 - Make chart exploration available through Left/Right/Home/End keys and expose
   the selected label and values as accessible text.
 - Keep touch selection persistent until the viewer chooses another point or

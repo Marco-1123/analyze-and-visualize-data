@@ -41,6 +41,15 @@ RANGE_SORTS = {
     "absolute-delta-desc",
 }
 LINE_ANNOTATION_KINDS = {"fact", "interpretation"}
+LINE_VALUE_LABEL_MODES = {"auto", "none", "end", "key", "all"}
+LINE_VALUE_LABEL_INCLUDES = {
+    "start",
+    "end",
+    "extrema",
+    "annotations",
+    "threshold-crossings",
+}
+LINE_VALUE_LABEL_FALLBACKS = {"reduce", "table"}
 SEMVER_PATTERN = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
     r"(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$"
@@ -296,6 +305,58 @@ def validate_spec(spec: dict[str, Any]) -> None:
                 fail(f"{path}.labels must be an array")
             if not isinstance(component.get("series"), list) or not component["series"]:
                 fail(f"{path}.series must be a non-empty array")
+            if component.get("endLabels") is not None and not isinstance(
+                component["endLabels"], bool
+            ):
+                fail(f"{path}.endLabels must be a boolean")
+            value_labels = component.get("valueLabels")
+            if value_labels is not None:
+                if not isinstance(value_labels, dict):
+                    fail(f"{path}.valueLabels must be an object")
+                mode = value_labels.get("mode", "auto")
+                if mode not in LINE_VALUE_LABEL_MODES:
+                    fail(
+                        f"{path}.valueLabels.mode must be one of "
+                        f"{sorted(LINE_VALUE_LABEL_MODES)}"
+                    )
+                includes = value_labels.get("include")
+                if includes is not None:
+                    validate_string_array(
+                        includes, f"{path}.valueLabels.include"
+                    )
+                    unknown = set(includes) - LINE_VALUE_LABEL_INCLUDES
+                    if unknown:
+                        fail(
+                            f"{path}.valueLabels.include contains unsupported "
+                            f"values: {sorted(unknown)}"
+                        )
+                max_per_series = value_labels.get("maxPerSeries")
+                if max_per_series is not None and (
+                    not isinstance(max_per_series, int)
+                    or isinstance(max_per_series, bool)
+                    or max_per_series < 1
+                    or max_per_series > 100
+                ):
+                    fail(
+                        f"{path}.valueLabels.maxPerSeries must be an integer "
+                        "between 1 and 100"
+                    )
+                fallback = value_labels.get("fallback", "table")
+                if fallback not in LINE_VALUE_LABEL_FALLBACKS:
+                    fail(
+                        f"{path}.valueLabels.fallback must be 'reduce' or "
+                        "'table'"
+                    )
+                thresholds = value_labels.get("thresholds")
+                if thresholds is not None and (
+                    not isinstance(thresholds, list)
+                    or not thresholds
+                    or not all(is_number(value) for value in thresholds)
+                ):
+                    fail(
+                        f"{path}.valueLabels.thresholds must be a non-empty "
+                        "array of finite numbers"
+                    )
             if component.get("annotation") is not None and component.get(
                 "annotations"
             ) is not None:

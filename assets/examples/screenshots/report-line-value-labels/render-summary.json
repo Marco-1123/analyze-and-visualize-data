@@ -1,0 +1,287 @@
+[
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "output": "14-line-value-labels-390x844.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "scrollHeight": 2103
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": {
+        "count": 3,
+        "renderedRows": 3,
+        "pairsStayInline": true
+      }
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 2,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": {
+      "hitboxes": 4,
+      "pointerSnap": true,
+      "pointerTooltip": true,
+      "touchPersistent": true,
+      "touchDismissesOutside": true,
+      "keyboardEnd": true,
+      "keyboardLeft": true,
+      "labelMatches": true,
+      "rowsMatch": true,
+      "rawValuesMatch": true,
+      "ariaValueTextPresent": true,
+      "legendButtons": 0,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "14-line-value-labels-390x844-crosshair.png",
+      "legendScreenshot": ""
+    },
+    "barInteraction": null,
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 520,
+      "height": 900
+    },
+    "output": "14-line-value-labels-520x900.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 520,
+      "clientWidth": 520,
+      "scrollHeight": 2014
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": {
+        "count": 3,
+        "renderedRows": 3,
+        "pairsStayInline": true
+      }
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 2,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": {
+      "hitboxes": 4,
+      "pointerSnap": true,
+      "pointerTooltip": true,
+      "touchPersistent": true,
+      "touchDismissesOutside": true,
+      "keyboardEnd": true,
+      "keyboardLeft": true,
+      "labelMatches": true,
+      "rowsMatch": true,
+      "rawValuesMatch": true,
+      "ariaValueTextPresent": true,
+      "legendButtons": 0,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "14-line-value-labels-520x900-crosshair.png",
+      "legendScreenshot": ""
+    },
+    "barInteraction": null,
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 818,
+      "height": 1000
+    },
+    "output": "14-line-value-labels-818x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 818,
+      "clientWidth": 818,
+      "scrollHeight": 2179
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": {
+        "count": 3,
+        "renderedRows": 1,
+        "pairsStayInline": true
+      }
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 2,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": {
+      "hitboxes": 4,
+      "pointerSnap": true,
+      "pointerTooltip": true,
+      "touchPersistent": true,
+      "touchDismissesOutside": true,
+      "keyboardEnd": true,
+      "keyboardLeft": true,
+      "labelMatches": true,
+      "rowsMatch": true,
+      "rawValuesMatch": true,
+      "ariaValueTextPresent": true,
+      "legendButtons": 0,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "14-line-value-labels-818x1000-crosshair.png",
+      "legendScreenshot": ""
+    },
+    "barInteraction": null,
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 880,
+      "height": 1000
+    },
+    "output": "14-line-value-labels-880x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 880,
+      "clientWidth": 880,
+      "scrollHeight": 2248
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": {
+        "count": 3,
+        "renderedRows": 1,
+        "pairsStayInline": true
+      }
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 2,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": {
+      "hitboxes": 4,
+      "pointerSnap": true,
+      "pointerTooltip": true,
+      "touchPersistent": true,
+      "touchDismissesOutside": true,
+      "keyboardEnd": true,
+      "keyboardLeft": true,
+      "labelMatches": true,
+      "rowsMatch": true,
+      "rawValuesMatch": true,
+      "ariaValueTextPresent": true,
+      "legendButtons": 0,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "14-line-value-labels-880x1000-crosshair.png",
+      "legendScreenshot": ""
+    },
+    "barInteraction": null,
+    "heatmapInteraction": null
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "output": "14-line-value-labels-1440x1000.png",
+    "ready": "true",
+    "consoleErrors": [],
+    "dimensions": {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "scrollHeight": 2363
+    },
+    "layoutIntegrity": {
+      "metrics": [],
+      "meta": {
+        "count": 3,
+        "renderedRows": 1,
+        "pairsStayInline": true
+      }
+    },
+    "contentIntegrity": {
+      "structuredComponentNotes": true
+    },
+    "interaction": {
+      "tooltipTargets": 2,
+      "keyboardTooltipOpen": true
+    },
+    "lineInteraction": {
+      "hitboxes": 4,
+      "pointerSnap": true,
+      "pointerTooltip": true,
+      "touchPersistent": true,
+      "touchDismissesOutside": true,
+      "keyboardEnd": true,
+      "keyboardLeft": true,
+      "labelMatches": true,
+      "rowsMatch": true,
+      "rawValuesMatch": true,
+      "ariaValueTextPresent": true,
+      "legendButtons": 0,
+      "legendInitial": true,
+      "legendHide": true,
+      "legendMarkHidden": true,
+      "legendPointHidden": true,
+      "legendTooltipFiltered": true,
+      "legendAriaFiltered": true,
+      "legendDomainStable": true,
+      "lastSeriesProtected": true,
+      "legendRestore": true,
+      "legendKeyboard": true,
+      "screenshot": "14-line-value-labels-1440x1000-crosshair.png",
+      "legendScreenshot": ""
+    },
+    "barInteraction": null,
+    "heatmapInteraction": null
+  }
+]

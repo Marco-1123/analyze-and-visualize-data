@@ -424,6 +424,73 @@ class SparklineContractTests(unittest.TestCase):
             validate_spec(spec)
 
 
+class LineValueLabelContractTests(unittest.TestCase):
+    def line_spec(self) -> dict:
+        spec = copy.deepcopy(BASE_SPEC)
+        spec["components"] = [
+            {
+                "id": "line",
+                "type": "line",
+                "title": "周度趋势",
+                "labels": ["W1", "W2", "W3", "W4"],
+                "series": [{"name": "SLA", "values": [90, 92, 91, 94]}],
+                "valueLabels": {
+                    "mode": "key",
+                    "include": [
+                        "start",
+                        "end",
+                        "extrema",
+                        "annotations",
+                        "threshold-crossings",
+                    ],
+                    "maxPerSeries": 5,
+                    "fallback": "table",
+                    "thresholds": [91.5],
+                },
+            }
+        ]
+        return spec
+
+    def test_value_label_contract_is_valid(self) -> None:
+        validate_spec(self.line_spec())
+
+    def test_all_supported_modes_are_valid(self) -> None:
+        for mode in ["auto", "none", "end", "key", "all"]:
+            spec = self.line_spec()
+            spec["components"][0]["valueLabels"]["mode"] = mode
+            validate_spec(spec)
+
+    def test_invalid_value_label_mode_is_rejected(self) -> None:
+        spec = self.line_spec()
+        spec["components"][0]["valueLabels"]["mode"] = "dense"
+        with self.assertRaisesRegex(ValueError, "valueLabels.mode"):
+            validate_spec(spec)
+
+    def test_invalid_value_label_include_is_rejected(self) -> None:
+        spec = self.line_spec()
+        spec["components"][0]["valueLabels"]["include"] = ["end", "average"]
+        with self.assertRaisesRegex(ValueError, "unsupported values"):
+            validate_spec(spec)
+
+    def test_invalid_max_per_series_is_rejected(self) -> None:
+        spec = self.line_spec()
+        spec["components"][0]["valueLabels"]["maxPerSeries"] = 0
+        with self.assertRaisesRegex(ValueError, "between 1 and 100"):
+            validate_spec(spec)
+
+    def test_thresholds_must_be_finite_numbers(self) -> None:
+        spec = self.line_spec()
+        spec["components"][0]["valueLabels"]["thresholds"] = [91, "92"]
+        with self.assertRaisesRegex(ValueError, "finite numbers"):
+            validate_spec(spec)
+
+    def test_legacy_end_labels_must_be_boolean(self) -> None:
+        spec = self.line_spec()
+        spec["components"][0]["endLabels"] = "false"
+        with self.assertRaisesRegex(ValueError, "endLabels must be a boolean"):
+            validate_spec(spec)
+
+
 class LineAnnotationContractTests(unittest.TestCase):
     def line_spec(self) -> dict:
         spec = copy.deepcopy(BASE_SPEC)

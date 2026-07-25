@@ -36,7 +36,16 @@
 - Use for ordered time.
 - Keep time intervals continuous or disclose gaps.
 - Use no more than four emphasized series.
-- Direct-label the final value when possible.
+- Use intelligent static value labels when they materially shorten lookup:
+  `auto` for the default, `end` for a minimal endpoint read, `key` for
+  business-significant points, `all` only when complete visible labeling is
+  explicitly required, and `none` when the line is contextual.
+- `auto` may show every point only for a short single series whose formatted
+  values fit the actual plot width. Dense or multi-series plots must retain
+  prioritized labels rather than shrink text or permit overlap.
+- If `all` cannot fit, preserve selected labels in the plot and provide the
+  complete exact values in an expandable, horizontally scrollable table. Do
+  not make the line plot itself scroll merely to fit static labels.
 - For two or more series, use a shared x-axis crosshair tooltip by default:
   snap to the nearest time point, highlight every available series point, and
   show the time label plus all series values in one comparison panel.
@@ -45,12 +54,15 @@
 - Support pointer movement, touch selection, and Left/Right/Home/End keyboard
   navigation. Do not require precise hovering on an individual point.
 - Render the legend as a visible, keyboard-accessible series filter. Clicking
-  or activating an item toggles its line, end label, crosshair point, tooltip
-  row, and accessible selected-value text as one state change.
+  or activating an item toggles its line, static labels, crosshair point,
+  tooltip row, complete-table row, and accessible selected-value text as one
+  state change.
 - Keep at least one series visible and keep the original y-domain stable while
   toggling.
 - Keep missing series values visible as unavailable (`—`) rather than silently
   removing the series from the comparison.
+- Render missing observations as real gaps; never coerce `null` or empty values
+  to zero or attach a static label to them.
 - Do not smooth lines when smoothing implies unobserved values.
 
 ### Bar

@@ -1184,7 +1184,7 @@
     });
     var allFits =
       series.length === 1 &&
-      labels.length <= (compact ? 6 : 8) &&
+      labels.length <= (compact ? 7 : 8) &&
       xStep >= widest + (compact ? 12 : 16);
     var mode = requestedMode === "auto"
       ? allFits ? "all" : "key"
@@ -1247,6 +1247,8 @@
       if (!points.length) return;
       if (options.mode === "all") {
         points.forEach(function (point) { add(point, "all", 10); });
+        add(points[0], "start", 20);
+        add(points[points.length - 1], "end", 20);
       } else if (options.mode === "end") {
         add(points[points.length - 1], "end", 90);
       } else {
@@ -1352,7 +1354,9 @@
       { dx: -6, dy: -8, anchor: "end" },
       { dx: 6, dy: -8, anchor: "start" },
       { dx: -6, dy: 18, anchor: "end" },
-      { dx: 6, dy: 18, anchor: "start" }
+      { dx: 6, dy: 18, anchor: "start" },
+      { dx: 0, dy: 32, anchor: "middle" },
+      { dx: 0, dy: -22, anchor: "middle" }
     ];
     candidates.forEach(function (candidate) {
       var accepted = null;
@@ -1613,7 +1617,10 @@
     );
     var valueLabelCandidates = requestedValueLabelCandidates;
     var valueLabelResolvedMode = valueLabelOptions.mode;
-    if (valueLabelOptions.mode === "all") {
+    if (
+      valueLabelOptions.mode === "all" &&
+      valueLabelOptions.requestedMode !== "auto"
+    ) {
       var labelBudget = Math.max(
         compact ? 6 : 8,
         Math.floor(innerW / (compact ? 58 : 62)) *
@@ -1644,6 +1651,35 @@
       },
       compact
     );
+    var valueLabelInitialPlacement = valueLabelPlacement;
+    if (
+      valueLabelOptions.requestedMode === "auto" &&
+      valueLabelOptions.mode === "all" &&
+      valueLabelPlacement.placed.length !== valueLabelCandidates.length
+    ) {
+      valueLabelResolvedMode = "key-fallback";
+      valueLabelCandidates = buildLineValueLabelCandidates(
+        component,
+        lineLayouts,
+        annotations,
+        {
+          mode: "key",
+          include: ["start", "end", "extrema", "annotations"],
+          maxPerSeries: 4,
+          thresholds: valueLabelOptions.thresholds
+        }
+      );
+      valueLabelPlacement = placeLineValueLabels(
+        valueLabelCandidates,
+        {
+          left: margin.left + 2,
+          right: width - margin.right - 2,
+          top: margin.top + 2,
+          bottom: height - margin.bottom - 2
+        },
+        compact
+      );
+    }
     valueLabelPlacement.placed.forEach(function (placement) {
       var candidate = placement.candidate;
       var layout = lineLayouts.find(function (entry) {
@@ -1712,6 +1748,26 @@
     svg.setAttribute(
       "data-line-value-label-omitted",
       valueLabelState.omitted
+    );
+    svg.setAttribute(
+      "data-line-value-label-reconciled",
+      valueLabelResolvedMode !== "all" ||
+        (
+          valueLabelPlacement.placed.length ===
+          requestedValueLabelCandidates.length
+        )
+        ? "true"
+        : "false"
+    );
+    svg.setAttribute(
+      "data-line-value-label-initial-rendered",
+      valueLabelInitialPlacement.placed.length
+    );
+    svg.setAttribute(
+      "data-line-value-label-initial-points",
+      valueLabelInitialPlacement.placed.map(function (placement) {
+        return placement.candidate.point.index;
+      }).join(",")
     );
 
     annotations.forEach(function (annotation, annotationIndex) {

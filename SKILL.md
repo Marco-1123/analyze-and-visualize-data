@@ -112,6 +112,12 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
   plot scroll to fit them. If an all-point request is too dense, keep
   prioritized labels in the plot and provide the complete expandable value
   table. Missing values remain gaps and are never labeled as zero.
+- Before building any line chart, reconcile each `series[].values` array
+  against `labels[]`: lengths must match exactly and missing observations must
+  be explicit `null` placeholders. Never trim the data array to the subset of
+  static labels expected to remain visible. After rendering, if `auto` resolves
+  to `all`, verify that every valid source point actually received a static
+  label; the preflight decision and final placement counts must agree.
 - For a canonical 24-hour heatmap, default to one HTML component with 0–11 and
   12–23 rendered as vertically stacked groups. Both groups must share one color
   domain and one legend; never squeeze all 24 hours into one horizontal row.

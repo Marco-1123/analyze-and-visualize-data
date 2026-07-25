@@ -118,6 +118,16 @@ Confirmed:
   and 1440 px; mobile touch and native waterfall scrolling were exercised in
   the bundled runtime harness. Treat the revision-29 result as verified mount
   and readback, not as a new tenant-UI interaction confirmation.
+- the Skill v0.11.1 line-value-label block replaced its v0.11.0 predecessor in
+  place. Revision 38 returned the new block and a reference file whose SHA-256
+  (`6f15fb95e5adcaebcfb4622f2a62c5372c0593e841f64d16ac6a0134f84c7b9f`)
+  was byte-identical to the local artifact. An authenticated Chrome session
+  loaded the actual Feishu iframe and exposed the complete seven-day fixture:
+  seven source dates, seven static value labels (`72.0%`, `74.5%`, `73.0%`,
+  `78.0%`, `81.0%`, `80.0%`, `84.0%`), and one keyboard-accessible line-chart
+  slider. The Feishu chapter heading and explanation also reflected v0.11.1.
+  This confirms end-to-end mount, readback, and rendered cardinality rather than
+  only a successful API write.
 
 Not yet confirmed:
 

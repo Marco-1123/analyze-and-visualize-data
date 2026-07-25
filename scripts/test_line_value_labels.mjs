@@ -32,6 +32,9 @@ async function inspect(page, viewport) {
     const lineState = (id) => {
       const section = component(id);
       const svg = section.querySelector("svg");
+      const source = window.__VDA_SPEC__.components.find(
+        (entry) => entry.id === id
+      );
       const boxes = Array.from(
         section.querySelectorAll(".vda-line-value-label .vda-value-label")
       ).map((node) => {
@@ -81,6 +84,9 @@ async function inspect(page, viewport) {
         candidates: Number(svg.dataset.lineValueLabelCandidates),
         rendered: Number(svg.dataset.lineValueLabelRendered),
         omitted: Number(svg.dataset.lineValueLabelOmitted),
+        reconciled: svg.dataset.lineValueLabelReconciled === "true",
+        sourceLabels: source.labels.length,
+        sourceSeriesLengths: source.series.map((entry) => entry.values.length),
         collisions,
         axisCollision,
         table: table
@@ -118,17 +124,19 @@ async function inspect(page, viewport) {
   }
 
   assert(state.auto.requested === "auto", `${viewport.width}: auto request lost`);
-  if (viewport.width >= 818) {
-    assert(
-      state.auto.mode === "all" && state.auto.rendered === 8,
-      `${viewport.width}: short auto series should show all eight values`
-    );
-  } else {
-    assert(
-      state.auto.mode === "key" && state.auto.rendered >= 2,
-      `${viewport.width}: short auto series should degrade to key values`
-    );
-  }
+  assert(
+    state.auto.sourceLabels === 7 &&
+      state.auto.sourceSeriesLengths.every((length) => length === 7),
+    `${viewport.width}: seven-day source cardinality was truncated before render`
+  );
+  assert(
+    state.auto.mode === "all" &&
+      state.auto.candidates === 7 &&
+      state.auto.rendered === 7 &&
+      state.auto.omitted === 0 &&
+      state.auto.reconciled,
+    `${viewport.width}: complete seven-day auto series must render all seven values`
+  );
 
   assert(state.dense.mode === "key-fallback", `${viewport.width}: dense all did not degrade`);
   assert(state.dense.omitted > 0, `${viewport.width}: dense all did not report omissions`);

@@ -66,8 +66,16 @@ Check:
 - persistent touch selection without blocking vertical page scrolling;
 - line value-label modes `auto`, `none`, `end`, `key`, and `all` pass schema
   validation; invalid include keys, thresholds, and caps fail;
-- short single-series fixtures show all values only when their formatted boxes
-  fit; 390 px and 520 px fixtures degrade without overlap or clipping;
+- short single-series fixtures show all values when their formatted boxes fit;
+  at 390 px and 520 px they degrade only when actual collision-free placement
+  cannot contain every label;
+- seven-day fixtures preserve all seven labels and all seven ordered source
+  entries through specification, build, and render. A 7-label / 4-value input
+  must fail before HTML generation, with explicit `null` required for a
+  genuinely missing observation;
+- when `auto` resolves to `all`, candidate count, rendered-label count, and
+  valid source-point count must match after placement. A preflight decision
+  alone is not sufficient;
 - dense multi-series and 52-point fixtures retain prioritized plot labels,
   expose complete exact-value tables, and create no page-level overflow;
 - label bounding boxes and x-axis labels do not overlap at 390, 520, 818, 880,

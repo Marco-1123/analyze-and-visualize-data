@@ -187,8 +187,15 @@ Line components may opt into static point-value labels:
 ```
 
 - `mode` is `auto`, `none`, `end`, `key`, or `all`; default is `auto`.
+- Every `series[].values` array must have exactly one entry for every
+  `labels[]` entry, in the same order. Use an explicit `null` for a missing
+  observation. Never shorten, slice, or omit the tail of `values` because only
+  a subset of static labels will be visible.
 - `auto` shows every value only for a short single series whose formatted
-  labels fit the actual plot width. Otherwise it uses the key-point policy.
+  labels fit the actual plot width. The runtime must reconcile the preflight
+  decision with the number of labels actually placed: `all` is valid only when
+  every valid source point was placed. Otherwise it switches to the key-point
+  policy instead of silently presenting a partial all-point result.
 - `key` may include `start`, `end`, `extrema`, `annotations`, and
   `threshold-crossings`. Selection priority is annotations, end, extrema,
   threshold crossings, start, then ordinary points. `maxPerSeries` is an

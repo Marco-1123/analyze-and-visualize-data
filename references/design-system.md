@@ -221,6 +221,11 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
 - Resolve label density from actual plot width, formatted text width, series
   count, and point count. Never solve density by reducing label type below the
   chart's minimum readable size.
+- Treat auto-label selection as a measured render decision, not a one-pass
+  estimate. Reconcile the planned candidate count with actual placed labels;
+  use additional restrained above/below lanes for a short seven-point series
+  when they remain collision-free, and never claim an all-point state after
+  silently dropping a tail.
 - When a requested all-point view is too dense, retain annotations, endpoint,
   extrema, threshold crossings, and start values in that order. Put the
   complete matrix in a collapsed disclosure below the chart with a sticky

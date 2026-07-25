@@ -301,10 +301,25 @@ def validate_spec(spec: dict[str, Any]) -> None:
                         item["sparkline"], f"{item_path}.sparkline"
                     )
         elif component_type == "line":
-            if not isinstance(component.get("labels"), list):
-                fail(f"{path}.labels must be an array")
+            labels = component.get("labels")
+            if not isinstance(labels, list) or not labels:
+                fail(f"{path}.labels must be a non-empty array")
             if not isinstance(component.get("series"), list) or not component["series"]:
                 fail(f"{path}.series must be a non-empty array")
+            for series_index, entry in enumerate(component["series"]):
+                series_path = f"{path}.series[{series_index}]"
+                if not isinstance(entry, dict):
+                    fail(f"{series_path} must be an object")
+                values = entry.get("values")
+                if not isinstance(values, list):
+                    fail(f"{series_path}.values must be an array")
+                if len(values) != len(labels):
+                    fail(
+                        f"{series_path}.values must contain exactly "
+                        f"{len(labels)} entries to match labels; got "
+                        f"{len(values)}. Use null for an explicitly missing "
+                        "observation."
+                    )
             if component.get("endLabels") is not None and not isinstance(
                 component["endLabels"], bool
             ):

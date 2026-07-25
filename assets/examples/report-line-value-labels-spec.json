@@ -13,13 +13,13 @@
     {
       "id": "line-labels-auto-short",
       "type": "line",
-      "title": "短序列在空间充足时显示全部节点数值",
-      "subtitle": "auto 会同时考虑节点数量、实际绘图区宽度和格式化文字宽度",
-      "labels": ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"],
+      "title": "完整 7 天数据在 auto 模式下显示全部节点数值",
+      "subtitle": "每个日期必须有一个对应值；auto 的预判结果还需与实际落位数量复核",
+      "labels": ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
       "series": [
         {
-          "name": "一次解决率",
-          "values": [72, 74.5, 73, 78, 81, 80, 84, 86],
+          "name": "业务完成率",
+          "values": [72, 74.5, 73, 78, 81, 80, 84],
           "color": "#315CF5"
         }
       ],
@@ -33,7 +33,7 @@
         "decimals": 1
       },
       "evidenceIds": ["qa.line-labels.auto-short"],
-      "ariaLabel": "八周一次解决率折线图，在空间充足时显示全部节点数值"
+      "ariaLabel": "周一到周日七天业务完成率折线图，在 auto 模式下显示全部七个节点数值"
     },
     {
       "id": "line-labels-dense-all",

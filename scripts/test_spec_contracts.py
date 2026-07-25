@@ -454,6 +454,26 @@ class LineValueLabelContractTests(unittest.TestCase):
     def test_value_label_contract_is_valid(self) -> None:
         validate_spec(self.line_spec())
 
+    def test_line_series_values_must_match_labels(self) -> None:
+        spec = self.line_spec()
+        spec["components"][0]["series"][0]["values"] = [90, 92, 91]
+        with self.assertRaisesRegex(
+            ValueError,
+            "must contain exactly 4 entries to match labels; got 3",
+        ):
+            validate_spec(spec)
+
+    def test_line_series_may_use_explicit_null_for_missing_value(self) -> None:
+        spec = self.line_spec()
+        spec["components"][0]["series"][0]["values"] = [90, None, 91, 94]
+        validate_spec(spec)
+
+    def test_line_series_values_must_be_an_array(self) -> None:
+        spec = self.line_spec()
+        spec["components"][0]["series"][0]["values"] = None
+        with self.assertRaisesRegex(ValueError, "values must be an array"):
+            validate_spec(spec)
+
     def test_all_supported_modes_are_valid(self) -> None:
         for mode in ["auto", "none", "end", "key", "all"]:
             spec = self.line_spec()

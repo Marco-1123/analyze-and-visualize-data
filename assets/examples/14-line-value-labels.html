@@ -6,7 +6,7 @@
   <meta name="use-iframe" content="true">
   <meta name="html-box-height-mode" content="auto">
   <meta name="description" content="短序列可逐点阅读，密集多系列自动降级并保留完整精确值">
-  <meta name="generator" content="analyze-and-visualize-data 0.11.0">
+  <meta name="generator" content="analyze-and-visualize-data 0.11.1">
   <meta name="color-scheme" content="light">
   <title>折线图数值标注根据数据密度自动保留清晰度</title>
   <style>
@@ -2137,7 +2137,7 @@ a:focus-visible,
   <main id="main" class="vda-app" tabindex="-1" aria-live="polite"></main>
   <noscript>此数据分析组件需要启用 JavaScript 才能显示交互图表。</noscript>
   <script>
-window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"折线图数值标注根据数据密度自动保留清晰度","eyebrow":"P2 · SMART VALUE LABELS","subtitle":"短序列可逐点阅读，密集多系列自动降级并保留完整精确值","meta":{"period":"固定回归数据","scope":"折线图数值标注策略","source":"Skill runtime fixture"},"components":[{"id":"line-labels-auto-short","type":"line","title":"短序列在空间充足时显示全部节点数值","subtitle":"auto 会同时考虑节点数量、实际绘图区宽度和格式化文字宽度","labels":["W1","W2","W3","W4","W5","W6","W7","W8"],"series":[{"name":"一次解决率","values":[72,74.5,73,78,81,80,84,86],"color":"#315CF5"}],"valueLabels":{"mode":"auto","fallback":"table"},"format":{"type":"percent","input":"percent","decimals":1},"evidenceIds":["qa.line-labels.auto-short"],"ariaLabel":"八周一次解决率折线图，在空间充足时显示全部节点数值"},{"id":"line-labels-dense-all","type":"line","title":"密集多系列请求全部数值时不允许标签互相覆盖","subtitle":"图内保留可清晰归属的标签，完整数值进入可展开横向表格","labels":["1/05","1/12","1/19","1/26","2/02","2/09","2/16","2/23","3/02","3/09","3/16","3/23","3/30","4/06","4/13","4/20","4/27","5/04"],"series":[{"name":"24 小时 SLA","values":[91.2,92.4,91.8,93.1,92.7,90.9,91.5,92.2,93.6,92.8,91.9,92.7,93.4,94.1,93.5,94.4,94.0,94.8],"color":"#315CF5"},{"name":"一次解决率","values":[78.1,78.7,79.0,78.4,79.3,78.9,79.6,80.2,79.8,80.5,80.1,80.8,81.3,80.9,81.6,82.0,81.7,82.4],"color":"#17A6A1"},{"name":"客户满意度","values":[89.8,90.3,90.1,90.7,91.0,90.5,91.2,91.6,91.3,91.9,91.5,92.1,92.4,92.0,92.7,93.1,92.8,93.4],"color":"#7357D6"}],"valueLabels":{"mode":"all","fallback":"table"},"format":{"type":"percent","input":"percent","decimals":1},"evidenceIds":["qa.line-labels.dense-all"],"ariaLabel":"十八周三个服务指标的密集多系列折线图，全部数值通过图内清晰标注和完整数值表提供"},{"id":"line-labels-key-points","type":"line","title":"关键模式优先保留事件、末期、极值与阈值穿越点","subtitle":"候选点超过上限时按业务优先级选择，不按视觉位置随机删减","labels":["D1","D2","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12"],"series":[{"name":"夜间 SLA","values":[92,91,89,88,90,93,91,89,87,90,92,94],"color":"#315CF5"}],"annotations":[{"id":"routing-change","index":3,"label":"路由调整","kind":"fact","evidenceIds":["event.routing-change"]},{"id":"staffing-change","index":8,"label":"夜班补充","kind":"fact","evidenceIds":["event.staffing-change"]}],"valueLabels":{"mode":"key","include":["end","extrema","annotations","threshold-crossings"],"thresholds":[90],"maxPerSeries":5,"fallback":"reduce"},"format":{"type":"percent","input":"percent","decimals":0},"evidenceIds":["qa.line-labels.key"],"ariaLabel":"十二个时间点的夜间 SLA 趋势，标记两个事件、末期、极值和九十百分比阈值穿越点"},{"id":"line-labels-adversarial","type":"line","title":"极端长数值、重合曲线与缺失值仍保持可读","subtitle":"52 个时间点不会被迫横向滚动；缺失值不标注，完整精确值保留在表格中","labels":["P01","P02","P03","P04","P05","P06","P07","P08","P09","P10","P11","P12","P13","P14","P15","P16","P17","P18","P19","P20","P21","P22","P23","P24","P25","P26","P27","P28","P29","P30","P31","P32","P33","P34","P35","P36","P37","P38","P39","P40","P41","P42","P43","P44","P45","P46","P47","P48","P49","P50","P51","P52"],"series":[{"name":"企业级队列实际处理额","values":[128000000,131000000,129000000,133000000,135000000,134000000,138000000,140000000,139000000,142000000,144000000,143000000,146000000,148000000,147000000,150000000,152000000,151000000,154000000,156000000,null,158000000,160000000,159000000,162000000,164000000,163000000,166000000,168000000,167000000,170000000,172000000,171000000,174000000,176000000,175000000,178000000,180000000,179000000,182000000,184000000,183000000,186000000,188000000,187000000,190000000,192000000,191000000,194000000,196000000,195000000,198000000],"color":"#315CF5"},{"name":"企业级队列计划处理额","values":[128000000,130000000,130000000,132000000,134000000,134000000,137000000,139000000,139000000,141000000,143000000,143000000,145000000,147000000,147000000,149000000,151000000,151000000,153000000,155000000,155000000,157000000,159000000,159000000,161000000,163000000,163000000,165000000,167000000,167000000,169000000,171000000,171000000,173000000,175000000,175000000,177000000,179000000,179000000,181000000,183000000,183000000,185000000,187000000,187000000,189000000,191000000,191000000,193000000,195000000,195000000,197000000],"color":"#17A6A1"}],"valueLabels":{"mode":"all","fallback":"table"},"format":{"type":"currency","currency":"CNY","decimals":0},"evidenceIds":["qa.line-labels.adversarial"],"ariaLabel":"五十二个时间点的企业队列处理金额趋势，包含长金额、重合数据与一个缺失值"}]};
+window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"折线图数值标注根据数据密度自动保留清晰度","eyebrow":"P2 · SMART VALUE LABELS","subtitle":"短序列可逐点阅读，密集多系列自动降级并保留完整精确值","meta":{"period":"固定回归数据","scope":"折线图数值标注策略","source":"Skill runtime fixture"},"components":[{"id":"line-labels-auto-short","type":"line","title":"完整 7 天数据在 auto 模式下显示全部节点数值","subtitle":"每个日期必须有一个对应值；auto 的预判结果还需与实际落位数量复核","labels":["周一","周二","周三","周四","周五","周六","周日"],"series":[{"name":"业务完成率","values":[72,74.5,73,78,81,80,84],"color":"#315CF5"}],"valueLabels":{"mode":"auto","fallback":"table"},"format":{"type":"percent","input":"percent","decimals":1},"evidenceIds":["qa.line-labels.auto-short"],"ariaLabel":"周一到周日七天业务完成率折线图，在 auto 模式下显示全部七个节点数值"},{"id":"line-labels-dense-all","type":"line","title":"密集多系列请求全部数值时不允许标签互相覆盖","subtitle":"图内保留可清晰归属的标签，完整数值进入可展开横向表格","labels":["1/05","1/12","1/19","1/26","2/02","2/09","2/16","2/23","3/02","3/09","3/16","3/23","3/30","4/06","4/13","4/20","4/27","5/04"],"series":[{"name":"24 小时 SLA","values":[91.2,92.4,91.8,93.1,92.7,90.9,91.5,92.2,93.6,92.8,91.9,92.7,93.4,94.1,93.5,94.4,94.0,94.8],"color":"#315CF5"},{"name":"一次解决率","values":[78.1,78.7,79.0,78.4,79.3,78.9,79.6,80.2,79.8,80.5,80.1,80.8,81.3,80.9,81.6,82.0,81.7,82.4],"color":"#17A6A1"},{"name":"客户满意度","values":[89.8,90.3,90.1,90.7,91.0,90.5,91.2,91.6,91.3,91.9,91.5,92.1,92.4,92.0,92.7,93.1,92.8,93.4],"color":"#7357D6"}],"valueLabels":{"mode":"all","fallback":"table"},"format":{"type":"percent","input":"percent","decimals":1},"evidenceIds":["qa.line-labels.dense-all"],"ariaLabel":"十八周三个服务指标的密集多系列折线图，全部数值通过图内清晰标注和完整数值表提供"},{"id":"line-labels-key-points","type":"line","title":"关键模式优先保留事件、末期、极值与阈值穿越点","subtitle":"候选点超过上限时按业务优先级选择，不按视觉位置随机删减","labels":["D1","D2","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12"],"series":[{"name":"夜间 SLA","values":[92,91,89,88,90,93,91,89,87,90,92,94],"color":"#315CF5"}],"annotations":[{"id":"routing-change","index":3,"label":"路由调整","kind":"fact","evidenceIds":["event.routing-change"]},{"id":"staffing-change","index":8,"label":"夜班补充","kind":"fact","evidenceIds":["event.staffing-change"]}],"valueLabels":{"mode":"key","include":["end","extrema","annotations","threshold-crossings"],"thresholds":[90],"maxPerSeries":5,"fallback":"reduce"},"format":{"type":"percent","input":"percent","decimals":0},"evidenceIds":["qa.line-labels.key"],"ariaLabel":"十二个时间点的夜间 SLA 趋势，标记两个事件、末期、极值和九十百分比阈值穿越点"},{"id":"line-labels-adversarial","type":"line","title":"极端长数值、重合曲线与缺失值仍保持可读","subtitle":"52 个时间点不会被迫横向滚动；缺失值不标注，完整精确值保留在表格中","labels":["P01","P02","P03","P04","P05","P06","P07","P08","P09","P10","P11","P12","P13","P14","P15","P16","P17","P18","P19","P20","P21","P22","P23","P24","P25","P26","P27","P28","P29","P30","P31","P32","P33","P34","P35","P36","P37","P38","P39","P40","P41","P42","P43","P44","P45","P46","P47","P48","P49","P50","P51","P52"],"series":[{"name":"企业级队列实际处理额","values":[128000000,131000000,129000000,133000000,135000000,134000000,138000000,140000000,139000000,142000000,144000000,143000000,146000000,148000000,147000000,150000000,152000000,151000000,154000000,156000000,null,158000000,160000000,159000000,162000000,164000000,163000000,166000000,168000000,167000000,170000000,172000000,171000000,174000000,176000000,175000000,178000000,180000000,179000000,182000000,184000000,183000000,186000000,188000000,187000000,190000000,192000000,191000000,194000000,196000000,195000000,198000000],"color":"#315CF5"},{"name":"企业级队列计划处理额","values":[128000000,130000000,130000000,132000000,134000000,134000000,137000000,139000000,139000000,141000000,143000000,143000000,145000000,147000000,147000000,149000000,151000000,151000000,153000000,155000000,155000000,157000000,159000000,159000000,161000000,163000000,163000000,165000000,167000000,167000000,169000000,171000000,171000000,173000000,175000000,175000000,177000000,179000000,179000000,181000000,183000000,183000000,185000000,187000000,187000000,189000000,191000000,191000000,193000000,195000000,195000000,197000000],"color":"#17A6A1"}],"valueLabels":{"mode":"all","fallback":"table"},"format":{"type":"currency","currency":"CNY","decimals":0},"evidenceIds":["qa.line-labels.adversarial"],"ariaLabel":"五十二个时间点的企业队列处理金额趋势，包含长金额、重合数据与一个缺失值"}]};
   </script>
   <script>
 (function () {
@@ -3326,7 +3326,7 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
     });
     var allFits =
       series.length === 1 &&
-      labels.length <= (compact ? 6 : 8) &&
+      labels.length <= (compact ? 7 : 8) &&
       xStep >= widest + (compact ? 12 : 16);
     var mode = requestedMode === "auto"
       ? allFits ? "all" : "key"
@@ -3389,6 +3389,8 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
       if (!points.length) return;
       if (options.mode === "all") {
         points.forEach(function (point) { add(point, "all", 10); });
+        add(points[0], "start", 20);
+        add(points[points.length - 1], "end", 20);
       } else if (options.mode === "end") {
         add(points[points.length - 1], "end", 90);
       } else {
@@ -3494,7 +3496,9 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
       { dx: -6, dy: -8, anchor: "end" },
       { dx: 6, dy: -8, anchor: "start" },
       { dx: -6, dy: 18, anchor: "end" },
-      { dx: 6, dy: 18, anchor: "start" }
+      { dx: 6, dy: 18, anchor: "start" },
+      { dx: 0, dy: 32, anchor: "middle" },
+      { dx: 0, dy: -22, anchor: "middle" }
     ];
     candidates.forEach(function (candidate) {
       var accepted = null;
@@ -3755,7 +3759,10 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
     );
     var valueLabelCandidates = requestedValueLabelCandidates;
     var valueLabelResolvedMode = valueLabelOptions.mode;
-    if (valueLabelOptions.mode === "all") {
+    if (
+      valueLabelOptions.mode === "all" &&
+      valueLabelOptions.requestedMode !== "auto"
+    ) {
       var labelBudget = Math.max(
         compact ? 6 : 8,
         Math.floor(innerW / (compact ? 58 : 62)) *
@@ -3786,6 +3793,35 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
       },
       compact
     );
+    var valueLabelInitialPlacement = valueLabelPlacement;
+    if (
+      valueLabelOptions.requestedMode === "auto" &&
+      valueLabelOptions.mode === "all" &&
+      valueLabelPlacement.placed.length !== valueLabelCandidates.length
+    ) {
+      valueLabelResolvedMode = "key-fallback";
+      valueLabelCandidates = buildLineValueLabelCandidates(
+        component,
+        lineLayouts,
+        annotations,
+        {
+          mode: "key",
+          include: ["start", "end", "extrema", "annotations"],
+          maxPerSeries: 4,
+          thresholds: valueLabelOptions.thresholds
+        }
+      );
+      valueLabelPlacement = placeLineValueLabels(
+        valueLabelCandidates,
+        {
+          left: margin.left + 2,
+          right: width - margin.right - 2,
+          top: margin.top + 2,
+          bottom: height - margin.bottom - 2
+        },
+        compact
+      );
+    }
     valueLabelPlacement.placed.forEach(function (placement) {
       var candidate = placement.candidate;
       var layout = lineLayouts.find(function (entry) {
@@ -3854,6 +3890,26 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
     svg.setAttribute(
       "data-line-value-label-omitted",
       valueLabelState.omitted
+    );
+    svg.setAttribute(
+      "data-line-value-label-reconciled",
+      valueLabelResolvedMode !== "all" ||
+        (
+          valueLabelPlacement.placed.length ===
+          requestedValueLabelCandidates.length
+        )
+        ? "true"
+        : "false"
+    );
+    svg.setAttribute(
+      "data-line-value-label-initial-rendered",
+      valueLabelInitialPlacement.placed.length
+    );
+    svg.setAttribute(
+      "data-line-value-label-initial-points",
+      valueLabelInitialPlacement.placed.map(function (placement) {
+        return placement.candidate.point.index;
+      }).join(",")
     );
 
     annotations.forEach(function (annotation, annotationIndex) {

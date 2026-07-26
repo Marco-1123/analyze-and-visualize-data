@@ -87,6 +87,17 @@ async function inspect(page, viewport) {
         reconciled: svg.dataset.lineValueLabelReconciled === "true",
         sourceLabels: source.labels.length,
         sourceSeriesLengths: source.series.map((entry) => entry.values.length),
+        configuredMaxPerSeries: source.valueLabels?.maxPerSeries ?? null,
+        domain: {
+          min: Number(svg.dataset.lineDomainMin),
+          max: Number(svg.dataset.lineDomainMax),
+          sourceMin: Number(svg.dataset.lineSourceMin),
+          sourceMax: Number(svg.dataset.lineSourceMax),
+          bufferMode: svg.dataset.lineDomainBufferMode,
+          requestedBufferPx: Number(svg.dataset.lineDomainBufferPx),
+          topHeadroomPx: Number(svg.dataset.lineDomainTopHeadroomPx),
+          bottomHeadroomPx: Number(svg.dataset.lineDomainBottomHeadroomPx),
+        },
         collisions,
         axisCollision,
         table: table
@@ -136,6 +147,18 @@ async function inspect(page, viewport) {
       state.auto.omitted === 0 &&
       state.auto.reconciled,
     `${viewport.width}: complete seven-day auto series must render all seven values`
+  );
+  assert(
+    state.auto.configuredMaxPerSeries === 4,
+    `${viewport.width}: adversarial auto cap fixture was not preserved`
+  );
+  assert(
+    state.auto.domain.bufferMode === "automatic" &&
+      state.auto.domain.min === 0 &&
+      state.auto.domain.max > state.auto.domain.sourceMax &&
+      state.auto.domain.topHeadroomPx >=
+        state.auto.domain.requestedBufferPx - 0.5,
+    `${viewport.width}: automatic line domain did not reserve the requested top buffer`
   );
 
   assert(state.dense.mode === "key-fallback", `${viewport.width}: dense all did not degrade`);

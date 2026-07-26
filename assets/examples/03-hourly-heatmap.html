@@ -6,7 +6,7 @@
   <meta name="use-iframe" content="true">
   <meta name="html-box-height-mode" content="auto">
   <meta name="description" content="周一至周日的逐小时访问量热力图，24 小时上下分组展示，共用统一色阶并支持逐格精确数值提示。">
-  <meta name="generator" content="analyze-and-visualize-data 0.11.1">
+  <meta name="generator" content="analyze-and-visualize-data 0.11.2">
   <meta name="color-scheme" content="light">
   <title>访问高峰集中在 18–21 时</title>
   <style>
@@ -3124,7 +3124,18 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
     );
   }
 
-  function getExtent(series) {
+  function niceAxisBoundary(value, direction) {
+    if (!Number.isFinite(value) || value === 0) return value;
+    var magnitude = Math.pow(
+      10,
+      Math.floor(Math.log10(Math.abs(value))) - 1
+    );
+    return direction === "down"
+      ? Math.floor(value / magnitude) * magnitude
+      : Math.ceil(value / magnitude) * magnitude;
+  }
+
+  function getExtent(series, options) {
     var values = [];
     (series || []).forEach(function (entry) {
       (entry.values || []).forEach(function (value) {
@@ -3145,7 +3156,30 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       return [min - padding, max + padding];
     }
     var range = max - min;
-    return [Math.min(0, min - range * 0.08), max + range * 0.12];
+    var domainMin = Math.min(0, min - range * 0.08);
+    var domainMax = max + range * 0.12;
+    var settings = options && typeof options === "object" ? options : {};
+    var plotHeight = Math.max(1, finite(settings.plotHeight, 0));
+    var boundaryBufferPx = Math.max(
+      0,
+      finite(settings.boundaryBufferPx, 0)
+    );
+    if (plotHeight > 0 && boundaryBufferPx > 0) {
+      var bufferRatio = clamp(boundaryBufferPx / plotHeight, 0, 0.24);
+      for (var pass = 0; pass < 2; pass += 1) {
+        domainMax = Math.max(
+          domainMax,
+          (max - bufferRatio * domainMin) / (1 - bufferRatio)
+        );
+        domainMin = Math.min(
+          domainMin,
+          (min - bufferRatio * domainMax) / (1 - bufferRatio)
+        );
+      }
+      domainMin = niceAxisBoundary(domainMin, "down");
+      domainMax = niceAxisBoundary(domainMax, "up");
+    }
+    return [domainMin, domainMax];
   }
 
   function compactChartLayout() {
@@ -3338,13 +3372,16 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
           ? ["start", "end", "extrema", "annotations"]
           : ["end", "annotations"]
         : [];
+    var configuredMaxPerSeries = Number.isInteger(options.maxPerSeries)
+      ? options.maxPerSeries
+      : 5;
     return {
       requestedMode: requestedMode,
       mode: mode,
       include: include,
-      maxPerSeries: Number.isInteger(options.maxPerSeries)
-        ? options.maxPerSeries
-        : mode === "all" ? Number.MAX_SAFE_INTEGER : 5,
+      maxPerSeries: mode === "all"
+        ? Number.MAX_SAFE_INTEGER
+        : configuredMaxPerSeries,
       fallback: options.fallback || "table",
       thresholds: Array.isArray(options.thresholds)
         ? options.thresholds.map(Number).filter(Number.isFinite)
@@ -3589,7 +3626,35 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
     var compact = compactChartLayout();
     var width = compact ? compactChartWidth() : 760;
     var height = compact ? Math.max(250, finite(component.height, 300) * 0.86) : finite(component.height, 300);
-    var extent = component.domain || getExtent(series);
+    var sourceValues = [];
+    series.forEach(function (entry) {
+      (Array.isArray(entry.values) ? entry.values : []).forEach(function (raw) {
+        if (raw == null || raw === "" || !Number.isFinite(Number(raw))) return;
+        sourceValues.push(Number(raw));
+      });
+    });
+    var sourceMin = sourceValues.length
+      ? Math.min.apply(null, sourceValues)
+      : 0;
+    var sourceMax = sourceValues.length
+      ? Math.max.apply(null, sourceValues)
+      : 1;
+    var provisionalTop = compact
+      ? annotations.length ? 48 : 18
+      : annotations.length ? 44 : 16;
+    var provisionalBottom = compact ? 38 : 42;
+    var valueLabelConfig = component.valueLabels;
+    var valueLabelMode = valueLabelConfig &&
+      typeof valueLabelConfig === "object"
+      ? valueLabelConfig.mode || "auto"
+      : component.endLabels === false ? "none" : "auto";
+    var boundaryBufferPx = valueLabelMode === "none"
+      ? compact ? 8 : 10
+      : compact ? 20 : 22;
+    var extent = component.domain || getExtent(series, {
+      plotHeight: Math.max(1, height - provisionalTop - provisionalBottom),
+      boundaryBufferPx: boundaryBufferPx
+    });
     var minY = finite(extent[0], 0);
     var maxY = finite(extent[1], 1);
     var yRange = maxY - minY || 1;
@@ -3633,6 +3698,26 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       role: "img",
       "aria-label": component.ariaLabel || component.title || "趋势图"
     });
+    svg.setAttribute("data-line-domain-min", minY);
+    svg.setAttribute("data-line-domain-max", maxY);
+    svg.setAttribute("data-line-source-min", sourceMin);
+    svg.setAttribute("data-line-source-max", sourceMax);
+    svg.setAttribute(
+      "data-line-domain-buffer-mode",
+      component.domain ? "explicit" : "automatic"
+    );
+    svg.setAttribute(
+      "data-line-domain-buffer-px",
+      component.domain ? 0 : boundaryBufferPx
+    );
+    svg.setAttribute(
+      "data-line-domain-top-headroom-px",
+      ((maxY - sourceMax) / yRange) * innerH
+    );
+    svg.setAttribute(
+      "data-line-domain-bottom-headroom-px",
+      ((sourceMin - minY) / yRange) * innerH
+    );
 
     for (var tick = 0; tick <= 4; tick += 1) {
       var y = margin.top + (innerH * tick) / 4;

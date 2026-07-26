@@ -226,6 +226,11 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
   use additional restrained above/below lanes for a short seven-point series
   when they remain collision-free, and never claim an all-point state after
   silently dropping a tail.
+- Derive automatic line domains with a pixel-aware boundary buffer. Preserve
+  the intended baseline, including zero where the runtime policy requires it,
+  while keeping source extrema far enough from the plot edge for labels and
+  selection states. Do not substitute a fixed numeric increment for this
+  layout requirement.
 - When a requested all-point view is too dense, retain annotations, endpoint,
   extrema, threshold crossings, and start values in that order. Put the
   complete matrix in a collapsed disclosure below the chart with a sticky

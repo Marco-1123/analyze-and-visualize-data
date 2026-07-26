@@ -128,6 +128,17 @@ Confirmed:
   slider. The Feishu chapter heading and explanation also reflected v0.11.1.
   This confirms end-to-end mount, readback, and rendered cardinality rather than
   only a successful API write.
+- the Skill v0.11.2 line-value-label block replaced its v0.11.1 predecessor in
+  place. Revision 41 returned the new block and a reference file whose SHA-256
+  (`d312f001a6d785688f5b54c0d859611ec481911426465cffaa03869267365f03`)
+  was byte-identical to the local artifact. An authenticated Chrome session
+  loaded the actual Feishu iframe and exposed the high-baseline seven-day
+  regression: the y-axis retained the zero baseline, expanded to a natural
+  `6,500` upper boundary, and rendered all seven static values (`5,769`,
+  `5,819`, `5,828`, `5,742`, `5,636`, `5,612`, `5,654`). The iframe also
+  exposed one keyboard-accessible line-chart slider, while the Feishu chapter
+  heading and explanation reflected v0.11.2. This confirms end-to-end mount,
+  resource readback, dynamic boundary headroom, and 7/7 rendered cardinality.
 
 Not yet confirmed:
 

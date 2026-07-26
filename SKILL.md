@@ -118,6 +118,11 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
   static labels expected to remain visible. After rendering, if `auto` resolves
   to `all`, verify that every valid source point actually received a static
   label; the preflight decision and final placement counts must agree.
+- Preserve the selected line-chart baseline while reserving an automatic,
+  pixel-aware buffer between source extrema and the plot boundaries. Static
+  labels, selection rings, and annotations must not sit directly against the
+  SVG edge. Treat `maxPerSeries` as a key-point cap only: when `auto` resolves
+  to `all`, it must not truncate an otherwise readable short series.
 - For a canonical 24-hour heatmap, default to one HTML component with 0–11 and
   12–23 rendered as vertically stacked groups. Both groups must share one color
   domain and one legend; never squeeze all 24 hours into one horizontal row.

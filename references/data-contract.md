@@ -199,7 +199,13 @@ Line components may opt into static point-value labels:
 - `key` may include `start`, `end`, `extrema`, `annotations`, and
   `threshold-crossings`. Selection priority is annotations, end, extrema,
   threshold crossings, start, then ordinary points. `maxPerSeries` is an
-  integer from 1 to 100.
+  integer from 1 to 100 and caps only `key` or a key-point fallback. It is
+  ignored when `auto` resolves to `all` and when an explicit `all` request
+  remains readable; use `mode: "key"` when a hard visible-point cap is wanted.
+- Automatically derived line domains retain the runtime's baseline policy but
+  reserve a pixel-aware buffer above and below the source extrema for static
+  labels, selection rings, and annotations. An explicit `domain` remains exact
+  and therefore must include any required boundary space itself.
 - `all` is a request for complete exact-value access, not permission to overlap
   text. When the plot cannot fit every label, the runtime retains prioritized
   labels in the plot and, for `fallback: "table"`, adds a complete expandable

@@ -73,6 +73,13 @@ Check:
   entries through specification, build, and render. A 7-label / 4-value input
   must fail before HTML generation, with explicit `null` required for a
   genuinely missing observation;
+- high-baseline, low-variance seven-day fixtures retain the selected zero
+  baseline while reserving the declared pixel buffer above the maximum source
+  value. Four-digit formatted labels must not touch the plot boundary or force
+  an otherwise readable series to reduce;
+- an adversarial `auto` fixture carrying legacy `maxPerSeries: 4` must still
+  render all seven values when `auto` resolves to `all`; the cap applies only
+  to key-point mode or fallback;
 - when `auto` resolves to `all`, candidate count, rendered-label count, and
   valid source-point count must match after placement. A preflight decision
   alone is not sufficient;

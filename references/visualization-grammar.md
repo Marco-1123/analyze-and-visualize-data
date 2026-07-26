@@ -43,6 +43,10 @@
 - `auto` may show every point only for a short single series whose formatted
   values fit the actual plot width. Dense or multi-series plots must retain
   prioritized labels rather than shrink text or permit overlap.
+- Keep automatically derived line domains buffered in screen space so source
+  extrema, static values, and selected points do not touch the plot boundary.
+  Preserve the intended baseline; the buffer is additional headroom, not a
+  reason to silently change the baseline policy.
 - If `all` cannot fit, preserve selected labels in the plot and provide the
   complete exact values in an expandable, horizontally scrollable table. Do
   not make the line plot itself scroll merely to fit static labels.

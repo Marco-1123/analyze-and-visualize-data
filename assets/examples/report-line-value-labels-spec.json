@@ -13,27 +13,26 @@
     {
       "id": "line-labels-auto-short",
       "type": "line",
-      "title": "完整 7 天数据在 auto 模式下显示全部节点数值",
-      "subtitle": "每个日期必须有一个对应值；auto 的预判结果还需与实际落位数量复核",
-      "labels": ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+      "title": "高基数 7 天数据保留边界留白与全部节点数值",
+      "subtitle": "零基线保留动态 buffer；auto 不受遗留关键点上限截断",
+      "labels": ["7/18", "7/19", "7/20", "7/21", "7/22", "7/23", "7/24"],
       "series": [
         {
-          "name": "业务完成率",
-          "values": [72, 74.5, 73, 78, 81, 80, 84],
+          "name": "整体进审量",
+          "values": [5769, 5819, 5828, 5742, 5636, 5612, 5654],
           "color": "#315CF5"
         }
       ],
       "valueLabels": {
         "mode": "auto",
+        "maxPerSeries": 4,
         "fallback": "table"
       },
       "format": {
-        "type": "percent",
-        "input": "percent",
-        "decimals": 1
+        "decimals": 0
       },
       "evidenceIds": ["qa.line-labels.auto-short"],
-      "ariaLabel": "周一到周日七天业务完成率折线图，在 auto 模式下显示全部七个节点数值"
+      "ariaLabel": "七天整体进审量折线图，纵轴保留零基线和动态边界留白，并显示全部七个节点数值"
     },
     {
       "id": "line-labels-dense-all",

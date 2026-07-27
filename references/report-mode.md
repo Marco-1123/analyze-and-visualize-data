@@ -17,6 +17,11 @@ Create native Feishu/Lark narrative blocks with one or more self-contained HTML 
 
 Adapt the chapters to the business question. Do not force this exact outline when fewer sections communicate better.
 
+For 2–10 peer queues or entities, use the portfolio sequence in
+`multi-entity-mode.md`: portfolio summary → governed comparison → material
+exceptions → selected detail → complete appendix. Do not create one equal
+chapter per entity.
+
 ## Chapter contract
 
 Each chapter should contain:
@@ -46,6 +51,10 @@ Place the conclusion before the chart when the audience is executive. Place the 
 - Keep conclusions, causal interpretation, and recommendations in native document prose by default.
 - Do not bundle KPI, trend, decomposition, and recommendation into one report component merely because the runtime supports it.
 - Target one component at roughly 180–520 px natural height at common Feishu width; exceed this only when the evidence itself requires it.
+- A 5–10 entity shared-scale small-multiple component may exceed the ordinary
+  height target when keeping the complete peer comparison together is the
+  evidence task. Do not split it into unrelated cards solely to satisfy a
+  nominal height.
 
 ## Report manifest
 

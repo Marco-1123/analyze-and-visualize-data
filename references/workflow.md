@@ -63,6 +63,8 @@ Do not ask generic questions such as “What do you want to analyze?” when the
 ### Data audit
 
 - Identify grain and keys.
+- When 2–10 peer entities are present, create one stable entity registry and
+  one governed metric registry before calculating portfolio values.
 - Detect duplicates, missing values, impossible values, inconsistent labels, and time gaps.
 - Confirm whether totals reconcile.
 - Record data limitations before interpretation.
@@ -76,6 +78,9 @@ Do not ask generic questions such as “What do you want to analyze?” when the
 ### Diagnostic decomposition
 
 - Break changes down by relevant dimensions.
+- For multiple peer entities, compare the full portfolio first and select
+  detailed entities by impact, benchmark distance, persistence, or data risk.
+- Do not copy the single-entity analysis sequence once per entity.
 - Compare contribution, not just absolute size.
 - Look for mix effects, concentration, outliers, and Simpson's-paradox risks.
 

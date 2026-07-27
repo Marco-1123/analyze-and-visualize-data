@@ -22,6 +22,8 @@ SUPPORTED_TYPES = {
     "range",
     "waterfall",
     "sparkline",
+    "comparison-matrix",
+    "small-multiples",
     "insight",
     "table",
     "divider",
@@ -30,6 +32,14 @@ SUPPORTED_SCHEMA_VERSIONS = {"1.0"}
 DECISION_KINDS = {"finding", "interpretation", "risk", "action", "evidence"}
 TARGET_DIRECTIONS = {"higher-is-better", "lower-is-better", "neutral"}
 TARGET_RANGE_TONES = {"negative", "warning", "positive", "neutral"}
+MULTI_ENTITY_AGGREGATIONS = {
+    "sum",
+    "average",
+    "weighted-average",
+    "median",
+    "ratio",
+    "none",
+}
 RANGE_SORTS = {
     "none",
     "start-asc",
@@ -204,6 +214,91 @@ def validate_target_item(item: Any, path: str, *, list_item: bool) -> None:
                 validate_non_empty_string(band["label"], f"{band_path}.label")
 
 
+def validate_multi_entity_contract(
+    spec: dict[str, Any],
+) -> tuple[set[str], set[str]]:
+    analysis_mode = spec.get("analysisMode")
+    if analysis_mode is None:
+        return set(), set()
+    if analysis_mode not in {"single-entity", "multi-entity"}:
+        fail("spec.analysisMode must be 'single-entity' or 'multi-entity'")
+    if analysis_mode == "single-entity":
+        return set(), set()
+
+    entity_set = spec.get("entitySet")
+    if not isinstance(entity_set, dict):
+        fail("spec.entitySet is required for multi-entity analysis")
+    validate_non_empty_string(entity_set.get("kind"), "spec.entitySet.kind")
+    entities = entity_set.get("entities")
+    if not isinstance(entities, list) or not 2 <= len(entities) <= 10:
+        fail("spec.entitySet.entities must contain between 2 and 10 entities")
+    entity_ids: set[str] = set()
+    for index, entity in enumerate(entities):
+        path = f"spec.entitySet.entities[{index}]"
+        if not isinstance(entity, dict):
+            fail(f"{path} must be an object")
+        validate_non_empty_string(entity.get("id"), f"{path}.id")
+        validate_non_empty_string(
+            entity.get("displayName"), f"{path}.displayName"
+        )
+        if entity["id"] in entity_ids:
+            fail("spec.entitySet.entities ids must be unique")
+        entity_ids.add(entity["id"])
+        if entity.get("group") is not None:
+            validate_non_empty_string(entity["group"], f"{path}.group")
+        if entity.get("weight") is not None and (
+            not is_number(entity["weight"]) or entity["weight"] < 0
+        ):
+            fail(f"{path}.weight must be a non-negative finite number")
+
+    metric_definitions = spec.get("metricDefinitions")
+    if not isinstance(metric_definitions, list) or not metric_definitions:
+        fail("spec.metricDefinitions is required for multi-entity analysis")
+    metric_ids: set[str] = set()
+    for index, metric in enumerate(metric_definitions):
+        path = f"spec.metricDefinitions[{index}]"
+        if not isinstance(metric, dict):
+            fail(f"{path} must be an object")
+        validate_non_empty_string(metric.get("id"), f"{path}.id")
+        validate_non_empty_string(metric.get("label"), f"{path}.label")
+        if metric["id"] in metric_ids:
+            fail("spec.metricDefinitions ids must be unique")
+        metric_ids.add(metric["id"])
+        if metric.get("direction") not in TARGET_DIRECTIONS:
+            fail(f"{path}.direction must be one of {sorted(TARGET_DIRECTIONS)}")
+        aggregation = metric.get("aggregation")
+        if aggregation not in MULTI_ENTITY_AGGREGATIONS:
+            fail(
+                f"{path}.aggregation must be one of "
+                f"{sorted(MULTI_ENTITY_AGGREGATIONS)}"
+            )
+        if aggregation in {"weighted-average", "ratio"}:
+            validate_non_empty_string(
+                metric.get("denominator"), f"{path}.denominator"
+            )
+        reference = metric.get("reference")
+        if reference is not None:
+            if not isinstance(reference, dict):
+                fail(f"{path}.reference must be an object")
+            if reference.get("type") not in {"target", "benchmark"}:
+                fail(f"{path}.reference.type must be 'target' or 'benchmark'")
+            if not is_number(reference.get("value")):
+                fail(f"{path}.reference.value must be a finite number")
+            if reference.get("label") is not None:
+                validate_non_empty_string(
+                    reference["label"], f"{path}.reference.label"
+                )
+            if reference.get("warningTolerance") is not None and (
+                not is_number(reference["warningTolerance"])
+                or reference["warningTolerance"] < 0
+            ):
+                fail(
+                    f"{path}.reference.warningTolerance must be a "
+                    "non-negative finite number"
+                )
+    return entity_ids, metric_ids
+
+
 def validate_spec(spec: dict[str, Any]) -> None:
     schema_version = spec.get("schemaVersion")
     if schema_version is not None and schema_version not in SUPPORTED_SCHEMA_VERSIONS:
@@ -219,6 +314,7 @@ def validate_spec(spec: dict[str, Any]) -> None:
     components = spec.get("components")
     if not isinstance(components, list) or not components:
         fail("spec.components must be a non-empty array")
+    entity_ids, metric_ids = validate_multi_entity_contract(spec)
 
     seen_ids: set[str] = set()
     for index, component in enumerate(components):
@@ -691,6 +787,99 @@ def validate_spec(spec: dict[str, Any]) -> None:
                         )
         elif component_type == "sparkline":
             validate_sparkline_contract(component, path)
+        elif component_type == "comparison-matrix":
+            if spec.get("analysisMode") != "multi-entity":
+                fail(f"{path} requires spec.analysisMode 'multi-entity'")
+            component_metric_ids = component.get("metricIds")
+            validate_string_array(
+                component_metric_ids,
+                f"{path}.metricIds",
+                allow_empty=False,
+            )
+            if len(component_metric_ids) > 6:
+                fail(f"{path}.metricIds supports at most 6 metrics")
+            unknown_metrics = set(component_metric_ids) - metric_ids
+            if unknown_metrics:
+                fail(
+                    f"{path}.metricIds contains unknown metrics: "
+                    f"{sorted(unknown_metrics)}"
+                )
+            rows = component.get("rows")
+            if not isinstance(rows, list) or not 2 <= len(rows) <= 10:
+                fail(f"{path}.rows must contain between 2 and 10 rows")
+            seen_row_entities: set[str] = set()
+            for row_index, row in enumerate(rows):
+                row_path = f"{path}.rows[{row_index}]"
+                if not isinstance(row, dict):
+                    fail(f"{row_path} must be an object")
+                entity_id = row.get("entityId")
+                if entity_id not in entity_ids:
+                    fail(f"{row_path}.entityId must reference a known entity")
+                if entity_id in seen_row_entities:
+                    fail(f"{path}.rows entityId values must be unique")
+                seen_row_entities.add(entity_id)
+                values = row.get("values")
+                if not isinstance(values, dict):
+                    fail(f"{row_path}.values must be an object")
+                for metric_id in component_metric_ids:
+                    value = values.get(metric_id)
+                    if value is not None and not is_number(value):
+                        fail(
+                            f"{row_path}.values.{metric_id} must be a finite "
+                            "number or null"
+                        )
+                if row.get("coverage") is not None and (
+                    not is_number(row["coverage"])
+                    or not 0 <= row["coverage"] <= 1
+                ):
+                    fail(f"{row_path}.coverage must be between 0 and 1")
+        elif component_type == "small-multiples":
+            if spec.get("analysisMode") != "multi-entity":
+                fail(f"{path} requires spec.analysisMode 'multi-entity'")
+            metric_id = component.get("metricId")
+            if metric_id not in metric_ids:
+                fail(f"{path}.metricId must reference a known metric")
+            labels = component.get("labels")
+            if not isinstance(labels, list) or not labels:
+                fail(f"{path}.labels must be a non-empty array")
+            series = component.get("series")
+            if not isinstance(series, list) or not 2 <= len(series) <= 10:
+                fail(f"{path}.series must contain between 2 and 10 entities")
+            seen_series_entities: set[str] = set()
+            for series_index, entry in enumerate(series):
+                series_path = f"{path}.series[{series_index}]"
+                if not isinstance(entry, dict):
+                    fail(f"{series_path} must be an object")
+                entity_id = entry.get("entityId")
+                if entity_id not in entity_ids:
+                    fail(f"{series_path}.entityId must reference a known entity")
+                if entity_id in seen_series_entities:
+                    fail(f"{path}.series entityId values must be unique")
+                seen_series_entities.add(entity_id)
+                values = entry.get("values")
+                if not isinstance(values, list) or len(values) != len(labels):
+                    fail(
+                        f"{series_path}.values must contain exactly "
+                        f"{len(labels)} entries to match labels"
+                    )
+                if not all(value is None or is_number(value) for value in values):
+                    fail(
+                        f"{series_path}.values must contain finite numbers "
+                        "or null"
+                    )
+            highlighted = component.get("highlightEntityIds")
+            if highlighted is not None:
+                validate_string_array(
+                    highlighted, f"{path}.highlightEntityIds"
+                )
+                if len(highlighted) > 3:
+                    fail(f"{path}.highlightEntityIds supports at most 3 entities")
+                unknown_highlights = set(highlighted) - seen_series_entities
+                if unknown_highlights:
+                    fail(
+                        f"{path}.highlightEntityIds contains entities not "
+                        f"present in series: {sorted(unknown_highlights)}"
+                    )
         elif component_type == "table":
             if not isinstance(component.get("columns"), list):
                 fail(f"{path}.columns must be an array")

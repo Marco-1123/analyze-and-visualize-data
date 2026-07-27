@@ -1867,6 +1867,228 @@ a:focus-visible,
   font-weight: 600;
 }
 
+.vda-comparison-matrix-scroll {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-md);
+}
+
+.vda-comparison-matrix {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.vda-comparison-matrix th,
+.vda-comparison-matrix td {
+  min-width: 128px;
+  padding: 13px 14px;
+  text-align: right;
+  border-right: 1px solid var(--vda-border);
+  border-bottom: 1px solid var(--vda-border);
+}
+
+.vda-comparison-matrix th:last-child,
+.vda-comparison-matrix td:last-child {
+  border-right: 0;
+}
+
+.vda-comparison-matrix tbody tr:last-child th,
+.vda-comparison-matrix tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.vda-comparison-matrix thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  color: var(--vda-text-2);
+  background: var(--vda-surface-subtle);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.vda-comparison-matrix thead th span,
+.vda-comparison-matrix thead th small,
+.vda-comparison-matrix tbody th span,
+.vda-comparison-matrix tbody th small,
+.vda-comparison-matrix tbody th em,
+.vda-comparison-matrix td strong,
+.vda-comparison-matrix td small {
+  display: block;
+}
+
+.vda-comparison-matrix thead th small,
+.vda-comparison-matrix tbody th small,
+.vda-comparison-matrix td small {
+  margin-top: 3px;
+  color: var(--vda-text-3);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.vda-comparison-matrix th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  min-width: 184px;
+  max-width: 184px;
+  text-align: left;
+  background: var(--vda-surface);
+  box-shadow: 1px 0 0 var(--vda-border);
+}
+
+.vda-comparison-matrix thead th:first-child {
+  z-index: 4;
+  background: var(--vda-surface-subtle);
+}
+
+.vda-comparison-matrix tbody th span {
+  overflow: hidden;
+  color: var(--vda-text-1);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-comparison-matrix tbody th em {
+  margin-top: 2px;
+  color: var(--vda-text-3);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.vda-comparison-matrix td {
+  background: var(--vda-surface);
+}
+
+.vda-comparison-matrix td strong {
+  color: var(--vda-text-1);
+  font-size: 13px;
+}
+
+.vda-comparison-matrix td[data-tone="positive"] {
+  background: var(--vda-positive-soft);
+}
+
+.vda-comparison-matrix td[data-tone="warning"] {
+  background: var(--vda-warning-soft);
+}
+
+.vda-comparison-matrix td[data-tone="negative"] {
+  background: var(--vda-negative-soft);
+}
+
+.vda-component[data-comparison-scrollable="true"]
+  .vda-comparison-matrix-cue {
+  display: block;
+}
+
+.vda-small-multiples-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+  color: var(--vda-text-3);
+  font-size: 10px;
+}
+
+.vda-small-multiples-summary strong {
+  color: var(--vda-text-2);
+}
+
+.vda-small-multiples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.vda-small-multiple {
+  min-width: 0;
+  padding: 13px 14px 10px;
+  background: var(--vda-surface-subtle);
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-md);
+}
+
+.vda-small-multiple.is-highlighted {
+  background: var(--vda-accent-soft);
+  border-color: rgba(49, 92, 245, 0.26);
+}
+
+.vda-small-multiple[data-tone="negative"] {
+  border-left: 3px solid var(--vda-negative);
+}
+
+.vda-small-multiple[data-tone="warning"] {
+  border-left: 3px solid var(--vda-warning);
+}
+
+.vda-small-multiple > header {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.vda-small-multiple > header > div:first-child {
+  min-width: 0;
+}
+
+.vda-small-multiple > header strong,
+.vda-small-multiple > header small {
+  display: block;
+}
+
+.vda-small-multiple > header > div:first-child strong {
+  overflow: hidden;
+  color: var(--vda-text-1);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-small-multiple > header > div:first-child small {
+  margin-top: 2px;
+  color: var(--vda-text-3);
+  font-size: 9px;
+}
+
+.vda-small-multiple-value {
+  flex: 0 0 auto;
+  text-align: right;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.vda-small-multiple-value strong {
+  color: var(--vda-text-1);
+  font-size: 13px;
+}
+
+.vda-small-multiple-value small {
+  margin-top: 2px;
+  color: var(--vda-text-3);
+  font-size: 9px;
+}
+
+.vda-small-multiple .vda-sparkline {
+  margin-top: 6px;
+}
+
+.vda-small-multiple .vda-sparkline svg {
+  min-height: 86px;
+}
+
 .vda-divider {
   grid-column: 1 / -1;
   display: grid;
@@ -2027,6 +2249,11 @@ a:focus-visible,
 
   .vda-sparkline-summary strong {
     font-size: 14px;
+  }
+
+  .vda-comparison-matrix th:first-child {
+    min-width: 148px;
+    max-width: 148px;
   }
 
   .vda-insight {

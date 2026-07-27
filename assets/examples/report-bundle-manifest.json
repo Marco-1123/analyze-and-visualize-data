@@ -55,6 +55,19 @@
         "nativeNarrative": "短单序列在空间充足时逐点显示精确值；密集、多系列、长金额和缺失值场景自动保留关键标注，并通过可展开的完整数值表承接精确查数。",
         "findingIds": ["qa.line-labels.auto-short", "qa.line-labels.dense-all"],
         "components": ["14-line-value-labels.html"]
+      },
+      {
+        "id": "multi-queue-portfolio",
+        "heading": "8. 多队列组合分析",
+        "nativeNarrative": "批量队列先以统一口径比较全体，再通过共享尺度小多图定位持续异常；不机械复制八个单队列章节。",
+        "findingIds": [
+          "finding.multi-queue.matrix-exceptions",
+          "finding.multi-queue.persistent-sla-risk"
+        ],
+        "components": [
+          "15-multi-queue-matrix.html",
+          "16-multi-queue-trends.html"
+        ]
       }
     ]
   }

@@ -139,6 +139,35 @@ Confirmed:
   exposed one keyboard-accessible line-chart slider, while the Feishu chapter
   heading and explanation reflected v0.11.2. This confirms end-to-end mount,
   resource readback, dynamic boundary headroom, and 7/7 rendered cardinality.
+- a dedicated Skill v0.12.0 multi-queue report was created with native
+  management narrative followed by a comparison matrix and shared-scale small
+  multiples. Revision 3 returned exactly two HTML blocks. Their fetched
+  reference files were byte-identical to the local artifacts: the matrix
+  SHA-256 was
+  `53e5a8fb8fd5935bf1068ee2f7fcc08332b5d169a1e5008a9201edd5586786cd`
+  (182,856 bytes) and the trends SHA-256 was
+  `f4fb9da9c021211324e70112fd1a03f6263485f579160ef9f785961bacc8caec`
+  (181,872 bytes).
+- in the authenticated 818 px Feishu embeds, the comparison matrix rendered
+  eight entity rows and five columns without component or page scrolling; the
+  queue column remained sticky, the scale-only metric stayed semantically
+  neutral, and the governed SLA tones matched the target contract. The trends
+  block rendered eight panels in three columns, two highlighted exceptions,
+  eight shared 90% target lines, one shared y-domain, and the APAC North missing
+  observation as four separated line segments. Keyboard `End` inspection
+  returned `7/24，APAC North 88.4%`, while the full raw queue ID remained in the
+  accessible label.
+- a separate Feishu-native two-column document verified the same v0.12.0 files
+  in real 396 px embeds. Revision 3 again returned exactly two reference files.
+  The matrix exposed a 338 px `overflow-x: auto` viewport over a 720 px table,
+  displayed the horizontal-scroll cue, and kept the page at
+  `scrollWidth = clientWidth = 396`. A real browser horizontal wheel/trackpad
+  event moved `scrollLeft` from 0 to 260 of the 382 px maximum; the sticky queue
+  column remained at the component's left edge and the final metric stayed
+  reachable. The trends block reflowed all eight panels to one column with eight
+  target lines and no page-level horizontal overflow. This confirms wide and
+  narrow Feishu mount, readback, responsive layout, and native component-level
+  scrolling for the multi-queue contract.
 
 Not yet confirmed:
 

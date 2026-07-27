@@ -28,6 +28,8 @@
 | What bridges a starting value to an ending value? | waterfall |
 | What is the short local direction beside a KPI? | sparkline |
 | What decision, risk, or action follows from the evidence? | decision block |
+| Which peer entities differ across several governed metrics? | comparison matrix |
+| How do 5–10 peer entities trend without line overlap? | shared-scale small multiples |
 
 ## 2. Chart rules
 
@@ -172,6 +174,27 @@
   matter; tooltips may add detail but may not hide the decision.
 - Link factual findings and actions to stable evidence IDs.
 - Give interpretations an explicit caveat and never style them as proven facts.
+
+### Comparison matrix
+
+- Use for 2–10 entities across 1–6 governed metrics.
+- Resolve format, direction, aggregation, denominator, and reference from the
+  metric registry.
+- Keep the entity label column sticky when the metric area scrolls.
+- Preserve exact raw entity IDs behind concise display names.
+- Use restrained semantic cell backgrounds only when a governed target or
+  benchmark exists. Neutral metrics receive no favorable/unfavorable tone.
+
+### Small multiples
+
+- Use for 5–10 peer trends when a multi-series line would overlap or require
+  too many emphasized colors.
+- Keep one shared y-domain and reference line across panels.
+- Preserve identical time labels and explicit missing gaps.
+- Highlight at most three decision-relevant entities.
+- Provide exact pointer, touch, and keyboard point inspection in every panel.
+- Do not use independent scales unless the user explicitly requests them and
+  the disclosure is visible.
 
 ### Table
 

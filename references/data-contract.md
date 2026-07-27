@@ -88,6 +88,8 @@ Supported baseline component types:
 - `range`
 - `waterfall`
 - `sparkline`
+- `comparison-matrix`
+- `small-multiples`
 - `insight`
 - `table`
 - `divider`
@@ -96,6 +98,98 @@ New specifications should set `"schemaVersion": "1.0"`. Existing
 specifications without this field remain valid for backward compatibility.
 Every component may carry `evidenceIds`, an array of stable fact, finding,
 series, event, method, or limitation IDs.
+
+For two to ten comparable entities, add the governed multi-entity contract:
+
+```json
+{
+  "analysisMode": "multi-entity",
+  "entitySet": {
+    "kind": "queue",
+    "entities": [
+      {
+        "id": "queue_enterprise_recovery_east_priority",
+        "displayName": "华东企业恢复",
+        "group": "企业服务",
+        "weight": 0.19
+      }
+    ]
+  },
+  "metricDefinitions": [
+    {
+      "id": "sla_24h",
+      "label": "24 小时 SLA",
+      "direction": "higher-is-better",
+      "aggregation": "ratio",
+      "denominator": "eligible_cases",
+      "format": {
+        "type": "percent",
+        "input": "ratio",
+        "decimals": 1
+      },
+      "reference": {
+        "type": "target",
+        "value": 0.9,
+        "label": "目标",
+        "warningTolerance": 0.03
+      }
+    }
+  ]
+}
+```
+
+- `analysisMode` accepts `single-entity` or `multi-entity`.
+- Multi-entity mode contains 2–10 entities. Shared comparison components reject
+  larger sets rather than silently producing an unreadable artifact.
+- Raw entity IDs remain exact. `displayName` is presentation-only.
+- `direction` is `higher-is-better`, `lower-is-better`, or `neutral`.
+- `aggregation` is `sum`, `average`, `weighted-average`, `median`, `ratio`, or
+  `none`. `ratio` and `weighted-average` require a denominator.
+- A reference is a governed `target` or `benchmark`. `warningTolerance` uses
+  the metric's source units.
+- Overall values must follow `aggregation`; do not average ratios that require
+  denominator weighting.
+
+Use `comparison-matrix` to scan several governed metrics:
+
+```json
+{
+  "type": "comparison-matrix",
+  "metricIds": ["sla_24h", "backlog"],
+  "rows": [
+    {
+      "entityId": "queue_enterprise_recovery_east_priority",
+      "coverage": 0.99,
+      "values": {"sla_24h": 0.934, "backlog": 642}
+    }
+  ]
+}
+```
+
+Use `small-multiples` for peer trends:
+
+```json
+{
+  "type": "small-multiples",
+  "metricId": "sla_24h",
+  "labels": ["7/18", "7/19", "7/20"],
+  "highlightEntityIds": ["queue_partner_escalation_south_tier_02"],
+  "series": [
+    {
+      "entityId": "queue_enterprise_recovery_east_priority",
+      "values": [0.918, 0.926, 0.931]
+    }
+  ]
+}
+```
+
+- Matrix metric IDs and row entity IDs must exist in the registries.
+- Matrix values may be numeric or `null`; optional coverage is 0–1.
+- Small multiples use 2–10 unique entities and one shared y-domain.
+- Every small-multiple value array matches `labels` exactly. Missing
+  observations are explicit `null`.
+- Highlight at most three entities; selection follows decision relevance, not
+  decoration.
 
 For a heatmap with many ordered columns, use a layout contract instead of
 pre-splitting or duplicating the data:

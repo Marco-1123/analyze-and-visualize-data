@@ -14,6 +14,10 @@ Create one self-contained HTML page over a fixed embedded dataset. Allow local e
 6. Detail table
 7. Methodology and limitations
 
+For multiple queues or peer entities, keep the portfolio state visible before
+any entity-specific selector. Use local switching for detail, not as a
+substitute for the comparison matrix or exception summary.
+
 ## Interaction
 
 Allow:

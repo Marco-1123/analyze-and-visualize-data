@@ -557,5 +557,118 @@ class LineAnnotationContractTests(unittest.TestCase):
             validate_spec(spec)
 
 
+class MultiEntityContractTests(unittest.TestCase):
+    def base_spec(self, component_type: str = "comparison-matrix") -> dict:
+        entities = [
+            {"id": f"queue_{index}", "displayName": f"队列 {index}"}
+            for index in range(1, 6)
+        ]
+        component = {
+            "id": "portfolio",
+            "type": "comparison-matrix",
+            "title": "队列比较",
+            "metricIds": ["sla", "backlog"],
+            "rows": [
+                {
+                    "entityId": entity["id"],
+                    "coverage": 0.99,
+                    "values": {"sla": 0.9, "backlog": 500},
+                }
+                for entity in entities
+            ],
+        }
+        if component_type == "small-multiples":
+            component = {
+                "id": "portfolio-trends",
+                "type": "small-multiples",
+                "title": "队列趋势",
+                "metricId": "sla",
+                "labels": ["D1", "D2", "D3"],
+                "highlightEntityIds": ["queue_3"],
+                "series": [
+                    {
+                        "entityId": entity["id"],
+                        "values": [0.9, None, 0.91]
+                        if entity["id"] == "queue_5"
+                        else [0.89, 0.9, 0.91],
+                    }
+                    for entity in entities
+                ],
+            }
+        return {
+            "schemaVersion": "1.0",
+            "analysisMode": "multi-entity",
+            "mode": "report-component",
+            "title": "Multi-entity contract",
+            "entitySet": {"kind": "queue", "entities": entities},
+            "metricDefinitions": [
+                {
+                    "id": "sla",
+                    "label": "SLA",
+                    "direction": "higher-is-better",
+                    "aggregation": "ratio",
+                    "denominator": "eligible_cases",
+                    "reference": {"type": "target", "value": 0.9},
+                },
+                {
+                    "id": "backlog",
+                    "label": "积压",
+                    "direction": "lower-is-better",
+                    "aggregation": "sum",
+                    "reference": {
+                        "type": "target",
+                        "value": 800,
+                        "warningTolerance": 100,
+                    },
+                },
+            ],
+            "components": [component],
+        }
+
+    def test_comparison_matrix_is_valid(self) -> None:
+        validate_spec(self.base_spec())
+
+    def test_small_multiples_allow_explicit_missing_values(self) -> None:
+        validate_spec(self.base_spec("small-multiples"))
+
+    def test_more_than_ten_entities_are_rejected(self) -> None:
+        spec = self.base_spec()
+        for index in range(6, 12):
+            spec["entitySet"]["entities"].append(
+                {"id": f"queue_{index}", "displayName": f"队列 {index}"}
+            )
+        with self.assertRaisesRegex(ValueError, "between 2 and 10"):
+            validate_spec(spec)
+
+    def test_ratio_requires_denominator(self) -> None:
+        spec = self.base_spec()
+        del spec["metricDefinitions"][0]["denominator"]
+        with self.assertRaisesRegex(ValueError, "denominator"):
+            validate_spec(spec)
+
+    def test_unknown_matrix_metric_is_rejected(self) -> None:
+        spec = self.base_spec()
+        spec["components"][0]["metricIds"].append("unknown")
+        with self.assertRaisesRegex(ValueError, "unknown metrics"):
+            validate_spec(spec)
+
+    def test_small_multiple_lengths_must_match_labels(self) -> None:
+        spec = self.base_spec("small-multiples")
+        spec["components"][0]["series"][0]["values"] = [0.9, 0.91]
+        with self.assertRaisesRegex(ValueError, "exactly 3 entries"):
+            validate_spec(spec)
+
+    def test_highlights_are_limited_to_three_entities(self) -> None:
+        spec = self.base_spec("small-multiples")
+        spec["components"][0]["highlightEntityIds"] = [
+            "queue_1",
+            "queue_2",
+            "queue_3",
+            "queue_4",
+        ]
+        with self.assertRaisesRegex(ValueError, "at most 3"):
+            validate_spec(spec)
+
+
 if __name__ == "__main__":
     unittest.main()

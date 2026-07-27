@@ -1,6 +1,6 @@
 ---
 name: analyze-and-visualize-data
-description: "Analyze fixed datasets and turn them into polished, Feishu-ready visual deliverables. Use when Codex receives CSV, XLSX, JSON, Lark Sheet/Base data, tables, or structured metrics and needs to produce: (1) a narrative analysis report with native document prose plus one or more embedded self-contained HTML evidence components per chapter, or (2) a one-page static-data dashboard. Also use for requests mentioning 数据分析报告, 可视化报告, HTML 图表, 静态 Dashboard, 仪表盘, 数据故事, 管理层数据汇报, or embedding HTML analysis in Feishu/Lark documents. Do not use for continuously refreshed monitoring systems."
+description: "Analyze fixed datasets and turn them into polished, Feishu-ready visual deliverables. Use when Codex receives CSV, XLSX, JSON, Lark Sheet/Base data, tables, or structured metrics and needs to produce: (1) a narrative analysis report with native document prose plus one or more embedded self-contained HTML evidence components per chapter, or (2) a one-page static-data dashboard. Also use for single or batch queue analysis, 2–10 peer queue/entity comparisons, 数据分析报告, 可视化报告, HTML 图表, 静态 Dashboard, 仪表盘, 数据故事, 管理层数据汇报, or embedding HTML analysis in Feishu/Lark documents. Do not use for continuously refreshed monitoring systems."
 ---
 
 # Analyze and Visualize Data
@@ -13,6 +13,9 @@ Turn a fixed dataset into an accurate, explanatory, visually refined report or d
 - Read [report-mode.md](references/report-mode.md) for the default narrative report.
 - Read [dashboard-mode.md](references/dashboard-mode.md) only when the user explicitly requests a dashboard or accepts a dashboard recommendation.
 - Read [visualization-grammar.md](references/visualization-grammar.md) before choosing or building charts.
+- Read [multi-entity-mode.md](references/multi-entity-mode.md) when the request
+  contains two or more peer queues, regions, teams, channels, stores, projects,
+  or other entities that must be compared together.
 - Read [feishu-embedding.md](references/feishu-embedding.md) when creating or updating a Feishu/Lark document or preparing HTML for its component container.
 - Read [maintenance.md](references/maintenance.md) only when changing or
   releasing the Skill itself. Use the root `VERSION` file as the version source
@@ -46,6 +49,9 @@ Both modes use fixed embedded data. Filters, tabs, sorting, tooltips, and local 
 - Use the spreadsheets skill for complex workbooks, formulas, merged structures, or multiple related sheets.
 - Check row counts, missingness, duplicates, types, ranges, category cardinality, time coverage, and likely units.
 - Identify grain, dimensions, measures, identifiers, date fields, denominators, and comparison periods.
+- When 2–10 peer entities are present, set `analysisMode: "multi-entity"` and
+  create the governed entity and metric registries before aggregating or
+  composing components.
 
 ### 2. Create the fact ledger
 
@@ -62,6 +68,9 @@ Both modes use fixed embedded data. Filters, tabs, sorting, tooltips, and local 
 - Organize the narrative as summary → evidence → explanation → implications.
 - Prefer a report chapter to contain one primary question and one to three HTML components.
 - Avoid chart inventories with no analytical storyline.
+- For multiple queues or peer entities, summarize the portfolio first, compare
+  all entities second, and expand only material exceptions. Never duplicate the
+  single-entity report for every entity.
 
 ### 4. Choose the visual language
 
@@ -84,6 +93,8 @@ Both modes use fixed embedded data. Filters, tabs, sorting, tooltips, and local 
   `assets/examples/report-sparkline-spec.json`,
   `assets/examples/report-trend-annotations-spec.json`, or
   `assets/examples/report-line-value-labels-spec.json`, or
+  `assets/examples/report-multi-queue-matrix-spec.json`, or
+  `assets/examples/report-multi-queue-trends-spec.json`, or
   `assets/examples/dashboard-spec.json`.
 - Run:
 
@@ -161,6 +172,10 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
 - Use structured component notes only for definitions, scope, methods,
   limitations, and sources. Put findings and recommendations in analytical
   content, not in subdued gray notes.
+- For 5–10 queue trends, prefer shared-scale `small-multiples` over five to ten
+  simultaneously emphasized line series. Use `comparison-matrix` for governed
+  queue × metric scanning; keep exact raw queue IDs accessible behind concise
+  display names.
 - Iterate after visual inspection. One-pass HTML generation is not complete.
 
 ### 7. Assemble the delivery

@@ -162,6 +162,24 @@ Check:
   validation instead of reaching the artifact;
 - reduced-motion behavior;
 - consistency across report components.
+- multi-entity specifications accept 2–10 unique entities and reject 11;
+- ratios and weighted averages require an explicit denominator;
+- comparison-matrix entity and metric references resolve against the governed
+  registries, with missing values shown as unavailable;
+- comparison-matrix favorable, warning, and unfavorable tones follow metric
+  direction and the governed reference;
+- at 390 px and 520 px, a wide comparison matrix scrolls inside the component,
+  the entity column remains sticky, and the page does not overflow;
+- small multiples preserve one identical domain and reference line across all
+  panels;
+- 5-, 8-, and 10-entity small multiples use a readable responsive grid without
+  overlapping labels or page-level overflow;
+- null small-multiple observations remain gaps;
+- every small-multiple panel supports pointer, persistent touch, and
+  Left/Right/Home/End keyboard exact-value inspection;
+- raw long queue IDs remain available from concise comparison labels;
+- multi-entity reports contain a portfolio summary and exception selection
+  instead of mechanically repeating one chapter per entity.
 
 Use `scripts/render_artifact.mjs` when the bundled browser runtime is available. Otherwise open the HTML in an available browser and capture equivalent screenshots.
 

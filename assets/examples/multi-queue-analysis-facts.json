@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "title": "八个重点服务队列组合分析",
+    "source": "Data Agent 固定查询快照",
+    "grain": "queue_id × date",
+    "period": {
+      "start": "2026-07-18",
+      "end": "2026-07-24"
+    },
+    "assumptions": [
+      "所有队列使用同一 24 小时 SLA 定义",
+      "SLA 按 eligible_cases 加权，不对队列百分比做简单平均"
+    ],
+    "limitations": [
+      "APAC North 在 2026-07-20 缺失一个日观测"
+    ]
+  },
+  "entities": [
+    {
+      "id": "queue_enterprise_recovery_east_priority",
+      "displayName": "华东企业恢复"
+    },
+    {
+      "id": "queue_enterprise_recovery_north_priority",
+      "displayName": "华北企业恢复"
+    },
+    {
+      "id": "queue_partner_escalation_south_tier_02",
+      "displayName": "华南伙伴升级"
+    },
+    {
+      "id": "queue_service_followup_central_standard",
+      "displayName": "华中服务跟进"
+    },
+    {
+      "id": "queue_vip_retention_east_dedicated",
+      "displayName": "华东 VIP 留存"
+    },
+    {
+      "id": "queue_overseas_apac_north_enterprise_followup_priority_tier_03",
+      "displayName": "APAC North"
+    },
+    {
+      "id": "queue_new_customer_onboarding_west_priority",
+      "displayName": "西部新客启用"
+    },
+    {
+      "id": "queue_risk_review_northeast_enterprise",
+      "displayName": "东北风险复核"
+    }
+  ],
+  "facts": [
+    {
+      "id": "fact.portfolio.sla",
+      "label": "组合 24 小时 SLA",
+      "value": 0.902,
+      "format": "percent",
+      "calculation": "sum(within_24h_cases) / sum(eligible_cases)",
+      "source_fields": ["within_24h_cases", "eligible_cases"]
+    },
+    {
+      "id": "fact.portfolio.backlog",
+      "label": "组合期末积压",
+      "value": 5928,
+      "format": "number",
+      "calculation": "sum(backlog)",
+      "source_fields": ["backlog"]
+    }
+  ],
+  "series": [
+    {
+      "id": "series.queue.sla_daily",
+      "dimensions": ["queue_id", "date"],
+      "measure": "sla_24h",
+      "aggregation": "ratio",
+      "denominator": "eligible_cases"
+    }
+  ],
+  "findings": [
+    {
+      "id": "finding.multi-queue.matrix-exceptions",
+      "kind": "observed",
+      "claim": "华南伙伴升级与东北风险复核同时落后于 SLA 和积压基准",
+      "evidence": ["fact.portfolio.sla", "fact.portfolio.backlog"],
+      "confidence": "high"
+    },
+    {
+      "id": "finding.multi-queue.persistent-sla-risk",
+      "kind": "derived",
+      "claim": "两个重点异常队列连续七天低于 90% SLA 目标",
+      "evidence": ["series.queue.sla_daily"],
+      "confidence": "high",
+      "caveat": "当前数据不能单独证明人员、路由或案件结构中的具体原因"
+    }
+  ]
+}

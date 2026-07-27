@@ -178,6 +178,17 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
   missing periods.
 - Avoid filled decorative areas or exaggerated independent slopes.
 
+### Multi-entity comparison
+
+- Treat 2–10 peer entities as one portfolio, not a repeated card template.
+- Keep raw IDs accessible while using concise display names in visible labels.
+- Use a sticky entity rail for comparison matrices and contain metric overflow
+  inside the component.
+- Use shared-scale small multiples for 5–10 peer trends. Keep panel structure,
+  y-domain, reference line, and time order identical.
+- Highlight at most three material exceptions; keep other panels neutral.
+- Do not assign a permanent rainbow color to every queue across the report.
+
 ### Tables
 
 - Right-align numeric columns.
@@ -285,6 +296,9 @@ At narrow widths:
 - use numbered in-plot event markers and a complete event list;
 - preserve the headline finding;
 - never shrink text below the defined minimum.
+- stack small-multiple panels to one column at 520 px and below;
+- keep comparison matrices in a native horizontal viewport with the entity
+  column sticky and the page contained.
 
 For high-cardinality heatmaps:
 

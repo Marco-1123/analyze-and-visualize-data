@@ -6,7 +6,7 @@
   <meta name="use-iframe" content="true">
   <meta name="html-box-height-mode" content="auto">
   <meta name="description" content="周一至周日的逐小时访问量热力图，24 小时上下分组展示，共用统一色阶并支持逐格精确数值提示。">
-  <meta name="generator" content="analyze-and-visualize-data 0.11.2">
+  <meta name="generator" content="analyze-and-visualize-data 0.12.0">
   <meta name="color-scheme" content="light">
   <title>访问高峰集中在 18–21 时</title>
   <style>
@@ -1879,6 +1879,228 @@ a:focus-visible,
   font-weight: 600;
 }
 
+.vda-comparison-matrix-scroll {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-md);
+}
+
+.vda-comparison-matrix {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.vda-comparison-matrix th,
+.vda-comparison-matrix td {
+  min-width: 128px;
+  padding: 13px 14px;
+  text-align: right;
+  border-right: 1px solid var(--vda-border);
+  border-bottom: 1px solid var(--vda-border);
+}
+
+.vda-comparison-matrix th:last-child,
+.vda-comparison-matrix td:last-child {
+  border-right: 0;
+}
+
+.vda-comparison-matrix tbody tr:last-child th,
+.vda-comparison-matrix tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.vda-comparison-matrix thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  color: var(--vda-text-2);
+  background: var(--vda-surface-subtle);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.vda-comparison-matrix thead th span,
+.vda-comparison-matrix thead th small,
+.vda-comparison-matrix tbody th span,
+.vda-comparison-matrix tbody th small,
+.vda-comparison-matrix tbody th em,
+.vda-comparison-matrix td strong,
+.vda-comparison-matrix td small {
+  display: block;
+}
+
+.vda-comparison-matrix thead th small,
+.vda-comparison-matrix tbody th small,
+.vda-comparison-matrix td small {
+  margin-top: 3px;
+  color: var(--vda-text-3);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.vda-comparison-matrix th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  min-width: 184px;
+  max-width: 184px;
+  text-align: left;
+  background: var(--vda-surface);
+  box-shadow: 1px 0 0 var(--vda-border);
+}
+
+.vda-comparison-matrix thead th:first-child {
+  z-index: 4;
+  background: var(--vda-surface-subtle);
+}
+
+.vda-comparison-matrix tbody th span {
+  overflow: hidden;
+  color: var(--vda-text-1);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-comparison-matrix tbody th em {
+  margin-top: 2px;
+  color: var(--vda-text-3);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.vda-comparison-matrix td {
+  background: var(--vda-surface);
+}
+
+.vda-comparison-matrix td strong {
+  color: var(--vda-text-1);
+  font-size: 13px;
+}
+
+.vda-comparison-matrix td[data-tone="positive"] {
+  background: var(--vda-positive-soft);
+}
+
+.vda-comparison-matrix td[data-tone="warning"] {
+  background: var(--vda-warning-soft);
+}
+
+.vda-comparison-matrix td[data-tone="negative"] {
+  background: var(--vda-negative-soft);
+}
+
+.vda-component[data-comparison-scrollable="true"]
+  .vda-comparison-matrix-cue {
+  display: block;
+}
+
+.vda-small-multiples-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+  color: var(--vda-text-3);
+  font-size: 10px;
+}
+
+.vda-small-multiples-summary strong {
+  color: var(--vda-text-2);
+}
+
+.vda-small-multiples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.vda-small-multiple {
+  min-width: 0;
+  padding: 13px 14px 10px;
+  background: var(--vda-surface-subtle);
+  border: 1px solid var(--vda-border);
+  border-radius: var(--vda-radius-md);
+}
+
+.vda-small-multiple.is-highlighted {
+  background: var(--vda-accent-soft);
+  border-color: rgba(49, 92, 245, 0.26);
+}
+
+.vda-small-multiple[data-tone="negative"] {
+  border-left: 3px solid var(--vda-negative);
+}
+
+.vda-small-multiple[data-tone="warning"] {
+  border-left: 3px solid var(--vda-warning);
+}
+
+.vda-small-multiple > header {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.vda-small-multiple > header > div:first-child {
+  min-width: 0;
+}
+
+.vda-small-multiple > header strong,
+.vda-small-multiple > header small {
+  display: block;
+}
+
+.vda-small-multiple > header > div:first-child strong {
+  overflow: hidden;
+  color: var(--vda-text-1);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vda-small-multiple > header > div:first-child small {
+  margin-top: 2px;
+  color: var(--vda-text-3);
+  font-size: 9px;
+}
+
+.vda-small-multiple-value {
+  flex: 0 0 auto;
+  text-align: right;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.vda-small-multiple-value strong {
+  color: var(--vda-text-1);
+  font-size: 13px;
+}
+
+.vda-small-multiple-value small {
+  margin-top: 2px;
+  color: var(--vda-text-3);
+  font-size: 9px;
+}
+
+.vda-small-multiple .vda-sparkline {
+  margin-top: 6px;
+}
+
+.vda-small-multiple .vda-sparkline svg {
+  min-height: 86px;
+}
+
 .vda-divider {
   grid-column: 1 / -1;
   display: grid;
@@ -2039,6 +2261,11 @@ a:focus-visible,
 
   .vda-sparkline-summary strong {
     font-size: 14px;
+  }
+
+  .vda-comparison-matrix th:first-child {
+    min-width: 148px;
+    max-width: 148px;
   }
 
   .vda-insight {
@@ -2215,6 +2442,63 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
     if (number > 0) return "+" + rendered;
     if (number < 0) return "−" + rendered;
     return rendered;
+  }
+
+  function entityDefinition(entityId) {
+    var entitySet = spec.entitySet || {};
+    var entities = Array.isArray(entitySet.entities)
+      ? entitySet.entities
+      : [];
+    return entities.find(function (entity) {
+      return entity && entity.id === entityId;
+    }) || null;
+  }
+
+  function metricDefinition(metricId) {
+    var metrics = Array.isArray(spec.metricDefinitions)
+      ? spec.metricDefinitions
+      : [];
+    return metrics.find(function (metric) {
+      return metric && metric.id === metricId;
+    }) || null;
+  }
+
+  function metricReferenceTone(value, metric) {
+    if (
+      value == null ||
+      !metric ||
+      metric.direction === "neutral" ||
+      !metric.reference ||
+      !Number.isFinite(Number(metric.reference.value))
+    ) {
+      return "neutral";
+    }
+    var numeric = Number(value);
+    var reference = Number(metric.reference.value);
+    var tolerance = Math.max(
+      0,
+      finite(metric.reference.warningTolerance, 0)
+    );
+    var favorableDelta = metric.direction === "lower-is-better"
+      ? reference - numeric
+      : numeric - reference;
+    if (favorableDelta >= 0) return "positive";
+    if (favorableDelta >= -tolerance) return "warning";
+    return "negative";
+  }
+
+  function metricReferenceLabel(value, metric) {
+    if (
+      value == null ||
+      !metric ||
+      !metric.reference ||
+      !Number.isFinite(Number(metric.reference.value))
+    ) {
+      return "无统一基准";
+    }
+    var delta = Number(value) - Number(metric.reference.value);
+    return "较" + (metric.reference.label || "基准") + " " +
+      signedLabel(delta, metric.format);
   }
 
   function sparklineNumericPoints(definition) {
@@ -2404,6 +2688,7 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       class: "vda-sparkline-hitbox",
       "data-sparkline-hitbox": "true",
       "data-metric-index": opts.metricIndex == null ? "" : opts.metricIndex,
+      "data-series-index": opts.seriesIndex == null ? "" : opts.seriesIndex,
       "data-plot-left": margin.left,
       "data-plot-right": width - margin.right,
       "data-plot-top": margin.top,
@@ -3121,6 +3406,154 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
         ariaLabel: component.ariaLabel || component.title || "迷你趋势"
       }) +
       status
+    );
+  }
+
+  function renderComparisonMatrix(component) {
+    var metricIds = Array.isArray(component.metricIds)
+      ? component.metricIds
+      : [];
+    var rows = Array.isArray(component.rows) ? component.rows : [];
+    var metrics = metricIds.map(metricDefinition).filter(Boolean);
+    var header = metrics.map(function (metric) {
+      var reference = metric.reference &&
+        Number.isFinite(Number(metric.reference.value))
+        ? '<small>' + esc(metric.reference.label || "基准") + " " +
+          esc(formatValue(metric.reference.value, metric.format)) + "</small>"
+        : "<small>无统一基准</small>";
+      return '<th scope="col"><span>' + esc(metric.label) + "</span>" +
+        reference + "</th>";
+    }).join("");
+    var body = rows.map(function (row) {
+      var entity = entityDefinition(row.entityId) || {
+        id: row.entityId,
+        displayName: row.entityId
+      };
+      var coverage = Number.isFinite(Number(row.coverage))
+        ? '<small>覆盖率 ' +
+          esc(formatValue(row.coverage, {
+            type: "percent",
+            input: "ratio",
+            decimals: 0
+          })) + "</small>"
+        : "";
+      var cells = metrics.map(function (metric) {
+        var value = row.values ? row.values[metric.id] : null;
+        var tone = metricReferenceTone(value, metric);
+        return '<td data-tone="' + tone + '">' +
+          '<strong>' + esc(formatValue(value, metric.format)) + "</strong>" +
+          '<small>' + esc(metricReferenceLabel(value, metric)) + "</small>" +
+          "</td>";
+      }).join("");
+      return '<tr data-entity-id="' + esc(entity.id) + '">' +
+        '<th scope="row"><span tabindex="0" data-tip="' +
+        esc(entity.id) + '" aria-label="' + esc(entity.displayName + "，" + entity.id) +
+        '">' + esc(entity.displayName) + "</span>" +
+        (entity.group ? "<em>" + esc(entity.group) + "</em>" : "") +
+        coverage + "</th>" + cells + "</tr>";
+    }).join("");
+    return componentFrame(
+      component,
+      '<div class="vda-comparison-matrix-scroll" tabindex="0" ' +
+      'aria-label="批量对象比较矩阵，可横向滚动查看全部指标">' +
+      '<table class="vda-comparison-matrix"><thead><tr>' +
+      '<th scope="col">队列</th>' + header +
+      "</tr></thead><tbody>" + body + "</tbody></table></div>" +
+      '<p class="vda-scroll-cue vda-comparison-matrix-cue">' +
+      "指标较多时可左右滑动查看 →</p>"
+    );
+  }
+
+  function smallMultipleDefinition(component, entry, metric) {
+    var labels = Array.isArray(component.labels) ? component.labels : [];
+    var values = Array.isArray(entry.values) ? entry.values : [];
+    var definition = {
+      points: labels.map(function (label, index) {
+        return {
+          x: label,
+          value: values[index] == null ? null : values[index],
+          status: values[index] == null ? "missing" : "complete"
+        };
+      }),
+      variant: "line",
+      domainMode: "shared",
+      format: metric ? metric.format : component.format
+    };
+    if (
+      metric &&
+      metric.reference &&
+      Number.isFinite(Number(metric.reference.value))
+    ) {
+      definition.target = Number(metric.reference.value);
+    }
+    return definition;
+  }
+
+  function renderSmallMultiples(component) {
+    var metric = metricDefinition(component.metricId) || {
+      label: component.metricId,
+      format: component.format
+    };
+    var series = Array.isArray(component.series) ? component.series : [];
+    var highlighted = new Set(
+      Array.isArray(component.highlightEntityIds)
+        ? component.highlightEntityIds
+        : []
+    );
+    var definitions = series.map(function (entry) {
+      return smallMultipleDefinition(component, entry, metric);
+    });
+    var sharedDomain = sparklineDomain(definitions);
+    var reference = metric.reference &&
+      Number.isFinite(Number(metric.reference.value))
+      ? (metric.reference.label || "基准") + " " +
+        formatValue(metric.reference.value, metric.format)
+      : "无统一基准";
+    var panels = series.map(function (entry, seriesIndex) {
+      var entity = entityDefinition(entry.entityId) || {
+        id: entry.entityId,
+        displayName: entry.entityId
+      };
+      var values = Array.isArray(entry.values) ? entry.values : [];
+      var numeric = values.filter(function (value) {
+        return value != null && Number.isFinite(Number(value));
+      }).map(Number);
+      var first = numeric.length ? numeric[0] : null;
+      var last = numeric.length ? numeric[numeric.length - 1] : null;
+      var change = first == null || last == null ? null : last - first;
+      var tone = metricReferenceTone(last, metric);
+      var definition = definitions[seriesIndex];
+      definition.ariaLabel = entity.displayName + metric.label + "趋势";
+      return '<article class="vda-small-multiple' +
+        (highlighted.has(entry.entityId) ? " is-highlighted" : "") +
+        '" data-entity-id="' + esc(entity.id) + '" data-tone="' + tone + '">' +
+        '<header><div><strong tabindex="0" data-tip="' + esc(entity.id) +
+        '" aria-label="' + esc(entity.displayName + "，" + entity.id) + '">' +
+        esc(entity.displayName) + "</strong>" +
+        (entity.group ? "<small>" + esc(entity.group) + "</small>" : "") +
+        '</div><div class="vda-small-multiple-value"><strong>' +
+        esc(formatValue(last, metric.format)) + "</strong><small>" +
+        esc(change == null
+          ? "较首期 —"
+          : "较首期 " + signedLabel(change, metric.format)) +
+        "</small></div></header>" +
+        renderSparklineGraphic(definition, {
+          width: 280,
+          height: 100,
+          compact: false,
+          domain: sharedDomain,
+          seriesIndex: seriesIndex,
+          ariaLabel: definition.ariaLabel
+        }) +
+        "</article>";
+    }).join("");
+    return componentFrame(
+      component,
+      '<div class="vda-small-multiples-summary">' +
+      '<span><strong>' + esc(metric.label) + "</strong> · 共享纵轴</span>" +
+      "<span>" + esc(reference) + "</span></div>" +
+      '<div class="vda-small-multiples" data-shared-domain="' +
+      esc(sharedDomain.join(",")) + '">' + panels + "</div>"
     );
   }
 
@@ -4647,6 +5080,8 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       case "range": return renderRange(component);
       case "waterfall": return renderWaterfall(component);
       case "sparkline": return renderSparkline(component);
+      case "comparison-matrix": return renderComparisonMatrix(component);
+      case "small-multiples": return renderSmallMultiples(component);
       case "insight": return renderInsight(component);
       case "table": return renderTable(component);
       case "divider": return renderDivider(component);
@@ -5053,6 +5488,7 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       });
       if (!component) return;
       var metricIndex = Number(hitbox.dataset.metricIndex);
+      var seriesIndex = Number(hitbox.dataset.seriesIndex);
       var definition = component.type === "sparkline"
         ? component
         : component.type === "metrics" &&
@@ -5060,6 +5496,15 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
           component.items &&
           component.items[metricIndex]
           ? component.items[metricIndex].sparkline
+          : component.type === "small-multiples" &&
+            Number.isInteger(seriesIndex) &&
+            component.series &&
+            component.series[seriesIndex]
+            ? smallMultipleDefinition(
+                component,
+                component.series[seriesIndex],
+                metricDefinition(component.metricId)
+              )
           : null;
       if (!definition) return;
       var points = sparklineNumericPoints(definition);
@@ -5079,6 +5524,9 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       var pinned = false;
       var name = component.type === "metrics"
         ? component.items[metricIndex].label
+        : component.type === "small-multiples"
+          ? ((entityDefinition(component.series[seriesIndex].entityId) || {})
+              .displayName || component.series[seriesIndex].entityId)
         : component.title || "迷你趋势";
 
       function chartX(index) {
@@ -5461,6 +5909,20 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
     }
   }
 
+  function setupComparisonMatrixScrolling() {
+    document.querySelectorAll(".vda-comparison-matrix-scroll").forEach(
+      function (scroll) {
+        var component = scroll.closest("[data-component-id]");
+        var scrollable = scroll.scrollWidth > scroll.clientWidth + 1;
+        scroll.dataset.scrollable = scrollable ? "true" : "false";
+        if (component) {
+          component.dataset.comparisonScrollable =
+            scrollable ? "true" : "false";
+        }
+      }
+    );
+  }
+
   function init() {
     try {
       var mode = spec.mode === "dashboard" ? "dashboard" : "report-component";
@@ -5479,6 +5941,7 @@ window.__VDA_SPEC__ = {"mode":"report-component","title":"访问高峰集中在 
       setupRangeKeyboard();
       window.requestAnimationFrame(function () {
         setupHeatmapSizing();
+        setupComparisonMatrixScrolling();
         setupDivergingBarLabels();
         setupDivergingBarScrolling();
         setupWaterfallInteractions();

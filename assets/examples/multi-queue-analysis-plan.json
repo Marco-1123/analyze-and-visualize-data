@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "recipeId": "multi-entity-portfolio",
+  "mode": "report",
+  "analysisMode": "multi-entity",
+  "question": "八个重点服务队列的共同状态、持续异常与优先行动是什么？",
+  "dataShape": {
+    "entityCount": 8,
+    "metricCount": 4,
+    "timePointCount": 7
+  },
+  "sections": [
+    {
+      "id": "portfolio-summary",
+      "role": "portfolio-summary",
+      "question": "整个队列组合处于什么状态？",
+      "evidenceIds": [
+        "fact.portfolio.sla",
+        "fact.portfolio.backlog"
+      ],
+      "findingIds": [],
+      "components": []
+    },
+    {
+      "id": "peer-comparison",
+      "role": "peer-comparison",
+      "question": "不同队列的差异集中在哪些指标？",
+      "evidenceIds": [
+        "finding.multi-queue.matrix-exceptions"
+      ],
+      "findingIds": [
+        "finding.multi-queue.matrix-exceptions"
+      ],
+      "components": [
+        {
+          "id": "queue-comparison-matrix",
+          "type": "comparison-matrix",
+          "spec": "assets/examples/report-multi-queue-matrix-spec.json",
+          "artifact": "assets/examples/15-multi-queue-matrix.html",
+          "entityScope": "all",
+          "evidenceIds": [
+            "finding.multi-queue.matrix-exceptions"
+          ],
+          "selectionReason": "统一口径的队列 × 指标矩阵最适合扫描八个队列的跨指标异常。"
+        }
+      ]
+    },
+    {
+      "id": "persistent-exceptions",
+      "role": "persistent-exceptions",
+      "question": "哪些队列的异常具有持续性？",
+      "evidenceIds": [
+        "finding.multi-queue.persistent-sla-risk"
+      ],
+      "findingIds": [
+        "finding.multi-queue.persistent-sla-risk"
+      ],
+      "components": [
+        {
+          "id": "queue-sla-small-multiples",
+          "type": "small-multiples",
+          "spec": "assets/examples/report-multi-queue-trends-spec.json",
+          "artifact": "assets/examples/16-multi-queue-trends.html",
+          "entityScope": "all",
+          "evidenceIds": [
+            "finding.multi-queue.persistent-sla-risk"
+          ],
+          "selectionReason": "共享纵轴小多图可同时保留八个队列，又能识别持续异常而非单日波动。"
+        }
+      ]
+    },
+    {
+      "id": "implications",
+      "role": "implications",
+      "question": "当前证据支持哪些优先行动，哪些原因仍需验证？",
+      "evidenceIds": [
+        "finding.multi-queue.matrix-exceptions",
+        "finding.multi-queue.persistent-sla-risk"
+      ],
+      "findingIds": [
+        "finding.multi-queue.matrix-exceptions",
+        "finding.multi-queue.persistent-sla-risk"
+      ],
+      "components": []
+    }
+  ]
+}

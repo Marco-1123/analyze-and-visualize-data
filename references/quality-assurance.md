@@ -20,6 +20,8 @@
 
 ## 2. Analytical checks
 
+- Run `scripts/validate_analysis_bundle.py` and resolve every mismatch between
+  the ledger, selected recipe, analysis plan, component specs, and manifest.
 - Link each claim to evidence.
 - Mark hypotheses and recommendations.
 - Check whether mix, base size, or selection effects offer an alternative explanation.
@@ -181,7 +183,11 @@ Check:
 - multi-entity reports contain a portfolio summary and exception selection
   instead of mechanically repeating one chapter per entity.
 
-Use `scripts/render_artifact.mjs` when the bundled browser runtime is available. Otherwise open the HTML in an available browser and capture equivalent screenshots.
+Use `python3 scripts/render_artifact.py --input <artifact.html> --output-dir
+<screenshots>`; the wrapper locates the bundled browser runtime and exercises
+the component at all required widths. Use `scripts/render_artifact.mjs`
+directly only when `NODE_PATH` is already configured. Otherwise open the HTML
+in an available browser and capture equivalent screenshots.
 
 ## 4. Portability checks
 
@@ -197,6 +203,7 @@ Use `scripts/render_artifact.mjs` when the bundled browser runtime is available.
 
 Require:
 
+- evidence-linked bundle validation passes;
 - automated validator passes;
 - no unresolved console errors;
 - visual inspection completed;

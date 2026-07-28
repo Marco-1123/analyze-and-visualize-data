@@ -68,6 +68,7 @@ Maintain a working manifest:
     {
       "id": "overall",
       "heading": "1. Overall performance",
+      "evidenceIds": ["fact_revenue", "finding_growth"],
       "findingIds": ["finding_growth"],
       "components": ["01-kpi-overview.html", "02-weekly-trend.html"]
     }
@@ -75,4 +76,6 @@ Maintain a working manifest:
 }
 ```
 
-Use the manifest to prevent missing, duplicated, or misplaced components.
+Use `evidenceIds` for the full evidence set and `findingIds` only for ledger
+findings. Use the manifest to prevent missing, duplicated, or misplaced
+components.

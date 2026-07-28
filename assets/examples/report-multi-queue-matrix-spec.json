@@ -127,6 +127,7 @@
     {
       "id": "queue-comparison-matrix",
       "type": "comparison-matrix",
+      "evidenceIds": ["finding.multi-queue.matrix-exceptions"],
       "title": "华南伙伴升级与东北风险复核同时落后于 SLA 和积压基准",
       "subtitle": "背景色仅表示相对统一目标的状态；进审量为规模信息，不判断好坏",
       "ariaLabel": "八个队列在日均进审量、24 小时 SLA、期末积压和平均处理时长上的比较矩阵",

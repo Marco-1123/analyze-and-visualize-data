@@ -8,6 +8,7 @@
         "id": "overall",
         "heading": "1. 整体表现",
         "nativeNarrative": "净收入同比增长 12.8%，高于订单数增速 3.2 个百分点。客单价温和增长说明本期并非单纯依赖提价，但订单扩张仍是主要贡献。",
+        "evidenceIds": ["finding_revenue_growth", "finding_volume_driver"],
         "findingIds": ["finding_revenue_growth", "finding_volume_driver"],
         "components": ["01-kpi-overview.html", "02-weekly-trend.html"]
       },
@@ -15,6 +16,7 @@
         "id": "hourly-pattern",
         "heading": "2. 分时访问模式",
         "nativeNarrative": "访问量在晚间明显抬升，工作日与周末均在 18–21 时形成高峰。24 小时数据在同一个证据组件中上下分组，便于在飞书文档宽度内比较。",
+        "evidenceIds": ["finding_evening_peak"],
         "findingIds": ["finding_evening_peak"],
         "components": ["03-hourly-heatmap.html"]
       },
@@ -22,6 +24,7 @@
         "id": "signed-contribution",
         "heading": "3. 正负增量分化",
         "nativeNarrative": "不同区域与渠道组合同时存在扩张和收缩。该极端比例样例以零轴和真实共同尺度为主图；小量级负向项目通过明确标注的独立比例局部读数辨认，并可快速定位两端与零轴。",
+        "evidenceIds": ["finding_signed_contribution"],
         "findingIds": ["finding_signed_contribution"],
         "components": [
           "04-diverging-bar.html",
@@ -32,34 +35,42 @@
         "id": "decision-and-goals",
         "heading": "4. 判断与目标",
         "nativeNarrative": "将风险判断、证据链和目标差距分开表达，避免把分析解释包装成已证实事实，也避免手工维护可能互相矛盾的达成率。",
-        "findingIds": ["finding.night-backlog", "fact.sla"],
+        "evidenceIds": ["finding.night-backlog", "fact.sla"],
+        "findingIds": ["finding.night-backlog"],
         "components": ["07-decision.html", "08-target.html"]
       },
       {
         "id": "paired-movement-and-bridge",
         "heading": "5. 配对变化与贡献桥接",
         "nativeNarrative": "两期端点使用配对范围表达；从基期到本期的加性贡献使用经过对账的瀑布图表达。",
-        "findingIds": ["series.queue-fcr-paired", "series.revenue-bridge"],
+        "evidenceIds": ["series.queue-fcr-paired", "series.revenue-bridge"],
+        "findingIds": [],
         "components": ["09-range.html", "10-waterfall.html"]
       },
       {
         "id": "compact-trend-and-events",
         "heading": "6. 短趋势与事件上下文",
         "nativeNarrative": "微型趋势支持快速扫描并保留完整期状态；多事件标注区分事实与解释，时间重合仅作为上下文。",
-        "findingIds": ["series.sla-weekly", "event.routing-release"],
+        "evidenceIds": ["series.sla-weekly", "event.routing-release"],
+        "findingIds": [],
         "components": ["11-sparkline.html", "12-trend-annotations.html"]
       },
       {
         "id": "smart-line-value-labels",
         "heading": "7. 折线图精确值标注",
         "nativeNarrative": "短单序列在空间充足时逐点显示精确值；密集、多系列、长金额和缺失值场景自动保留关键标注，并通过可展开的完整数值表承接精确查数。",
-        "findingIds": ["qa.line-labels.auto-short", "qa.line-labels.dense-all"],
+        "evidenceIds": ["qa.line-labels.auto-short", "qa.line-labels.dense-all"],
+        "findingIds": [],
         "components": ["14-line-value-labels.html"]
       },
       {
         "id": "multi-queue-portfolio",
         "heading": "8. 多队列组合分析",
         "nativeNarrative": "批量队列先以统一口径比较全体，再通过共享尺度小多图定位持续异常；不机械复制八个单队列章节。",
+        "evidenceIds": [
+          "finding.multi-queue.matrix-exceptions",
+          "finding.multi-queue.persistent-sla-risk"
+        ],
         "findingIds": [
           "finding.multi-queue.matrix-exceptions",
           "finding.multi-queue.persistent-sla-risk"

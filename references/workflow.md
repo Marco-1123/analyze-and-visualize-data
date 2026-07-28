@@ -93,6 +93,16 @@ Select findings using four criteria:
 - reliability;
 - non-redundancy.
 
+### Evidence-linked planning gate
+
+- Select a recipe from `assets/analysis-recipes.json`.
+- Select components from `assets/component-catalog.json`.
+- Write the analysis plan before component specifications.
+- Validate the ledger, plan, specs, and manifest together as described in
+  [planning-and-evidence.md](planning-and-evidence.md).
+- Do not treat a successful HTML build as proof that all source points,
+  findings, and final report files agree.
+
 ### Narrative construction
 
 Use:

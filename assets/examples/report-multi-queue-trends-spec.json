@@ -47,6 +47,7 @@
     {
       "id": "queue-sla-small-multiples",
       "type": "small-multiples",
+      "evidenceIds": ["finding.multi-queue.persistent-sla-risk"],
       "title": "华南伙伴升级与东北风险复核连续七天低于目标",
       "subtitle": "共享尺度避免每个小图独立缩放后夸大微小波动",
       "ariaLabel": "八个队列七天 24 小时 SLA 共享尺度小多图",

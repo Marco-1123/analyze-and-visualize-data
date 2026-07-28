@@ -19,6 +19,10 @@ or broad local exploration is the main need. Recommend dashboard mode when
 frequent entity switching, sorting, or linked filtering matters more than a
 narrative conclusion.
 
+Treat frequent cross-component linked filtering as a custom-dashboard
+requirement, not an existing baseline interaction. Record it explicitly in the
+plan and implement and test it before promising it to the user.
+
 ## Required data contract
 
 Set `analysisMode` to `multi-entity` and define:

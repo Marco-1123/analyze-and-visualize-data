@@ -1,0 +1,181 @@
+{
+  "schemaVersion": "1.0",
+  "recipes": [
+    {
+      "id": "executive-performance-report",
+      "label": "经营表现分析",
+      "allowedModes": ["report"],
+      "analysisModes": ["single-entity", "multi-entity"],
+      "requiredSectionRoles": ["portfolio-summary", "trend", "implications"],
+      "steps": [
+        {
+          "role": "portfolio-summary",
+          "question": "整体表现处于什么状态？",
+          "preferredComponents": ["metrics", "target", "insight"]
+        },
+        {
+          "role": "trend",
+          "question": "变化发生在什么时候？",
+          "preferredComponents": ["line", "small-multiples"]
+        },
+        {
+          "role": "drivers",
+          "question": "变化集中在哪里？",
+          "preferredComponents": ["bar", "waterfall", "heatmap"],
+          "optional": true
+        },
+        {
+          "role": "implications",
+          "question": "应该采取什么行动，还有什么不确定？",
+          "preferredComponents": ["decision", "table"]
+        }
+      ]
+    },
+    {
+      "id": "time-trend-diagnosis",
+      "label": "趋势与事件诊断",
+      "allowedModes": ["report", "dashboard"],
+      "analysisModes": ["single-entity"],
+      "requiredSectionRoles": ["trend", "event-context", "implications"],
+      "steps": [
+        {
+          "role": "trend",
+          "question": "指标如何随时间变化？",
+          "preferredComponents": ["line", "sparkline"]
+        },
+        {
+          "role": "event-context",
+          "question": "哪些已知事件与变化时间相邻？",
+          "preferredComponents": ["line", "decision"]
+        },
+        {
+          "role": "implications",
+          "question": "哪些判断可证实，哪些仍是解释？",
+          "preferredComponents": ["decision", "table"]
+        }
+      ]
+    },
+    {
+      "id": "multi-entity-portfolio",
+      "label": "多实体组合分析",
+      "allowedModes": ["report", "dashboard"],
+      "analysisModes": ["multi-entity"],
+      "requiredSectionRoles": [
+        "portfolio-summary",
+        "peer-comparison",
+        "persistent-exceptions",
+        "implications"
+      ],
+      "steps": [
+        {
+          "role": "portfolio-summary",
+          "question": "整个组合处于什么状态？",
+          "preferredComponents": ["metrics", "insight"]
+        },
+        {
+          "role": "peer-comparison",
+          "question": "不同实体的差异集中在哪些指标？",
+          "preferredComponents": ["comparison-matrix"]
+        },
+        {
+          "role": "persistent-exceptions",
+          "question": "哪些异常是持续性的？",
+          "preferredComponents": ["small-multiples"]
+        },
+        {
+          "role": "selected-detail",
+          "question": "哪些少量实体需要展开诊断？",
+          "preferredComponents": ["line", "bar", "range", "decision"],
+          "optional": true
+        },
+        {
+          "role": "implications",
+          "question": "优先行动和解释边界是什么？",
+          "preferredComponents": ["decision", "table"]
+        }
+      ]
+    },
+    {
+      "id": "target-gap-review",
+      "label": "目标差距复盘",
+      "allowedModes": ["report", "dashboard"],
+      "analysisModes": ["single-entity", "multi-entity"],
+      "requiredSectionRoles": ["target-status", "gap-drivers", "implications"],
+      "steps": [
+        {
+          "role": "target-status",
+          "question": "距离目标还有多远？",
+          "preferredComponents": ["target", "comparison-matrix"]
+        },
+        {
+          "role": "gap-drivers",
+          "question": "差距主要来自哪里？",
+          "preferredComponents": ["bar", "waterfall", "heatmap"]
+        },
+        {
+          "role": "implications",
+          "question": "需要采取什么行动？",
+          "preferredComponents": ["decision", "table"]
+        }
+      ]
+    },
+    {
+      "id": "contribution-bridge",
+      "label": "贡献与桥接分析",
+      "allowedModes": ["report"],
+      "analysisModes": ["single-entity", "multi-entity"],
+      "requiredSectionRoles": ["change-summary", "contribution", "implications"],
+      "steps": [
+        {
+          "role": "change-summary",
+          "question": "总体发生了什么变化？",
+          "preferredComponents": ["metrics", "range"]
+        },
+        {
+          "role": "contribution",
+          "question": "哪些因素构成了这次变化？",
+          "preferredComponents": ["waterfall", "bar"]
+        },
+        {
+          "role": "implications",
+          "question": "贡献结构意味着什么？",
+          "preferredComponents": ["decision", "table"]
+        }
+      ]
+    },
+    {
+      "id": "static-exploration-dashboard",
+      "label": "固定数据探索 Dashboard",
+      "allowedModes": ["dashboard"],
+      "analysisModes": ["single-entity", "multi-entity"],
+      "requiredSectionRoles": [
+        "portfolio-summary",
+        "primary-pattern",
+        "diagnostics",
+        "detail"
+      ],
+      "steps": [
+        {
+          "role": "portfolio-summary",
+          "question": "整体状态是什么？",
+          "preferredComponents": ["metrics", "insight"]
+        },
+        {
+          "role": "primary-pattern",
+          "question": "最重要的变化或差异是什么？",
+          "preferredComponents": ["line", "comparison-matrix", "small-multiples"]
+        },
+        {
+          "role": "diagnostics",
+          "question": "哪些维度解释了主要模式？",
+          "preferredComponents": ["bar", "heatmap", "waterfall"]
+        },
+        {
+          "role": "detail",
+          "question": "精确值和异常明细是什么？",
+          "preferredComponents": ["table", "decision"]
+        }
+      ]
+    }
+  ]
+}

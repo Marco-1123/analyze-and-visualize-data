@@ -9,10 +9,16 @@ Turn a fixed dataset into an accurate, explanatory, visually refined report or d
 
 ## Load only the references needed
 
-- Always read [workflow.md](references/workflow.md), [data-contract.md](references/data-contract.md), [design-system.md](references/design-system.md), and [quality-assurance.md](references/quality-assurance.md).
+- Always read [workflow.md](references/workflow.md) and
+  [planning-and-evidence.md](references/planning-and-evidence.md) first.
+- Read [data-contract.md](references/data-contract.md) while profiling and
+  building the fact ledger.
+- Read [design-system.md](references/design-system.md),
+  [visualization-grammar.md](references/visualization-grammar.md), and
+  [quality-assurance.md](references/quality-assurance.md) after the analysis
+  plan has selected the necessary evidence components.
 - Read [report-mode.md](references/report-mode.md) for the default narrative report.
 - Read [dashboard-mode.md](references/dashboard-mode.md) only when the user explicitly requests a dashboard or accepts a dashboard recommendation.
-- Read [visualization-grammar.md](references/visualization-grammar.md) before choosing or building charts.
 - Read [multi-entity-mode.md](references/multi-entity-mode.md) when the request
   contains two or more peer queues, regions, teams, channels, stores, projects,
   or other entities that must be compared together.
@@ -30,7 +36,11 @@ Apply these rules in order:
 3. Recommend `dashboard` when the main need is broad browsing across many peer metrics or dimensions, a one-page overview, or interactive exploration without a strong narrative question.
 4. Never silently switch an unspecified request from the default report to a dashboard. State the recommendation and let the user choose.
 
-Both modes use fixed embedded data. Filters, tabs, sorting, tooltips, and local drill-down are allowed; network refresh, live databases, scheduled polling, and monitoring backends are out of scope.
+Both modes use fixed embedded data. A component may use filters, tabs, sorting,
+tooltips, or local drill-down only when its catalog entry and bundled runtime
+actually implement that interaction. Generic cross-component linked filtering
+is not part of this Skill. Network refresh, live databases, scheduled polling,
+and monitoring backends are out of scope.
 
 ## Use bounded analytical autonomy
 
@@ -64,6 +74,12 @@ Both modes use fixed embedded data. Filters, tabs, sorting, tooltips, and local 
 ### 3. Build the analysis plan
 
 - Restate the decision or question the deliverable should support.
+- Choose one recipe from `assets/analysis-recipes.json`.
+- Choose components from `assets/component-catalog.json`; obey their data-shape,
+  multi-entity, limit, and fallback contracts.
+- Write an `analysis-plan.json` before writing component specs or HTML. Include
+  chapter questions, component selection reasons, entity scope, evidence IDs,
+  spec paths, and artifact paths.
 - Select only modules that contribute evidence.
 - Organize the narrative as summary → evidence → explanation → implications.
 - Prefer a report chapter to contain one primary question and one to three HTML components.
@@ -71,6 +87,9 @@ Both modes use fixed embedded data. Filters, tabs, sorting, tooltips, and local 
 - For multiple queues or peer entities, summarize the portfolio first, compare
   all entities second, and expand only material exceptions. Never duplicate the
   single-entity report for every entity.
+- Create the ordered report/dashboard manifest and run the bundle validation
+  command in [planning-and-evidence.md](references/planning-and-evidence.md).
+  Do not proceed while the fact ledger, plan, specs, and manifest disagree.
 
 ### 4. Choose the visual language
 
@@ -82,20 +101,8 @@ Both modes use fixed embedded data. Filters, tabs, sorting, tooltips, and local 
 
 ### 5. Generate the artifact
 
-- Start from `assets/examples/report-kpi-spec.json`,
-  `assets/examples/report-trend-spec.json`,
-  `assets/examples/report-hourly-heatmap-spec.json`, or
-  `assets/examples/report-diverging-bar-spec.json`, or
-  `assets/examples/report-decision-spec.json`,
-  `assets/examples/report-target-spec.json`,
-  `assets/examples/report-range-spec.json`,
-  `assets/examples/report-waterfall-spec.json`,
-  `assets/examples/report-sparkline-spec.json`,
-  `assets/examples/report-trend-annotations-spec.json`, or
-  `assets/examples/report-line-value-labels-spec.json`, or
-  `assets/examples/report-multi-queue-matrix-spec.json`, or
-  `assets/examples/report-multi-queue-trends-spec.json`, or
-  `assets/examples/dashboard-spec.json`.
+- Start from the example path declared by the selected component in
+  `assets/component-catalog.json`.
 - Run:
 
 ```bash
@@ -109,6 +116,8 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
 ### 6. Validate data and presentation
 
 - Run `scripts/validate_artifact.py` on every HTML output.
+- Re-run `scripts/validate_analysis_bundle.py` after final spec and manifest
+  edits; a visual render cannot substitute for evidence closure.
 - Render every final component rather than trusting source inspection alone.
 - Inspect the common Feishu width, a narrow/mobile width, and full-screen width.
 - Check clipping, overflow, label collisions, hierarchy, empty space, color semantics, number formatting, and interaction.
@@ -208,6 +217,8 @@ Do not declare completion until:
 
 - Source scope and assumptions are stated.
 - Key calculations are reproducible.
+- The fact ledger, analysis plan, component specs, and manifest pass bundle
+  validation.
 - Narrative numbers match charts and tables.
 - Claims distinguish fact from hypothesis.
 - Every chart answers a specific question.
@@ -221,6 +232,13 @@ Do not declare completion until:
 - `scripts/profile_data.py`: profile CSV, JSON, and XLSX inputs.
 - `scripts/build_artifact.py`: compile a JSON artifact specification into self-contained HTML.
 - `scripts/validate_artifact.py`: enforce structural, portability, and accessibility checks.
+- `scripts/validate_analysis_bundle.py`: enforce recipe, evidence, component,
+  entity-scope, spec, and manifest consistency.
+- `scripts/run_qa.py`: run the complete package regression suite through one
+  command; use `--quick` only when browser checks are intentionally deferred.
+- `scripts/render_artifact.py`: render and interactively inspect any generated
+  artifact at the required widths while automatically locating the bundled
+  browser runtime.
 - `scripts/test_p1_runtime.mjs`: exercise P1 components, edge cases, native
   scrolling, touch, keyboard, and responsive behavior in a headless browser.
 - `scripts/test_line_value_labels.mjs`: verify intelligent line-label density,
@@ -228,6 +246,10 @@ Do not declare completion until:
   values, and responsive containment.
 - `scripts/check_version.py`: verify semantic version metadata and release tags.
 - `assets/design-tokens.json`: machine-readable visual tokens.
+- `assets/component-catalog.json`: machine-readable capability and constraint
+  catalog for every shared component.
+- `assets/analysis-recipes.json`: reusable analytical sequences and required
+  chapter roles.
 - `assets/theme.css`: shared light editorial visual language.
 - `assets/visual-runtime.js`: dependency-free chart and component runtime.
 - `assets/shell.html`: HTML artifact shell.

@@ -1,0 +1,185 @@
+{
+  "schemaVersion": "1.0",
+  "components": [
+    {
+      "type": "metrics",
+      "questions": ["level", "portfolio-summary", "target-context"],
+      "dataShapes": ["metric-list"],
+      "multiEntity": {
+        "support": "portfolio-only",
+        "maxEntities": 10,
+        "fallback": "comparison-matrix"
+      },
+      "limits": {"maxItems": 6},
+      "example": "assets/examples/report-kpi-spec.json"
+    },
+    {
+      "type": "line",
+      "questions": ["time-trend", "event-context", "threshold-crossing"],
+      "dataShapes": ["ordered-series"],
+      "multiEntity": {
+        "support": "selective",
+        "maxEntities": 4,
+        "fallback": "small-multiples"
+      },
+      "limits": {"maxEmphasizedSeries": 4},
+      "example": "assets/examples/report-trend-spec.json"
+    },
+    {
+      "type": "bar",
+      "questions": ["category-ranking", "signed-change", "contribution"],
+      "dataShapes": ["category-value"],
+      "multiEntity": {
+        "support": "selective",
+        "maxEntities": 10,
+        "fallback": "comparison-matrix"
+      },
+      "limits": {"maxRecommendedCategories": 12},
+      "example": "assets/examples/report-diverging-bar-spec.json"
+    },
+    {
+      "type": "donut",
+      "questions": ["part-to-whole"],
+      "dataShapes": ["category-share"],
+      "multiEntity": {
+        "support": "portfolio-only",
+        "maxEntities": 10,
+        "fallback": "bar"
+      },
+      "limits": {"maxSegments": 5},
+      "example": "assets/examples/dashboard-spec.json"
+    },
+    {
+      "type": "heatmap",
+      "questions": ["two-dimensional-hotspots", "time-pattern"],
+      "dataShapes": ["matrix"],
+      "multiEntity": {
+        "support": "selective",
+        "maxEntities": 10,
+        "fallback": "comparison-matrix"
+      },
+      "limits": {"canonicalHourColumns": 24},
+      "example": "assets/examples/report-hourly-heatmap-spec.json"
+    },
+    {
+      "type": "decision",
+      "questions": ["finding", "interpretation", "risk", "action"],
+      "dataShapes": ["evidence-statement"],
+      "multiEntity": {
+        "support": "selective",
+        "maxEntities": 3,
+        "fallback": "insight"
+      },
+      "limits": {"maxDetails": 6},
+      "example": "assets/examples/report-decision-spec.json"
+    },
+    {
+      "type": "target",
+      "questions": ["goal-gap", "attainment"],
+      "dataShapes": ["actual-target"],
+      "multiEntity": {
+        "support": "selective",
+        "maxEntities": 4,
+        "fallback": "comparison-matrix"
+      },
+      "limits": {"maxItems": 6},
+      "example": "assets/examples/report-target-spec.json"
+    },
+    {
+      "type": "range",
+      "questions": ["paired-change", "endpoint-comparison"],
+      "dataShapes": ["paired-values"],
+      "multiEntity": {
+        "support": "selective",
+        "maxEntities": 10,
+        "fallback": "comparison-matrix"
+      },
+      "limits": {"maxRecommendedItems": 12},
+      "example": "assets/examples/report-range-spec.json"
+    },
+    {
+      "type": "waterfall",
+      "questions": ["additive-bridge", "change-contribution"],
+      "dataShapes": ["ordered-additive-steps"],
+      "multiEntity": {
+        "support": "portfolio-only",
+        "maxEntities": 10,
+        "fallback": "bar"
+      },
+      "limits": {"maxVisibleStepsWithoutScroll": 8},
+      "example": "assets/examples/report-waterfall-spec.json"
+    },
+    {
+      "type": "sparkline",
+      "questions": ["compact-local-trend"],
+      "dataShapes": ["ordered-series"],
+      "multiEntity": {
+        "support": "selective",
+        "maxEntities": 4,
+        "fallback": "small-multiples"
+      },
+      "limits": {"role": "secondary-evidence"},
+      "example": "assets/examples/report-sparkline-spec.json"
+    },
+    {
+      "type": "comparison-matrix",
+      "questions": ["peer-metric-comparison", "portfolio-exceptions"],
+      "dataShapes": ["entity-metric-matrix"],
+      "multiEntity": {
+        "support": "native",
+        "maxEntities": 10,
+        "fallback": null
+      },
+      "limits": {"maxMetrics": 6},
+      "example": "assets/examples/report-multi-queue-matrix-spec.json"
+    },
+    {
+      "type": "small-multiples",
+      "questions": ["peer-trends", "persistent-exceptions"],
+      "dataShapes": ["entity-ordered-series"],
+      "multiEntity": {
+        "support": "native",
+        "maxEntities": 10,
+        "fallback": null
+      },
+      "limits": {"maxHighlightedEntities": 3},
+      "example": "assets/examples/report-multi-queue-trends-spec.json"
+    },
+    {
+      "type": "insight",
+      "questions": ["headline-finding", "interpretation-boundary"],
+      "dataShapes": ["evidence-statement"],
+      "multiEntity": {
+        "support": "portfolio-only",
+        "maxEntities": 10,
+        "fallback": "decision"
+      },
+      "limits": {"maxMessages": 1},
+      "example": "assets/examples/dashboard-spec.json"
+    },
+    {
+      "type": "table",
+      "questions": ["exact-values", "appendix", "exceptions"],
+      "dataShapes": ["records"],
+      "multiEntity": {
+        "support": "selective",
+        "maxEntities": 10,
+        "fallback": null
+      },
+      "limits": {"preferForExactLookup": true},
+      "example": "assets/examples/dashboard-spec.json"
+    },
+    {
+      "type": "divider",
+      "questions": ["structural-separation"],
+      "dataShapes": ["none"],
+      "multiEntity": {
+        "support": "portfolio-only",
+        "maxEntities": 10,
+        "fallback": null
+      },
+      "limits": {"analyticalEvidence": false},
+      "example": "assets/examples/dashboard-spec.json"
+    }
+  ]
+}

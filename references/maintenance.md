@@ -39,17 +39,20 @@ templates, examples, or publishing workflow.
 Run:
 
 ```bash
-python3 scripts/check_version.py assets/examples/*.html
-python3 scripts/test_spec_contracts.py
-python3 scripts/validate_artifact.py <each-artifact.html>
-python3 <skill-creator>/scripts/quick_validate.py .
+python3 scripts/run_qa.py
 git diff --check
 ```
+
+`scripts/run_qa.py` includes semantic version metadata, specification
+contracts, analysis-plan and evidence closure, every generated artifact,
+Skill-package validation, and all bundled browser regressions. Use
+`python3 scripts/run_qa.py --quick` only for an intermediate local check; it is
+not a release gate.
 
 After creating the release tag, run:
 
 ```bash
-python3 scripts/check_version.py --require-tag assets/examples/*.html
+python3 scripts/run_qa.py --require-tag
 ```
 
 Do not tag a dirty, unvalidated, or partially merged worktree.

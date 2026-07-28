@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "title": "八个重点服务队列组合分析",
+  "mode": "report",
+  "sections": [
+    {
+      "id": "portfolio-summary",
+      "heading": "1. 组合概览",
+      "evidenceIds": [
+        "fact.portfolio.sla",
+        "fact.portfolio.backlog"
+      ],
+      "findingIds": [],
+      "components": []
+    },
+    {
+      "id": "peer-comparison",
+      "heading": "2. 同口径横向比较",
+      "evidenceIds": [
+        "finding.multi-queue.matrix-exceptions"
+      ],
+      "findingIds": [
+        "finding.multi-queue.matrix-exceptions"
+      ],
+      "components": [
+        "assets/examples/15-multi-queue-matrix.html"
+      ]
+    },
+    {
+      "id": "persistent-exceptions",
+      "heading": "3. 持续异常",
+      "evidenceIds": [
+        "finding.multi-queue.persistent-sla-risk"
+      ],
+      "findingIds": [
+        "finding.multi-queue.persistent-sla-risk"
+      ],
+      "components": [
+        "assets/examples/16-multi-queue-trends.html"
+      ]
+    },
+    {
+      "id": "implications",
+      "heading": "4. 行动与解释边界",
+      "evidenceIds": [
+        "finding.multi-queue.matrix-exceptions",
+        "finding.multi-queue.persistent-sla-risk"
+      ],
+      "findingIds": [
+        "finding.multi-queue.matrix-exceptions",
+        "finding.multi-queue.persistent-sla-risk"
+      ],
+      "components": []
+    }
+  ]
+}

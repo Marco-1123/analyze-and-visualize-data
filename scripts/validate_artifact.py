@@ -157,6 +157,8 @@ def validate(path: Path) -> tuple[list[str], list[str]]:
                     "range",
                     "waterfall",
                     "sparkline",
+                    "comparison-matrix",
+                    "small-multiples",
                 }:
                     if not component.get("title"):
                         errors.append(f"visual component {component.get('id')} has no title")

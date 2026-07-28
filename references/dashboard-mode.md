@@ -20,15 +20,21 @@ substitute for the comparison matrix or exception summary.
 
 ## Interaction
 
-Allow:
+Use only interactions implemented by the selected catalog component and shared
+runtime. The current shared vocabulary supports component-local tooltips,
+series legend visibility, exact-value inspection, disclosure tables, native
+scrolling, and table behavior where declared. A custom dashboard may add:
 
 - local filters;
 - tabs;
 - sorting;
-- tooltips;
 - dimension switches;
 - linked highlighting;
 - client-side search.
+
+Do not promise any custom interaction in the plan unless it is implemented,
+rendered, and tested in the final artifact. Generic linked filtering across
+unrelated shared components is not a baseline capability.
 
 Do not require:
 

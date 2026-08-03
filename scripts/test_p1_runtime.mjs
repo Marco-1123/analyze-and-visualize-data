@@ -4,6 +4,7 @@ import path from "node:path";
 import process from "node:process";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
+import { launchChromium } from "./browser_launch.mjs";
 
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
@@ -397,7 +398,7 @@ async function testTouchWaterfall(browser, fixture, viewport) {
   await context.close();
 }
 
-const browser = await chromium.launch({ headless: true });
+const browser = await launchChromium(chromium);
 const results = [];
 try {
   for (const fixture of fixtures) {

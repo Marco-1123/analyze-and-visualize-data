@@ -5,6 +5,7 @@ import path from "node:path";
 import process from "node:process";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
+import { launchChromium } from "./browser_launch.mjs";
 
 const require = createRequire(import.meta.url);
 
@@ -38,7 +39,7 @@ async function main() {
   const input = path.resolve(args.input);
   const outputDir = path.resolve(args.outputDir);
   fs.mkdirSync(outputDir, { recursive: true });
-  const browser = await chromium.launch({ headless: true });
+  const browser = await launchChromium(chromium);
   const results = [];
 
   try {

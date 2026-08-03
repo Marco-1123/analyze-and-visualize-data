@@ -168,6 +168,20 @@ Confirmed:
   target lines and no page-level horizontal overflow. This confirms wide and
   narrow Feishu mount, readback, responsive layout, and native component-level
   scrolling for the multi-queue contract.
+- Skill v0.14.0 replaced the trends block in the existing multi-queue test
+  document with the three-series small-multiple contract. Revision 8 returned
+  block `doxcnhwtj4Vd3jaj21sAukpeEub`; the fetched HTML reference and local
+  artifact were byte-identical at 203,417 bytes with SHA-256
+  `6638a4e51a62e8157efe5409b0eef5bdced20c3d8978d7a5d362f69320bea73d`.
+  An authenticated Chrome session rendered one shared legend, three toggles,
+  eight entity panels, 24 line marks, and eight keyboard-accessible hit areas
+  without a component error. At the ordinary 818 px inner width, the panels
+  used three columns and the page remained contained. With a 390 px outer
+  browser override, Feishu provided a 300 px HTML-block inner width; the panels
+  reflowed to one column and `scrollWidth` equaled `clientWidth` at 300 px.
+  Clicking the 48-hour legend item hid exactly eight peer lines, retained the
+  other 16, and reduced the exact-value tooltip to the two visible series;
+  restoring the legend returned all 24 marks before browser handoff.
 
 Not yet confirmed:
 

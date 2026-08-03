@@ -105,15 +105,23 @@ contains horizontal overflow inside the component.
 
 Use `small-multiples` with:
 
-- one governed `metricId`;
+- one governed `metricId` for the backward-compatible single-line form, or
+  `metricIds` containing one to three compatible governed metrics;
 - shared ordered `labels`;
-- 2–10 entity series;
+- 2–10 entity panels, each containing every declared metric series;
 - explicit `null` values for missing observations;
 - no more than three `highlightEntityIds`.
 
 The runtime uses one shared y-domain and one reference line for every panel.
-Each panel supports exact pointer, touch, and keyboard point inspection. Use
-highlighting only for entities selected by the exception policy.
+For two or three metrics, one shared legend controls the same series in every
+panel. Each panel uses a shared nearest-x tooltip for all visible series and
+supports exact pointer, persistent touch, and keyboard point inspection. The
+last visible series cannot be hidden and legend changes do not rescale the
+plots. Use highlighting only for entities selected by the exception policy.
+
+Do not use three lines merely because three measures exist. They must share a
+unit, time grain, and meaningful common scale. If their units differ, split
+them into separate small-multiple groups or use the comparison matrix.
 
 ## Dashboard guidance
 
@@ -131,8 +139,14 @@ Verify:
 - raw IDs survive concise labels;
 - matrix references and tones match metric direction;
 - shared small-multiple domains are identical;
+- one to three lines render in every panel without dropping any declared
+  metric or time point;
+- the shared legend hides and restores the same series across all panels,
+  filters panel tooltips and accessible values, prevents hiding the final
+  series, and keeps the domain stable;
 - missing periods remain gaps;
-- 390, 520, 880, and 1440 px remain page-contained;
+- 300 px effective Feishu inner width plus 390, 520, 880, and 1440 px remain
+  page-contained;
 - component-level scrolling is native and the sticky entity column remains
   readable;
 - exact trend values work by pointer, touch, and keyboard;

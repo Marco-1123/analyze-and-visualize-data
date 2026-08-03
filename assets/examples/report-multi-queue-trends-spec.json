@@ -2,9 +2,9 @@
   "schemaVersion": "1.0",
   "analysisMode": "multi-entity",
   "mode": "report-component",
-  "title": "哪些队列的 SLA 是持续偏弱，而不是单日波动？",
+  "title": "哪些队列在三档响应 SLA 上持续偏弱？",
   "eyebrow": "MULTI-QUEUE · SMALL MULTIPLES",
-  "subtitle": "八个队列使用同一纵轴；目标线统一为 90%",
+  "subtitle": "八个队列、三条响应时效线使用同一纵轴；共享图例可同步显隐",
   "meta": {
     "period": "2026-07-18 — 2026-07-24",
     "scope": "8 个重点服务队列",
@@ -41,6 +41,42 @@
         "label": "目标",
         "warningTolerance": 0.03
       }
+    },
+    {
+      "id": "sla_48h",
+      "label": "48 小时 SLA",
+      "direction": "higher-is-better",
+      "aggregation": "ratio",
+      "denominator": "eligible_cases",
+      "format": {
+        "type": "percent",
+        "input": "ratio",
+        "decimals": 1
+      },
+      "reference": {
+        "type": "target",
+        "value": 0.9,
+        "label": "目标",
+        "warningTolerance": 0.03
+      }
+    },
+    {
+      "id": "sla_72h",
+      "label": "72 小时 SLA",
+      "direction": "higher-is-better",
+      "aggregation": "ratio",
+      "denominator": "eligible_cases",
+      "format": {
+        "type": "percent",
+        "input": "ratio",
+        "decimals": 1
+      },
+      "reference": {
+        "type": "target",
+        "value": 0.9,
+        "label": "目标",
+        "warningTolerance": 0.03
+      }
     }
   ],
   "components": [
@@ -48,10 +84,10 @@
       "id": "queue-sla-small-multiples",
       "type": "small-multiples",
       "evidenceIds": ["finding.multi-queue.persistent-sla-risk"],
-      "title": "华南伙伴升级与东北风险复核连续七天低于目标",
-      "subtitle": "共享尺度避免每个小图独立缩放后夸大微小波动",
-      "ariaLabel": "八个队列七天 24 小时 SLA 共享尺度小多图",
-      "metricId": "sla_24h",
+      "title": "华南伙伴升级与东北风险复核的三档响应 SLA 均持续承压",
+      "subtitle": "共享尺度避免独立缩放；图例会同步控制所有队列中的对应折线",
+      "ariaLabel": "八个队列七天三档响应 SLA 共享尺度多折线小多图",
+      "metricIds": ["sla_24h", "sla_48h", "sla_72h"],
       "labels": ["7/18", "7/19", "7/20", "7/21", "7/22", "7/23", "7/24"],
       "highlightEntityIds": [
         "queue_partner_escalation_south_tier_02",
@@ -60,40 +96,72 @@
       "series": [
         {
           "entityId": "queue_enterprise_recovery_east_priority",
-          "values": [0.918, 0.926, 0.931, 0.929, 0.938, 0.936, 0.934]
+          "values": {
+            "sla_24h": [0.918, 0.926, 0.931, 0.929, 0.938, 0.936, 0.934],
+            "sla_48h": [0.944, 0.951, 0.956, 0.954, 0.962, 0.961, 0.959],
+            "sla_72h": [0.966, 0.972, 0.976, 0.974, 0.981, 0.979, 0.978]
+          }
         },
         {
           "entityId": "queue_enterprise_recovery_north_priority",
-          "values": [0.897, 0.904, 0.908, 0.915, 0.918, 0.914, 0.912]
+          "values": {
+            "sla_24h": [0.897, 0.904, 0.908, 0.915, 0.918, 0.914, 0.912],
+            "sla_48h": [0.926, 0.932, 0.937, 0.944, 0.946, 0.942, 0.941],
+            "sla_72h": [0.949, 0.955, 0.961, 0.967, 0.969, 0.966, 0.965]
+          }
         },
         {
           "entityId": "queue_partner_escalation_south_tier_02",
-          "values": [0.868, 0.859, 0.851, 0.846, 0.838, 0.844, 0.842]
+          "values": {
+            "sla_24h": [0.868, 0.859, 0.851, 0.846, 0.838, 0.844, 0.842],
+            "sla_48h": [0.894, 0.886, 0.879, 0.873, 0.866, 0.871, 0.869],
+            "sla_72h": [0.918, 0.911, 0.904, 0.898, 0.891, 0.896, 0.894]
+          }
         },
         {
           "entityId": "queue_service_followup_central_standard",
-          "values": [0.886, 0.892, 0.898, 0.903, 0.907, 0.904, 0.901]
+          "values": {
+            "sla_24h": [0.886, 0.892, 0.898, 0.903, 0.907, 0.904, 0.901],
+            "sla_48h": [0.914, 0.921, 0.927, 0.932, 0.936, 0.933, 0.930],
+            "sla_72h": [0.938, 0.945, 0.951, 0.956, 0.960, 0.957, 0.954]
+          }
         },
         {
           "entityId": "queue_vip_retention_east_dedicated",
-          "values": [0.942, 0.948, 0.951, 0.954, 0.958, 0.957, 0.956]
+          "values": {
+            "sla_24h": [0.942, 0.948, 0.951, 0.954, 0.958, 0.957, 0.956],
+            "sla_48h": [0.966, 0.972, 0.975, 0.978, 0.982, 0.981, 0.980],
+            "sla_72h": [0.981, 0.985, 0.987, 0.989, 0.991, 0.990, 0.990]
+          }
         },
         {
           "entityId": "queue_overseas_apac_north_enterprise_followup_priority_tier_03",
-          "values": [0.903, 0.896, null, 0.891, 0.887, 0.886, 0.884]
+          "values": {
+            "sla_24h": [0.903, 0.896, null, 0.891, 0.887, 0.886, 0.884],
+            "sla_48h": [0.931, 0.924, null, 0.919, 0.915, 0.914, 0.912],
+            "sla_72h": [0.955, 0.948, null, 0.943, 0.939, 0.938, 0.936]
+          }
         },
         {
           "entityId": "queue_new_customer_onboarding_west_priority",
-          "values": [0.901, 0.909, 0.918, 0.922, 0.925, 0.929, 0.928]
+          "values": {
+            "sla_24h": [0.901, 0.909, 0.918, 0.922, 0.925, 0.929, 0.928],
+            "sla_48h": [0.929, 0.937, 0.946, 0.950, 0.953, 0.957, 0.956],
+            "sla_72h": [0.953, 0.961, 0.970, 0.974, 0.977, 0.981, 0.980]
+          }
         },
         {
           "entityId": "queue_risk_review_northeast_enterprise",
-          "values": [0.889, 0.881, 0.875, 0.869, 0.864, 0.858, 0.861]
+          "values": {
+            "sla_24h": [0.889, 0.881, 0.875, 0.869, 0.864, 0.858, 0.861],
+            "sla_48h": [0.917, 0.909, 0.903, 0.897, 0.892, 0.886, 0.889],
+            "sla_72h": [0.941, 0.933, 0.927, 0.921, 0.916, 0.910, 0.913]
+          }
         }
       ],
       "note": {
         "kind": "scope",
-        "text": "APAC North 的 7 月 20 日观测缺失，以空缺呈现；所有小图保持相同纵轴范围。"
+        "text": "APAC North 的 7 月 20 日三档观测缺失，以空缺呈现；所有小图及系列保持相同纵轴范围。"
       }
     }
   ],

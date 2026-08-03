@@ -34,6 +34,8 @@
 Render and inspect at:
 
 - 390 × 844;
+- 300 × 844 when validating a Feishu HTML block whose outer 390 px viewport
+  leaves roughly 300 px of effective inner width;
 - 520 × 900;
 - 880 × 1000 or the closest Feishu component width;
 - 1440 × 1000 for dashboard mode.
@@ -174,6 +176,19 @@ Check:
   the entity column remains sticky, and the page does not overflow;
 - small multiples preserve one identical domain and reference line across all
   panels;
+- single-line legacy small-multiple specifications remain valid;
+- multi-series small multiples accept one to three compatible metrics and
+  reject a fourth metric, missing nested series, shortened arrays, duplicate
+  metric IDs, and incompatible shared-axis formats;
+- every multi-series panel renders every declared line, retains explicit gaps,
+  and uses the same ordered colors and shared domain;
+- exactly one shared legend appears above the panel grid; hiding or restoring a
+  series updates that series in every panel, the active panel's crosshair,
+  tooltip, and accessible value without changing the domain;
+- the last visible small-multiple series cannot be hidden and the prevention is
+  announced accessibly;
+- each multi-series panel tooltip contains all and only currently visible
+  series values at the nearest time point;
 - 5-, 8-, and 10-entity small multiples use a readable responsive grid without
   overlapping labels or page-level overflow;
 - null small-multiple observations remain gaps;

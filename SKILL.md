@@ -185,6 +185,11 @@ python3 scripts/build_artifact.py --spec <spec.json> --output <artifact.html>
   simultaneously emphasized line series. Use `comparison-matrix` for governed
   queue × metric scanning; keep exact raw queue IDs accessible behind concise
   display names.
+- A `small-multiples` panel may contain one to three compatible governed line
+  series. Use the component-level shared legend, keep its visibility state
+  synchronized across every entity panel, preserve the shared y-domain, and
+  verify per-panel multi-value pointer, touch, and keyboard inspection. Never
+  mix incompatible units or drop nested series to make a compact plot fit.
 - Iterate after visual inspection. One-pass HTML generation is not complete.
 
 ### 7. Assemble the delivery

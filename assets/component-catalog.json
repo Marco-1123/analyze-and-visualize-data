@@ -136,13 +136,18 @@
     {
       "type": "small-multiples",
       "questions": ["peer-trends", "persistent-exceptions"],
-      "dataShapes": ["entity-ordered-series"],
+      "dataShapes": ["entity-ordered-series", "entity-multi-metric-ordered-series"],
       "multiEntity": {
         "support": "native",
         "maxEntities": 10,
         "fallback": null
       },
-      "limits": {"maxHighlightedEntities": 3},
+      "limits": {
+        "maxHighlightedEntities": 3,
+        "maxSeriesPerPanel": 3,
+        "sharedSeriesLegend": true,
+        "sharedYAxisRequired": true
+      },
       "example": "assets/examples/report-multi-queue-trends-spec.json"
     },
     {

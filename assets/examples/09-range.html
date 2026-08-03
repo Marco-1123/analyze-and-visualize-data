@@ -6,7 +6,7 @@
   <meta name="use-iframe" content="true">
   <meta name="html-box-height-mode" content="auto">
   <meta name="description" content="水平哑铃图展示同一对象的两期端点，不暗示中间存在连续趋势">
-  <meta name="generator" content="analyze-and-visualize-data 0.13.0">
+  <meta name="generator" content="analyze-and-visualize-data 0.14.0">
   <meta name="color-scheme" content="light">
   <title>两个周期之间，改善集中在三个高优先级队列</title>
   <style>
@@ -47,7 +47,7 @@
 }
 
 html {
-  min-width: 320px;
+  min-width: 0;
   background: var(--vda-canvas);
   color: var(--vda-text-1);
   font-family: var(--vda-font);
@@ -58,7 +58,7 @@ html {
 }
 
 body {
-  min-width: 320px;
+  min-width: 0;
   margin: 0;
   background:
     radial-gradient(circle at 8% -5%, rgba(49, 92, 245, 0.055), transparent 32rem),
@@ -2019,6 +2019,10 @@ a:focus-visible,
   color: var(--vda-text-2);
 }
 
+.vda-small-multiples-legend {
+  margin: 0 0 12px;
+}
+
 .vda-small-multiples {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -2093,12 +2097,71 @@ a:focus-visible,
   font-size: 9px;
 }
 
-.vda-small-multiple .vda-sparkline {
+.vda-small-multiple .vda-sparkline,
+.vda-small-multiple-chart {
+  position: relative;
+  min-width: 0;
   margin-top: 6px;
 }
 
-.vda-small-multiple .vda-sparkline svg {
+.vda-small-multiple .vda-sparkline svg,
+.vda-small-multiple-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
   min-height: 86px;
+  overflow: visible;
+}
+
+.vda-small-multiple-series-line,
+.vda-small-multiple-series-end,
+.vda-small-multiple-focus-point,
+.vda-small-multiple-focus-line,
+.vda-small-multiple-reference {
+  vector-effect: non-scaling-stroke;
+}
+
+.vda-small-multiple-reference {
+  stroke: var(--vda-target);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  opacity: 0.62;
+}
+
+.vda-small-multiple-axis-label {
+  fill: var(--vda-text-3);
+  font-size: 8.5px;
+}
+
+.vda-small-multiple-focus {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.vda-small-multiple-focus[data-open="true"] {
+  opacity: 1;
+}
+
+.vda-small-multiple-focus-line {
+  stroke: var(--vda-text-3);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.vda-small-multiple-hitbox {
+  cursor: crosshair;
+  pointer-events: all;
+  stroke: transparent;
+  stroke-width: 2;
+  touch-action: pan-y;
+}
+
+.vda-small-multiple-hitbox:focus-visible {
+  stroke: rgba(49, 92, 245, 0.58);
+  stroke-dasharray: 4 4;
+  outline: none;
+  vector-effect: non-scaling-stroke;
 }
 
 .vda-divider {
@@ -2266,6 +2329,10 @@ a:focus-visible,
   .vda-comparison-matrix th:first-child {
     min-width: 148px;
     max-width: 148px;
+  }
+
+  .vda-small-multiples {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .vda-insight {
@@ -3464,66 +3531,289 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
     );
   }
 
-  function smallMultipleDefinition(component, entry, metric) {
-    var labels = Array.isArray(component.labels) ? component.labels : [];
-    var values = Array.isArray(entry.values) ? entry.values : [];
-    var definition = {
-      points: labels.map(function (label, index) {
-        return {
-          x: label,
-          value: values[index] == null ? null : values[index],
-          status: values[index] == null ? "missing" : "complete"
-        };
-      }),
-      variant: "line",
-      domainMode: "shared",
-      format: metric ? metric.format : component.format
-    };
-    if (
-      metric &&
-      metric.reference &&
-      Number.isFinite(Number(metric.reference.value))
-    ) {
-      definition.target = Number(metric.reference.value);
+  function smallMultipleMetricIds(component) {
+    if (Array.isArray(component.metricIds) && component.metricIds.length) {
+      return component.metricIds.slice(0, 3);
     }
-    return definition;
+    return component.metricId ? [component.metricId] : [];
+  }
+
+  function smallMultipleSeries(component, entry) {
+    var metricIds = smallMultipleMetricIds(component);
+    return metricIds.map(function (metricId, seriesIndex) {
+      var metric = metricDefinition(metricId) || {
+        id: metricId,
+        label: metricId,
+        format: component.format
+      };
+      var values = Array.isArray(entry.values)
+        ? entry.values
+        : entry.values && Array.isArray(entry.values[metricId])
+          ? entry.values[metricId]
+          : [];
+      return {
+        id: metricId,
+        name: metric.label || metricId,
+        color: palette[seriesIndex % palette.length],
+        format: metric.format || component.format,
+        metric: metric,
+        values: values
+      };
+    });
+  }
+
+  function smallMultipleSharedDomain(component, entries) {
+    var definitions = [];
+    (entries || []).forEach(function (entry) {
+      smallMultipleSeries(component, entry).forEach(function (series) {
+        definitions.push({
+          points: (component.labels || []).map(function (label, index) {
+            var value = series.values[index];
+            return {
+              x: label,
+              value: value == null ? null : value
+            };
+          })
+        });
+      });
+    });
+    smallMultipleMetricIds(component).forEach(function (metricId) {
+      var metric = metricDefinition(metricId);
+      if (
+        metric &&
+        metric.reference &&
+        Number.isFinite(Number(metric.reference.value))
+      ) {
+        definitions.push({ target: Number(metric.reference.value), points: [] });
+      }
+    });
+    return sparklineDomain(definitions);
+  }
+
+  function smallMultipleReferenceValues(component) {
+    var seen = new Set();
+    return smallMultipleMetricIds(component).map(function (metricId) {
+      var metric = metricDefinition(metricId);
+      var value = metric && metric.reference
+        ? Number(metric.reference.value)
+        : NaN;
+      if (!Number.isFinite(value) || seen.has(value)) return null;
+      seen.add(value);
+      return {
+        value: value,
+        label: metric.reference.label || "基准"
+      };
+    }).filter(Boolean);
+  }
+
+  function renderSmallMultipleGraphic(
+    component,
+    entry,
+    entity,
+    sharedDomain,
+    panelIndex
+  ) {
+    var labels = Array.isArray(component.labels) ? component.labels : [];
+    var series = smallMultipleSeries(component, entry);
+    var width = 280;
+    var height = 116;
+    var margin = { top: 10, right: 10, bottom: 24, left: 10 };
+    var innerW = width - margin.left - margin.right;
+    var innerH = height - margin.top - margin.bottom;
+    var minY = finite(sharedDomain[0], 0);
+    var maxY = finite(sharedDomain[1], 1);
+    var yRange = maxY - minY || 1;
+    var xAt = function (index) {
+      return labels.length > 1
+        ? margin.left + (innerW * index) / (labels.length - 1)
+        : margin.left + innerW / 2;
+    };
+    var yAt = function (value) {
+      return margin.top + ((maxY - value) / yRange) * innerH;
+    };
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": entity.displayName + "，" +
+        series.map(function (item) { return item.name; }).join("、") +
+        "趋势"
+    });
+    svg.setAttribute("data-small-multiple-domain-min", minY);
+    svg.setAttribute("data-small-multiple-domain-max", maxY);
+
+    smallMultipleReferenceValues(component).forEach(function (reference) {
+      var y = yAt(reference.value);
+      svg.appendChild(svgEl("line", {
+        x1: margin.left,
+        x2: width - margin.right,
+        y1: y,
+        y2: y,
+        class: "vda-small-multiple-reference",
+        "data-small-multiple-reference": reference.value
+      }));
+    });
+
+    series.forEach(function (item, seriesIndex) {
+      var points = item.values.map(function (raw, index) {
+        var numeric = raw == null ? NaN : Number(raw);
+        return Number.isFinite(numeric)
+          ? { index: index, value: numeric, x: xAt(index), y: yAt(numeric) }
+          : null;
+      });
+      var d = points.map(function (point, index) {
+        if (!point) return "";
+        var previous = points[index - 1];
+        var command = previous ? "L" : "M";
+        return command + point.x.toFixed(2) + "," + point.y.toFixed(2);
+      }).join(" ");
+      var mark = svgEl("g", {
+        "data-small-multiple-series-mark": "true",
+        "data-series-index": seriesIndex,
+        "data-visible": "true"
+      });
+      mark.appendChild(svgEl("path", {
+        d: d,
+        fill: "none",
+        stroke: item.color,
+        "stroke-width": seriesIndex === 0 ? 2.6 : 2.1,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        opacity: seriesIndex === 0 ? 1 : 0.82,
+        class: "vda-small-multiple-series-line"
+      }));
+      var lastPoint = null;
+      points.forEach(function (point) {
+        if (point) lastPoint = point;
+      });
+      if (lastPoint) {
+        mark.appendChild(svgEl("circle", {
+          cx: lastPoint.x,
+          cy: lastPoint.y,
+          r: seriesIndex === 0 ? 3.2 : 2.7,
+          fill: item.color,
+          class: "vda-small-multiple-series-end"
+        }));
+      }
+      svg.appendChild(mark);
+    });
+
+    var axisIndices = labels.length > 2
+      ? [0, Math.floor((labels.length - 1) / 2), labels.length - 1]
+      : labels.map(function (_, index) { return index; });
+    Array.from(new Set(axisIndices)).forEach(function (index) {
+      svg.appendChild(svgEl("text", {
+        x: xAt(index),
+        y: height - 7,
+        "text-anchor": index === 0
+          ? "start"
+          : index === labels.length - 1 ? "end" : "middle",
+        class: "vda-small-multiple-axis-label"
+      }, labels[index]));
+    });
+
+    var focus = svgEl("g", {
+      class: "vda-small-multiple-focus",
+      "data-open": "false",
+      "aria-hidden": "true"
+    });
+    focus.appendChild(svgEl("line", {
+      x1: margin.left,
+      x2: margin.left,
+      y1: margin.top,
+      y2: height - margin.bottom,
+      class: "vda-small-multiple-focus-line"
+    }));
+    series.forEach(function (item, seriesIndex) {
+      focus.appendChild(svgEl("circle", {
+        cx: margin.left,
+        cy: margin.top,
+        r: 3.7,
+        fill: "#FFFFFF",
+        stroke: item.color,
+        "stroke-width": 2,
+        class: "vda-small-multiple-focus-point",
+        "data-series-index": seriesIndex
+      }));
+    });
+    svg.appendChild(focus);
+    svg.appendChild(svgEl("rect", {
+      x: margin.left,
+      y: margin.top,
+      width: innerW,
+      height: innerH,
+      fill: "transparent",
+      tabindex: "0",
+      role: "slider",
+      class: "vda-small-multiple-hitbox",
+      "data-small-multiple-hitbox": "true",
+      "data-panel-index": panelIndex,
+      "data-plot-left": margin.left,
+      "data-plot-right": width - margin.right,
+      "data-plot-top": margin.top,
+      "data-plot-bottom": height - margin.bottom,
+      "data-min-y": minY,
+      "data-max-y": maxY,
+      "aria-valuemin": 0,
+      "aria-valuemax": Math.max(0, labels.length - 1),
+      "aria-valuenow": 0,
+      "aria-label": entity.displayName + "趋势，当前显示 " + series.length +
+        " 个系列，使用左右方向键查看各期数值"
+    }));
+    var wrapper = document.createElement("div");
+    wrapper.className = "vda-small-multiple-chart";
+    wrapper.appendChild(svg);
+    return wrapper.outerHTML;
   }
 
   function renderSmallMultiples(component) {
-    var metric = metricDefinition(component.metricId) || {
-      label: component.metricId,
+    var labels = Array.isArray(component.labels) ? component.labels : [];
+    var series = Array.isArray(component.series) ? component.series : [];
+    var metricIds = smallMultipleMetricIds(component);
+    var metrics = metricIds.map(function (metricId) {
+      return metricDefinition(metricId) || {
+        id: metricId,
+        label: metricId,
+        format: component.format
+      };
+    });
+    var primaryMetric = metrics[0] || {
+      label: "指标",
       format: component.format
     };
-    var series = Array.isArray(component.series) ? component.series : [];
     var highlighted = new Set(
       Array.isArray(component.highlightEntityIds)
         ? component.highlightEntityIds
         : []
     );
-    var definitions = series.map(function (entry) {
-      return smallMultipleDefinition(component, entry, metric);
-    });
-    var sharedDomain = sparklineDomain(definitions);
-    var reference = metric.reference &&
-      Number.isFinite(Number(metric.reference.value))
-      ? (metric.reference.label || "基准") + " " +
-        formatValue(metric.reference.value, metric.format)
-      : "无统一基准";
-    var panels = series.map(function (entry, seriesIndex) {
+    var sharedDomain = smallMultipleSharedDomain(component, series);
+    var references = smallMultipleReferenceValues(component);
+    var reference = references.length === 1
+      ? references[0].label + " " +
+        formatValue(references[0].value, primaryMetric.format)
+      : references.length > 1 ? references.length + " 条治理基准" : "无统一基准";
+    var panels = series.map(function (entry, panelIndex) {
       var entity = entityDefinition(entry.entityId) || {
         id: entry.entityId,
         displayName: entry.entityId
       };
-      var values = Array.isArray(entry.values) ? entry.values : [];
+      var entitySeries = smallMultipleSeries(component, entry);
+      var values = entitySeries.length ? entitySeries[0].values : [];
       var numeric = values.filter(function (value) {
         return value != null && Number.isFinite(Number(value));
       }).map(Number);
       var first = numeric.length ? numeric[0] : null;
       var last = numeric.length ? numeric[numeric.length - 1] : null;
       var change = first == null || last == null ? null : last - first;
-      var tone = metricReferenceTone(last, metric);
-      var definition = definitions[seriesIndex];
-      definition.ariaLabel = entity.displayName + metric.label + "趋势";
+      var tone = metricReferenceTone(last, primaryMetric);
+      var panelSummary = metrics.length > 1
+        ? '<div class="vda-small-multiple-value"><strong>' + metrics.length +
+          " 个系列</strong><small>" + labels.length + " 个时间点</small></div>"
+        : '<div class="vda-small-multiple-value"><strong>' +
+          esc(formatValue(last, primaryMetric.format)) + "</strong><small>" +
+          esc(change == null
+            ? "较首期 —"
+            : "较首期 " + signedLabel(change, primaryMetric.format)) +
+          "</small></div>";
       return '<article class="vda-small-multiple' +
         (highlighted.has(entry.entityId) ? " is-highlighted" : "") +
         '" data-entity-id="' + esc(entity.id) + '" data-tone="' + tone + '">' +
@@ -3531,27 +3821,41 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
         '" aria-label="' + esc(entity.displayName + "，" + entity.id) + '">' +
         esc(entity.displayName) + "</strong>" +
         (entity.group ? "<small>" + esc(entity.group) + "</small>" : "") +
-        '</div><div class="vda-small-multiple-value"><strong>' +
-        esc(formatValue(last, metric.format)) + "</strong><small>" +
-        esc(change == null
-          ? "较首期 —"
-          : "较首期 " + signedLabel(change, metric.format)) +
-        "</small></div></header>" +
-        renderSparklineGraphic(definition, {
-          width: 280,
-          height: 100,
-          compact: false,
-          domain: sharedDomain,
-          seriesIndex: seriesIndex,
-          ariaLabel: definition.ariaLabel
-        }) +
+        "</div>" + panelSummary + "</header>" +
+        renderSmallMultipleGraphic(
+          component,
+          entry,
+          entity,
+          sharedDomain,
+          panelIndex
+        ) +
         "</article>";
     }).join("");
+    var legend = metrics.length > 1
+      ? '<div class="vda-legend vda-small-multiples-legend" role="group" ' +
+        'aria-label="小多图共享图例，点击同步显示或隐藏所有面板中的数据系列" ' +
+        'data-small-multiples-legend="true">' +
+        metrics.map(function (metric, index) {
+          return '<button class="vda-legend-item" type="button" ' +
+            'data-small-multiple-series-toggle="true" data-series-index="' +
+            index + '" data-state="visible" aria-pressed="true" ' +
+            'aria-label="' + esc(metric.label) + '，当前显示，点击隐藏">' +
+            '<span class="vda-legend-swatch" style="--series-color:' +
+            esc(palette[index % palette.length]) + '"></span>' +
+            '<span class="vda-legend-label">' + esc(metric.label) +
+            "</span></button>";
+        }).join("") +
+        '<span class="vda-sr-only" aria-live="polite" ' +
+        'data-small-multiple-legend-status></span></div>'
+      : "";
     return componentFrame(
       component,
       '<div class="vda-small-multiples-summary">' +
-      '<span><strong>' + esc(metric.label) + "</strong> · 共享纵轴</span>" +
+      '<span><strong>' + esc(metrics.map(function (metric) {
+        return metric.label;
+      }).join(" · ")) + "</strong> · 共享纵轴</span>" +
       "<span>" + esc(reference) + "</span></div>" +
+      legend +
       '<div class="vda-small-multiples" data-shared-domain="' +
       esc(sharedDomain.join(",")) + '">' + panels + "</div>"
     );
@@ -5478,6 +5782,275 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
     });
   }
 
+  function setupSmallMultipleInteractions(tooltipApi) {
+    var components = Array.isArray(spec.components) ? spec.components : [];
+    document.querySelectorAll("[data-component-id]").forEach(function (section) {
+      var component = components.find(function (item) {
+        return item &&
+          item.id === section.dataset.componentId &&
+          item.type === "small-multiples";
+      });
+      if (!component) return;
+      var labels = Array.isArray(component.labels) ? component.labels : [];
+      var entries = Array.isArray(component.series) ? component.series : [];
+      var metricIds = smallMultipleMetricIds(component);
+      if (!labels.length || !entries.length || !metricIds.length) return;
+
+      var visibleSeries = metricIds.map(function () { return true; });
+      var toggles = Array.from(
+        section.querySelectorAll("[data-small-multiple-series-toggle]")
+      );
+      var legendStatus = section.querySelector(
+        "[data-small-multiple-legend-status]"
+      );
+      var panelStates = [];
+      var activeState = null;
+
+      function visibleCount() {
+        return visibleSeries.filter(Boolean).length;
+      }
+
+      function updateLegendState(message) {
+        var count = visibleCount();
+        toggles.forEach(function (toggle, seriesIndex) {
+          var metric = metricDefinition(metricIds[seriesIndex]) || {
+            label: metricIds[seriesIndex]
+          };
+          var visible = visibleSeries[seriesIndex];
+          var lastVisible = visible && count === 1;
+          toggle.setAttribute("aria-pressed", visible ? "true" : "false");
+          toggle.setAttribute("aria-disabled", lastVisible ? "true" : "false");
+          toggle.dataset.state = visible ? "visible" : "hidden";
+          toggle.setAttribute(
+            "aria-label",
+            visible
+              ? metric.label + (lastVisible
+                ? "，当前显示，至少保留一个系列"
+                : "，当前显示，点击隐藏")
+              : metric.label + "，当前隐藏，点击显示"
+          );
+        });
+        panelStates.forEach(function (state) {
+          state.hitbox.setAttribute(
+            "aria-label",
+            state.entity.displayName + "趋势，当前显示 " + count +
+              " 个系列，使用左右方向键查看各期数值"
+          );
+        });
+        section.dataset.smallMultipleVisibleSeries = String(count);
+        if (legendStatus) legendStatus.textContent = message || "";
+      }
+
+      function setSeriesVisibility(seriesIndex, visible) {
+        visibleSeries[seriesIndex] = visible;
+        section.querySelectorAll(
+          '[data-small-multiple-series-mark][data-series-index="' +
+            seriesIndex + '"]'
+        ).forEach(function (mark) {
+          mark.dataset.visible = visible ? "true" : "false";
+          mark.style.display = visible ? "" : "none";
+        });
+        section.querySelectorAll(
+          '.vda-small-multiple-focus-point[data-series-index="' +
+            seriesIndex + '"]'
+        ).forEach(function (point) {
+          if (!visible) point.style.display = "none";
+        });
+      }
+
+      function hideState(state, force) {
+        if (!force && state.pinned) return;
+        state.focus.dataset.open = "false";
+        if (activeState === state) activeState = null;
+        tooltipApi.hide();
+      }
+
+      function selectIndex(state, index, clientX, clientY) {
+        panelStates.forEach(function (candidate) {
+          if (candidate !== state) candidate.focus.dataset.open = "false";
+        });
+        activeState = state;
+        state.currentIndex = clamp(index, 0, labels.length - 1);
+        var x = state.chartX(state.currentIndex);
+        state.focusLine.setAttribute("x1", x);
+        state.focusLine.setAttribute("x2", x);
+        var rows = [];
+        state.series.forEach(function (item, seriesIndex) {
+          var raw = item.values[state.currentIndex];
+          var numeric = raw == null ? NaN : Number(raw);
+          var valid = Number.isFinite(numeric);
+          var point = state.focusPoints[seriesIndex];
+          point.setAttribute("cx", x);
+          if (visibleSeries[seriesIndex] && valid) {
+            point.setAttribute("cy", state.chartY(numeric));
+            point.style.display = "";
+          } else {
+            point.style.display = "none";
+          }
+          if (!visibleSeries[seriesIndex]) return;
+          rows.push({
+            seriesIndex: seriesIndex,
+            name: item.name,
+            raw: valid ? raw : null,
+            display: valid ? formatValue(raw, item.format) : "—",
+            color: item.color
+          });
+        });
+        state.focus.dataset.open = "true";
+        state.hitbox.setAttribute("aria-valuenow", state.currentIndex);
+        state.hitbox.setAttribute(
+          "aria-valuetext",
+          [state.entity.displayName, labels[state.currentIndex]].concat(
+            rows.map(function (row) {
+              return row.name + " " + row.display;
+            })
+          ).join("，")
+        );
+        var anchor = state.clientPoint(state.currentIndex);
+        tooltipApi.showShared(
+          state.entity.displayName + " · " + labels[state.currentIndex],
+          rows,
+          clientX == null ? anchor.x + 10 : clientX + 10,
+          clientY == null ? anchor.y + 10 : clientY + 10
+        );
+      }
+
+      section.querySelectorAll("[data-small-multiple-hitbox]").forEach(
+        function (hitbox) {
+          var panelIndex = Number(hitbox.dataset.panelIndex);
+          var entry = entries[panelIndex];
+          if (!entry) return;
+          var entity = entityDefinition(entry.entityId) || {
+            id: entry.entityId,
+            displayName: entry.entityId
+          };
+          var svg = hitbox.ownerSVGElement;
+          var focus = svg.querySelector(".vda-small-multiple-focus");
+          var plotLeft = finite(hitbox.dataset.plotLeft, 0);
+          var plotRight = finite(hitbox.dataset.plotRight, 1);
+          var plotTop = finite(hitbox.dataset.plotTop, 0);
+          var plotBottom = finite(hitbox.dataset.plotBottom, 1);
+          var minY = finite(hitbox.dataset.minY, 0);
+          var maxY = finite(hitbox.dataset.maxY, 1);
+          var yRange = maxY - minY || 1;
+          var state = {
+            hitbox: hitbox,
+            svg: svg,
+            focus: focus,
+            focusLine: focus.querySelector(".vda-small-multiple-focus-line"),
+            focusPoints: Array.from(
+              focus.querySelectorAll(".vda-small-multiple-focus-point")
+            ),
+            entity: entity,
+            series: smallMultipleSeries(component, entry),
+            currentIndex: 0,
+            pinned: false,
+            chartX: function (index) {
+              return labels.length > 1
+                ? plotLeft + ((plotRight - plotLeft) * index) /
+                    (labels.length - 1)
+                : (plotLeft + plotRight) / 2;
+            },
+            chartY: function (value) {
+              return plotTop + ((maxY - value) / yRange) *
+                (plotBottom - plotTop);
+            },
+            clientPoint: function (index) {
+              var rect = svg.getBoundingClientRect();
+              var viewBox = svg.viewBox.baseVal;
+              var x = state.chartX(index);
+              return {
+                x: rect.left + ((x - viewBox.x) / viewBox.width) * rect.width,
+                y: rect.top + ((plotTop - viewBox.y) / viewBox.height) * rect.height
+              };
+            }
+          };
+          panelStates.push(state);
+
+          function indexFromPointer(event) {
+            var rect = svg.getBoundingClientRect();
+            var viewBox = svg.viewBox.baseVal;
+            var svgX = viewBox.x +
+              ((event.clientX - rect.left) / rect.width) * viewBox.width;
+            var ratio = clamp(
+              (svgX - plotLeft) / (plotRight - plotLeft || 1),
+              0,
+              1
+            );
+            return Math.round(ratio * Math.max(0, labels.length - 1));
+          }
+
+          hitbox.addEventListener("pointerenter", function (event) {
+            if (event.pointerType === "touch") return;
+            selectIndex(state, indexFromPointer(event), event.clientX, event.clientY);
+          });
+          hitbox.addEventListener("pointermove", function (event) {
+            if (event.pointerType === "touch" || state.pinned) return;
+            selectIndex(state, indexFromPointer(event), event.clientX, event.clientY);
+          });
+          hitbox.addEventListener("pointerleave", function () {
+            hideState(state, false);
+          });
+          hitbox.addEventListener("pointerdown", function (event) {
+            state.pinned = event.pointerType === "touch" || event.pointerType === "pen";
+            selectIndex(state, indexFromPointer(event), event.clientX, event.clientY);
+          });
+          hitbox.addEventListener("focus", function () {
+            selectIndex(state, state.currentIndex);
+          });
+          hitbox.addEventListener("blur", function () {
+            hideState(state, false);
+          });
+          hitbox.addEventListener("keydown", function (event) {
+            var next = state.currentIndex;
+            if (event.key === "ArrowRight") next += 1;
+            else if (event.key === "ArrowLeft") next -= 1;
+            else if (event.key === "Home") next = 0;
+            else if (event.key === "End") next = labels.length - 1;
+            else if (event.key === "Escape") {
+              state.pinned = false;
+              hideState(state, true);
+              return;
+            } else {
+              return;
+            }
+            event.preventDefault();
+            state.pinned = true;
+            selectIndex(state, next);
+          });
+        }
+      );
+
+      toggles.forEach(function (toggle, seriesIndex) {
+        toggle.addEventListener("click", function () {
+          var metric = metricDefinition(metricIds[seriesIndex]) || {
+            label: metricIds[seriesIndex]
+          };
+          if (visibleSeries[seriesIndex] && visibleCount() === 1) {
+            updateLegendState("至少保留一个可见系列");
+            return;
+          }
+          var nextVisible = !visibleSeries[seriesIndex];
+          setSeriesVisibility(seriesIndex, nextVisible);
+          updateLegendState(
+            metric.label + (nextVisible ? "已显示" : "已隐藏")
+          );
+          if (activeState) {
+            selectIndex(activeState, activeState.currentIndex);
+          }
+        });
+      });
+      updateLegendState("");
+      document.addEventListener("pointerdown", function (event) {
+        if (section.contains(event.target)) return;
+        panelStates.forEach(function (state) {
+          state.pinned = false;
+          hideState(state, true);
+        });
+      });
+    });
+  }
+
   function setupSparklineInteractions(tooltipApi) {
     var components = Array.isArray(spec.components) ? spec.components : [];
     document.querySelectorAll("[data-sparkline-hitbox]").forEach(function (hitbox) {
@@ -5496,15 +6069,6 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
           component.items &&
           component.items[metricIndex]
           ? component.items[metricIndex].sparkline
-          : component.type === "small-multiples" &&
-            Number.isInteger(seriesIndex) &&
-            component.series &&
-            component.series[seriesIndex]
-            ? smallMultipleDefinition(
-                component,
-                component.series[seriesIndex],
-                metricDefinition(component.metricId)
-              )
           : null;
       if (!definition) return;
       var points = sparklineNumericPoints(definition);
@@ -5524,9 +6088,6 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
       var pinned = false;
       var name = component.type === "metrics"
         ? component.items[metricIndex].label
-        : component.type === "small-multiples"
-          ? ((entityDefinition(component.series[seriesIndex].entityId) || {})
-              .displayName || component.series[seriesIndex].entityId)
         : component.title || "迷你趋势";
 
       function chartX(index) {
@@ -5937,6 +6498,7 @@ window.__VDA_SPEC__ = {"schemaVersion":"1.0","mode":"report-component","title":"
         "</div>";
       var tooltipApi = setupTooltips();
       setupLineChartInteractions(tooltipApi);
+      setupSmallMultipleInteractions(tooltipApi);
       setupSparklineInteractions(tooltipApi);
       setupRangeKeyboard();
       window.requestAnimationFrame(function () {

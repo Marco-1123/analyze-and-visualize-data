@@ -4,6 +4,7 @@ import path from "node:path";
 import process from "node:process";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
+import { launchChromium } from "./browser_launch.mjs";
 
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
@@ -229,7 +230,7 @@ async function inspect(page, viewport) {
   return state;
 }
 
-const browser = await chromium.launch({ headless: true });
+const browser = await launchChromium(chromium);
 try {
   const page = await browser.newPage();
   const output = [];

@@ -171,13 +171,17 @@ Use `small-multiples` for peer trends:
 ```json
 {
   "type": "small-multiples",
-  "metricId": "sla_24h",
+  "metricIds": ["sla_24h", "sla_48h", "sla_72h"],
   "labels": ["7/18", "7/19", "7/20"],
   "highlightEntityIds": ["queue_partner_escalation_south_tier_02"],
   "series": [
     {
       "entityId": "queue_enterprise_recovery_east_priority",
-      "values": [0.918, 0.926, 0.931]
+      "values": {
+        "sla_24h": [0.918, 0.926, 0.931],
+        "sla_48h": [0.944, 0.951, 0.956],
+        "sla_72h": [0.966, 0.972, 0.976]
+      }
     }
   ]
 }
@@ -186,8 +190,20 @@ Use `small-multiples` for peer trends:
 - Matrix metric IDs and row entity IDs must exist in the registries.
 - Matrix values may be numeric or `null`; optional coverage is 0–1.
 - Small multiples use 2–10 unique entities and one shared y-domain.
-- Every small-multiple value array matches `labels` exactly. Missing
-  observations are explicit `null`.
+- Use legacy `metricId` plus one `values[]` array for a single line, or use
+  `metricIds` with one to three unique governed metrics and a `values` object
+  keyed by every declared metric ID. Do not define both contracts together.
+- Metrics inside one panel must share a compatible unit and format. Different
+  currencies, percentages, durations, or other incompatible scales require
+  separate components; small multiples never add a hidden dual axis.
+- Every nested small-multiple value array matches `labels` exactly. Missing
+  observations are explicit `null`; agents must not shorten any series.
+- Multi-series small multiples render one shared legend above the panel grid.
+  A legend toggle applies the same series role to every entity panel, retains
+  at least one visible series, and never changes the shared y-domain.
+- Each panel uses one nearest-x guide and one tooltip containing every visible
+  series value. Pointer, persistent touch, and Left/Right/Home/End keyboard
+  inspection remain available even though the plots are compact.
 - Highlight at most three entities; selection follows decision relevance, not
   decoration.
 

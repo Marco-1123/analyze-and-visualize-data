@@ -189,8 +189,18 @@
 
 - Use for 5–10 peer trends when a multi-series line would overlap or require
   too many emphasized colors.
+- A panel may contain one to three comparable line series when retaining the
+  same measures for every entity is necessary. Keep series colors and order
+  identical across panels; identify entities by panel title, not rainbow
+  colors.
 - Keep one shared y-domain and reference line across panels.
 - Preserve identical time labels and explicit missing gaps.
+- Use one component-level legend for multi-series panels. Toggling a legend
+  item changes that series in every panel and keeps the domain stable.
+- Use one nearest-x tooltip per active panel containing all visible values.
+  Do not repeat a legend inside every small panel or permanently label every
+  point merely to claim data completeness.
+- Do not mix incompatible units or add dual axes inside small multiples.
 - Highlight at most three decision-relevant entities.
 - Provide exact pointer, touch, and keyboard point inspection in every panel.
 - Do not use independent scales unless the user explicitly requests them and

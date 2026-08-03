@@ -837,8 +837,46 @@ def validate_spec(spec: dict[str, Any]) -> None:
             if spec.get("analysisMode") != "multi-entity":
                 fail(f"{path} requires spec.analysisMode 'multi-entity'")
             metric_id = component.get("metricId")
-            if metric_id not in metric_ids:
-                fail(f"{path}.metricId must reference a known metric")
+            component_metric_ids = component.get("metricIds")
+            if metric_id is not None and component_metric_ids is not None:
+                fail(f"{path} cannot define both metricId and metricIds")
+            if component_metric_ids is not None:
+                validate_string_array(
+                    component_metric_ids,
+                    f"{path}.metricIds",
+                    allow_empty=False,
+                )
+                if not 1 <= len(component_metric_ids) <= 3:
+                    fail(f"{path}.metricIds must contain between 1 and 3 metrics")
+                if len(set(component_metric_ids)) != len(component_metric_ids):
+                    fail(f"{path}.metricIds must be unique")
+                unknown_metrics = set(component_metric_ids) - metric_ids
+                if unknown_metrics:
+                    fail(
+                        f"{path}.metricIds contains unknown metrics: "
+                        f"{sorted(unknown_metrics)}"
+                    )
+                metrics_by_id = {
+                    metric["id"]: metric
+                    for metric in spec.get("metricDefinitions", [])
+                }
+                format_signatures = {
+                    (
+                        (metrics_by_id[item].get("format") or {}).get("type", "number"),
+                        (metrics_by_id[item].get("format") or {}).get("input"),
+                        (metrics_by_id[item].get("format") or {}).get("currency"),
+                    )
+                    for item in component_metric_ids
+                }
+                if len(format_signatures) != 1:
+                    fail(
+                        f"{path}.metricIds must use compatible units and formats "
+                        "for one shared y-axis"
+                    )
+            else:
+                if metric_id not in metric_ids:
+                    fail(f"{path}.metricId must reference a known metric")
+                component_metric_ids = [metric_id]
             labels = component.get("labels")
             if not isinstance(labels, list) or not labels:
                 fail(f"{path}.labels must be a non-empty array")
@@ -857,16 +895,54 @@ def validate_spec(spec: dict[str, Any]) -> None:
                     fail(f"{path}.series entityId values must be unique")
                 seen_series_entities.add(entity_id)
                 values = entry.get("values")
-                if not isinstance(values, list) or len(values) != len(labels):
-                    fail(
-                        f"{series_path}.values must contain exactly "
-                        f"{len(labels)} entries to match labels"
-                    )
-                if not all(value is None or is_number(value) for value in values):
-                    fail(
-                        f"{series_path}.values must contain finite numbers "
-                        "or null"
-                    )
+                if component.get("metricIds") is None:
+                    if not isinstance(values, list) or len(values) != len(labels):
+                        fail(
+                            f"{series_path}.values must contain exactly "
+                            f"{len(labels)} entries to match labels"
+                        )
+                    if not all(value is None or is_number(value) for value in values):
+                        fail(
+                            f"{series_path}.values must contain finite numbers "
+                            "or null"
+                        )
+                else:
+                    if not isinstance(values, dict):
+                        fail(
+                            f"{series_path}.values must be an object keyed by "
+                            "metricIds"
+                        )
+                    missing_metrics = set(component_metric_ids) - set(values)
+                    unknown_value_metrics = set(values) - set(component_metric_ids)
+                    if missing_metrics:
+                        fail(
+                            f"{series_path}.values is missing metrics: "
+                            f"{sorted(missing_metrics)}"
+                        )
+                    if unknown_value_metrics:
+                        fail(
+                            f"{series_path}.values contains undeclared metrics: "
+                            f"{sorted(unknown_value_metrics)}"
+                        )
+                    for nested_metric_id in component_metric_ids:
+                        nested_values = values[nested_metric_id]
+                        nested_path = f"{series_path}.values.{nested_metric_id}"
+                        if (
+                            not isinstance(nested_values, list)
+                            or len(nested_values) != len(labels)
+                        ):
+                            fail(
+                                f"{nested_path} must contain exactly "
+                                f"{len(labels)} entries to match labels"
+                            )
+                        if not all(
+                            value is None or is_number(value)
+                            for value in nested_values
+                        ):
+                            fail(
+                                f"{nested_path} must contain finite numbers "
+                                "or null"
+                            )
             highlighted = component.get("highlightEntityIds")
             if highlighted is not None:
                 validate_string_array(

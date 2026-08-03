@@ -608,6 +608,7 @@ class MultiEntityContractTests(unittest.TestCase):
                     "direction": "higher-is-better",
                     "aggregation": "ratio",
                     "denominator": "eligible_cases",
+                    "format": {"type": "percent", "input": "ratio"},
                     "reference": {"type": "target", "value": 0.9},
                 },
                 {
@@ -615,6 +616,7 @@ class MultiEntityContractTests(unittest.TestCase):
                     "label": "积压",
                     "direction": "lower-is-better",
                     "aggregation": "sum",
+                    "format": {"type": "number"},
                     "reference": {
                         "type": "target",
                         "value": 800,
@@ -625,11 +627,83 @@ class MultiEntityContractTests(unittest.TestCase):
             "components": [component],
         }
 
+    def multi_series_small_multiples_spec(self) -> dict:
+        spec = self.base_spec("small-multiples")
+        spec["metricDefinitions"].extend(
+            [
+                {
+                    "id": "sla_48h",
+                    "label": "48 小时 SLA",
+                    "direction": "higher-is-better",
+                    "aggregation": "ratio",
+                    "denominator": "eligible_cases",
+                    "format": {"type": "percent", "input": "ratio"},
+                    "reference": {"type": "target", "value": 0.9},
+                },
+                {
+                    "id": "sla_72h",
+                    "label": "72 小时 SLA",
+                    "direction": "higher-is-better",
+                    "aggregation": "ratio",
+                    "denominator": "eligible_cases",
+                    "format": {"type": "percent", "input": "ratio"},
+                    "reference": {"type": "target", "value": 0.9},
+                },
+            ]
+        )
+        component = spec["components"][0]
+        del component["metricId"]
+        component["metricIds"] = ["sla", "sla_48h", "sla_72h"]
+        for entry in component["series"]:
+            primary = entry["values"]
+            entry["values"] = {
+                "sla": primary,
+                "sla_48h": [
+                    None if value is None else value + 0.02
+                    for value in primary
+                ],
+                "sla_72h": [
+                    None if value is None else value + 0.04
+                    for value in primary
+                ],
+            }
+        return spec
+
     def test_comparison_matrix_is_valid(self) -> None:
         validate_spec(self.base_spec())
 
     def test_small_multiples_allow_explicit_missing_values(self) -> None:
         validate_spec(self.base_spec("small-multiples"))
+
+    def test_small_multiples_accept_three_compatible_series(self) -> None:
+        validate_spec(self.multi_series_small_multiples_spec())
+
+    def test_small_multiples_reject_more_than_three_series(self) -> None:
+        spec = self.multi_series_small_multiples_spec()
+        spec["components"][0]["metricIds"].append("sla_extra")
+        with self.assertRaisesRegex(ValueError, "between 1 and 3"):
+            validate_spec(spec)
+
+    def test_small_multiples_reject_incompatible_shared_axis(self) -> None:
+        spec = self.multi_series_small_multiples_spec()
+        component = spec["components"][0]
+        component["metricIds"][2] = "backlog"
+        for entry in component["series"]:
+            entry["values"]["backlog"] = entry["values"].pop("sla_72h")
+        with self.assertRaisesRegex(ValueError, "compatible units and formats"):
+            validate_spec(spec)
+
+    def test_small_multiples_require_every_declared_series(self) -> None:
+        spec = self.multi_series_small_multiples_spec()
+        del spec["components"][0]["series"][0]["values"]["sla_72h"]
+        with self.assertRaisesRegex(ValueError, "missing metrics"):
+            validate_spec(spec)
+
+    def test_small_multiples_cannot_mix_legacy_and_multi_series_contracts(self) -> None:
+        spec = self.multi_series_small_multiples_spec()
+        spec["components"][0]["metricId"] = "sla"
+        with self.assertRaisesRegex(ValueError, "cannot define both"):
+            validate_spec(spec)
 
     def test_more_than_ten_entities_are_rejected(self) -> None:
         spec = self.base_spec()

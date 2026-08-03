@@ -186,6 +186,12 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
   inside the component.
 - Use shared-scale small multiples for 5–10 peer trends. Keep panel structure,
   y-domain, reference line, and time order identical.
+- Small-multiple panels may repeat up to three comparable series. Use one
+  shared legend above the grid, consistent series colors in every panel, and a
+  shared nearest-x tooltip within the active panel. Do not repeat legend
+  controls inside every panel.
+- Let a component-level legend filter the same series role across all panels.
+  Preserve at least one visible series and the original shared domain.
 - Highlight at most three material exceptions; keep other panels neutral.
 - Do not assign a permanent rainbow color to every queue across the report.
 
@@ -251,6 +257,10 @@ Use line style and opacity to distinguish actual, target, forecast, and incomple
   the selected label and values as accessible text.
 - Keep touch selection persistent until the viewer chooses another point or
   taps outside the chart.
+- Apply the complete multi-series line interaction contract to multi-series
+  small multiples: synchronized per-panel crosshair points, component-level
+  legend visibility, stable shared domain, filtered tooltips and accessible
+  values, and a final-visible-series guard.
 - Use native component-level horizontal scrolling for a diverging bar whose
   readable width exceeds its container. Support trackpad/wheel, touch,
   scrollbar, and keyboard behavior without JavaScript grab-to-drag gestures.
